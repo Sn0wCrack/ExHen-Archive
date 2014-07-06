@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="utf-8">
+
+	<meta name="viewport" content="width=device-width, user-scalable=no">
+	<meta name="mobile-web-app-capable" content="yes">
+
+	<title>ExHentai Archive</title>
+
+	<link rel="icon" type="image/png" href="img/icon.png">
+
+	<link href='//fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css' async="true" >
+	<link rel="stylesheet" href="css/exhen.css">
+
+	<script src="js/jquery-2.1.0.min.js"></script>
+	<script src="js/jquery-ui-1.10.3.custom.js"></script>
+	<script src="js/jquery.mousewheel.js"></script>
+	<script src="js/hammer.min.js"></script>
+	<script src="js/exhen.js"></script>
+</head>
+<body>
+	<header>
+		<form method="get" action="/" class="search-form">
+			<input type="text" class="search" placeholder="Search" name="search" />
+			<ul class="suggestions"></ul>
+			<div class="search-options">
+				<div class="input-clear"></div>
+				<div class="search-order dropdown-button">
+					<span class="label button">Order</span>
+					<div class="menu-outer">
+						<ul>
+							<li data-order="posted">Posted
+							<li data-order="added">Archived
+							<li data-order="random">Random
+							<li data-order="weight">Weight
+						</ul>
+					</div>
+				</div>
+				<button class="search-button button">Search</button>
+			</div>
+		</form>
+		<div class="search-count">
+
+		</div>
+	</header>
+	
+	<div class="loaders loaders-top">
+		<div class="loader-outer">
+			<div class="loader loader-ichi"></div>
+		</div>
+		<div class="loader-outer">
+			<div class="loader loader-ni"></div>
+		</div>
+		<div class="loader-outer">
+			<div class="loader loader-san"></div>
+		</div>
+	</div>
+	<div class="load-previous">
+		<span class="inner">Click to load previous</span>
+	</div>
+	<div class="gallery-list">
+
+	</div>
+	<div class="load-next">
+		<span class="inner">Click to load next</span>
+	</div>
+	<div class="loaders loaders-bottom">
+		<div class="loader-outer">
+			<div class="loader loader-ichi"></div>
+		</div>
+		<div class="loader-outer">
+			<div class="loader loader-ni"></div>
+		</div>
+		<div class="loader-outer">
+			<div class="loader loader-san"></div>
+		</div>
+	</div>
+	<div class="reader-container">
+		<img src alt class="image-holder" draggable="true" />
+
+		<div class="gallery-info">
+			<span class="title"></span>
+			<div class="expand">
+				<span class="origtitle"></span>
+				<div class="tags"></div>
+			</div>
+		</div>
+
+		<div class="control-hotspot control-hotspot-prev"></div>
+		<div class="control control-prev"></div>
+		
+		<div class="control-hotspot control-hotspot-next"></div>
+		<div class="control control-next"></div>
+
+		<div class="thumbs-hotspot"></div>
+		<div class="gallery-thumbs-outer">
+			<div class="thumbs">
+
+			</div>
+		</div>
+		
+		<div class="gallery-actions">
+			<div class="actions-menu dropdown-button">
+				<span class="label button">Actions</span>
+				<div class="menu-outer">
+					<ul>
+						<li data-action="delete">Delete
+						<li data-action="resize">Resize
+						<li data-action="download">Download
+						<li data-action="similar">Similar
+					</ul>
+				</div>
+			</div>
+
+			<span class="close button">X</span>
+		</div>
+
+		<div class="end-flash">End</div>
+	</div>
+	<div class="template">
+		<div class="gallery-item">
+			<div class="top">
+				<div class="title"></div>
+			</div>
+			
+
+			<div class="bottom">
+				<div class="tags">
+					<span class="weight"></span>&nbsp;<span class="date"></span>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
