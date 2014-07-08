@@ -11,7 +11,7 @@ class ExClient {
 		$params = array('page' => $page);
 
 		if($search) {
-			$params = array_merge($params, array(
+			$params = array_merge($params, array( //todo - move to config
 				'f_doujinshi' => 1,
 				'f_manga' => 1,
 				'f_artistcg' => 0,
@@ -41,7 +41,9 @@ class ExClient {
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_COOKIE, Config::get()->cookie);
+
+        $cookie = Config::buildCookie();
+		curl_setopt($ch, CURLOPT_COOKIE, $cookie);
 		curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36');
 		
 		$ret = curl_exec($ch);

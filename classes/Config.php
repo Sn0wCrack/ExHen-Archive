@@ -15,7 +15,9 @@ class Config {
 			$config = $data->base;
 
 			$host = gethostname();
-			self::processEntry($config, $data, $host);
+			if(!self::processEntry($config, $data, $host)) {
+                self::processEntry($config, $data, 'default');
+            }
 
 			self::$config = $config;
 		}
@@ -32,8 +34,22 @@ class Config {
 			foreach($data->$key as $key => $value) {
 				$config->$key = $value;
 			}
+
+            return true;
 		}
+        else {
+            return false;
+        }
 	}
+
+    public static function buildCookie() {
+        $cookie = array();
+        foreach(self::$config->cookie as $var => $value) {
+            $cookie[] = $var.'='.$value;
+        }
+
+        return implode('; ', $cookie);
+    }
 }
 
 ?>

@@ -31,21 +31,17 @@ class ApiHandler {
 		}
 
 		$config = Config::get();
-
-		$memcache = new Memcache();
-		$cacheConnected = $memcache->addServer($config->memcache->host, $config->memcache->port);
+        $cache = Cache::getInstance();
 
 		foreach($result as $row) {
 			$galleryId = $row['id'];
 
 			$export = null;
 
-			if($cacheConnected) {
-				$export = $memcache->get('gallery'.$galleryId);
-				if($export) {
-					$export['fromcache'] = true;
-				}
-			}
+			$export = $cache->getObject('gallery', $galleryId);
+            if($export) {
+                $export['fromcache'] = true;
+            }
 			
 			if(!$export) {
 				$gallery = R::load('gallery', $galleryId);
@@ -69,8 +65,8 @@ class ApiHandler {
 
 				$export['fromcache'] = false;
 
-				if($cacheConnected && $thumb) {
-					$ret = $memcache->set('gallery'.$gallery->id, $export, MEMCACHE_COMPRESSED, 0);
+				if($thumb) {
+				    $cache->setObject('gallery', $galleryId, $export);
 				}
 			}
 
@@ -81,11 +77,7 @@ class ApiHandler {
 			$data['galleries'][] = $export;
 		}
 
-		if($cacheConnected) {
-			$memcache->close();
-		}
-
-		$this->sendSuccess($data);
+        $this->sendSuccess($data);
 	}
 
 	protected function galleryAction() {
@@ -312,23 +304,20 @@ class ApiHandler {
 
 	public function flushAction() {
 		$config = Config::get();
+        $cache = Cache::getInstance();
 
-		$memcache = new Memcache();
-		$cacheConnected = $memcache->addServer($config->memcache->host, $config->memcache->port);
-		if($cacheConnected) {
-			$ret = $memcache->flush();
-			$memcache->close();
-
-			if($ret) {
-				$this->sendSuccess(true);
-			}
-			else {
-				$this->sendFail('flush() failed');
-			}
-		}
-		else {
-			$this->sendFail('cache not connected');
-		}
+        if($cache->cacheConnected()) {
+            $ret = $cache->flush();
+            if($ret) {
+                $this->sendSuccess('Cache flushed');
+            }
+            else {
+                $this->sendFail('Failed to flush cache');
+            }
+        }
+        else {
+            $this->sendFail('Cache not connected');
+        }
 	}
 
 	public function indexerAction() {
