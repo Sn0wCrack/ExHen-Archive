@@ -68,7 +68,7 @@ class Cache {
     }
 
     public function createObjectKey($objectType, $objectId) {
-        return printf("%s_%d", $objectType, $objectId);
+        return sprintf("%s_%d", $objectType, $objectId);
     }
 
     public function __destruct() {
