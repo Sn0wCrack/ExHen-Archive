@@ -3,3 +3,4 @@ images/*
 temp/*
 io/*
 config.json
+sphinx.conf
