@@ -28,7 +28,7 @@ class ExArchiver {
 		$archivedCount = 0;
 
 		//archive unarchived galleries
-		$unarchived = R::find('gallery', 'archived = 0 and deleted = 0 and feed_id is null');
+		$unarchived = R::find('gallery', 'archived = 0 and deleted = 0 and download = 1');
 		foreach($unarchived as $gallery) {
 			$this->archiveGallery($gallery);
 
@@ -65,6 +65,7 @@ class ExArchiver {
 							$gallery->name = $exGallery->name;
 							$gallery->archived = false;
 							$gallery->feed = $feed;
+                            $gallery->download = $feed->download;
 							R::store($gallery);
 						}
 						else {
@@ -73,19 +74,13 @@ class ExArchiver {
 							}
 						}
 
-						if(!$gallery->archived && !$gallery->hasmeta) {
-							$this->archiveGallery($gallery, false);
-						}
+						if((!$gallery->archived && $gallery->download) || !$gallery->hasmeta) {
+							$this->archiveGallery($gallery);
 
-						/*
-						if(!$gallery->archived && !$gallery->deleted) {
-							//$this->archiveGallery($gallery);
-
-							if($gallery->archived) {
-								$archivedCount++;
-							}
+                            if($gallery->archived) {
+                                $archivedCount++;
+                            }
 						}
-						*/
 					}
 				}
 
@@ -112,7 +107,7 @@ class ExArchiver {
 		}
 	}
 
-	protected function archiveGallery($gallery, $downloadArchive = true) {
+	protected function archiveGallery($gallery) {
 		Log::debug(self::LOG_TAG, 'Archiving gallery: #%d', $gallery->exhenid);
 
 		$galleryHtml = $this->client->gallery($gallery->exhenid, $gallery->hash);
@@ -139,7 +134,7 @@ class ExArchiver {
 
 		$gallery->hasmeta = true;
 
-		if($downloadArchive) {
+		if($gallery->download) {
 			//delete if gallery zip exists (it shouldn't)
 			$targetFile = $gallery->getArchiveFilepath();
 			if(file_exists($targetFile)) {

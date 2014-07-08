@@ -4,7 +4,8 @@
 // @require  http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js
 // ==/UserScript==
 
-var baseUrl = 'http://exhen.localhost/';
+var baseUrl = 'http://your.archive.url.com/';
+var key = 'changeme';
 
 function createArchiveLink(gid, token) {
     var link = $('<a href="#">Send to archive</a>');
@@ -12,7 +13,7 @@ function createArchiveLink(gid, token) {
     link.data('token', token);
     
     link.click(function() {
-        $.getJSON(baseUrl + 'api.php', { action: 'addgallery', gid: link.data('gid'), token: link.data('token') }, function(data, result) {
+        $.getJSON(baseUrl + 'api.php', { action: 'addgallery', gid: link.data('gid'), token: link.data('token'), key: key }, function(data, result) {
             if(data.ret === true && result === 'success') {
                 $(link).css({
                     color: '#777',
@@ -33,17 +34,17 @@ function createArchiveLink(gid, token) {
 $('div#gd5').each(function() { //archive button on gallery detail
     var container = $(this);
     
-    $.getJSON(baseUrl + 'api.php', { action: 'hasgallery', gid: gid }, function(data, result) {
+    $.getJSON(baseUrl + 'api.php', { action: 'hasgallery', gid: gid, key: key }, function(data, result) {
         if(data.data.exists) {
             var p = $('<p class="g2"><img src="http://st.exhentai.net/img/mr.gif"> </p>');
-    		var link = $('<a href="#" target="_blank">Archived</a>');
+            var link = $('<a href="#" target="_blank">Archived</a>');
             
             if(data.data.archived) {
                 link.prop('href', baseUrl + '?' + $.param({ action: 'gallery', id: data.data.id }));
             }
             else {
                 link.click(function() {
-                	alert('Not yet downloaded');
+                    alert('Not yet downloaded');
                     return false;
                 });
             }
@@ -54,7 +55,7 @@ $('div#gd5').each(function() { //archive button on gallery detail
         }
         else {
             var p = $('<p class="g2"><img src="http://st.exhentai.net/img/mr.gif"> </p>');
-    		var link = createArchiveLink(gid, token);
+            var link = createArchiveLink(gid, token);
             
             link.appendTo(p);
             
@@ -64,7 +65,7 @@ $('div#gd5').each(function() { //archive button on gallery detail
 });
 
 $('div.itg').each(function() { //gallery search
-	var container = $(this);
+    var container = $(this);
     var galleries = $('div.id1', container);
     var gids = [ ];
     
@@ -88,13 +89,13 @@ $('div.itg').each(function() { //gallery search
         link.prependTo($('.id44', galleryContainer));
     });
     
-    $.getJSON(baseUrl + 'api.php', { action: 'hasgalleries', gids: gids }, function(ret) {
+    $.getJSON(baseUrl + 'api.php', { action: 'hasgalleries', gids: gids, key: key }, function(ret) {
         if(ret.ret) {
             for(var i in ret.data) {
                 var row = ret.data[i];
                 
                 galleries.filter(function() {
-                	return $(this).data('gid') == row.exhenid;
+                    return $(this).data('gid') == row.exhenid;
                 }).css({ background: 'green' });
             }
         }
