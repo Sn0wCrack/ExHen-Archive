@@ -209,6 +209,7 @@ class ApiHandler {
 				R::store($gallery);
 			}
 			elseif(!$gallery->download) {
+                $gallery->added = date('Y-m-d H:i:s');
 				$gallery->download = true;
 				R::store($gallery);
 			}
