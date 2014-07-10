@@ -28,7 +28,7 @@ class ExArchiver {
 		$archivedCount = 0;
 
 		//archive unarchived galleries
-		$unarchived = R::find('gallery', 'archived = 0 and deleted = 0 and download = 1');
+		$unarchived = R::find('gallery', '((archived = 0 and download = 1) or hasmeta = 0) and deleted = 0');
 		foreach($unarchived as $gallery) {
 			$this->archiveGallery($gallery);
 
@@ -40,7 +40,7 @@ class ExArchiver {
 		//run through feeds and add new galleries
 		$feeds = R::find('feed', 'disabled = 0');
 		foreach($feeds as $feed) {
-			$page = 0;
+			$page = 1112;
 
 			while(true) {
 				Log::debug(self::LOG_TAG, 'Crawling feed "%s", page %d', $feed->term, $page);
