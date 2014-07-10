@@ -40,7 +40,7 @@ class ExArchiver {
 		//run through feeds and add new galleries
 		$feeds = R::find('feed', 'disabled = 0');
 		foreach($feeds as $feed) {
-			$page = 1112;
+			$page = 0;
 
 			while(true) {
 				Log::debug(self::LOG_TAG, 'Crawling feed "%s", page %d', $feed->term, $page);
