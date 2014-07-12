@@ -51,6 +51,7 @@ $(document).ready(function() {
 		var init = false;
 		var end = false;
 		var randomSeed = 0;
+        var unarchived = false;
 
 		function loadPage(fwd) {
 			loading = true;
@@ -85,8 +86,11 @@ $(document).ready(function() {
 				params.seed = randomSeed;
 			}
 
+            if(unarchived) {
+                params.unarchived = unarchived;
+            }
+
 			xhr = api('galleries', params, function(result) {
-				
 				var collection = [ ];
 				var galleries = result.galleries;
 				var topWeight = null;
@@ -99,6 +103,10 @@ $(document).ready(function() {
 						item.addClass('page-break');
 						item.data('page', loadPage);
 					}
+
+                    if(gallery.archived == 0) {
+                        item.addClass('unarchived');
+                    }
 
 					$('.title', item).text(gallery.name);
 					$('.date', item).text(gallery.posted_formatted);
@@ -125,7 +133,15 @@ $(document).ready(function() {
 						})
 					}
 					else {
-						var url = 'api.php?' + $.param({ action: 'gallerythumb', id: gallery.id, index: 0, type: 1 });
+                        if(gallery.archived == 1) {
+                            var url = 'api.php?' + $.param({ action: 'gallerythumb', id: gallery.id, index: 0, type: 1 });
+                        }
+                        else {
+                            var url = 'api.php?' + $.param({ action: 'exgallerythumb', id: gallery.id });
+                        }
+
+                        console.log(gallery.archived, url);
+						
 
 						item.css({
 							backgroundImage: 'url(' + url + ')'
@@ -181,12 +197,26 @@ $(document).ready(function() {
 			});
 		}
 
+        galleryList.on('click', '.gallery-item', function() {
+            var galleryItem = $(this);
+            var gallery = galleryItem.data('gallery');
+
+            if(gallery.archived == 0) {
+                var url = 'http://exhentai.org/g/' + gallery.exhenid + '/' + gallery.hash;
+                window.open(url);
+            }
+            else {
+                reader.trigger('loadgallery', [ gallery ]);    
+            }
+        });
+
 		function setHistoryState(replace, state) {
 			var urlParams = { };
 			if(state.data.search) urlParams.search = state.data.search;
 			if(state.data.page && state.data.page > 0) urlParams.page = state.data.page;
 			if(state.data.order != 'posted') urlParams.order = state.data.order;
 			//if(state.data.seed) urlParams.seed = state.data.seed;
+            if(state.data.unarchived) urlParams.unarchived = state.data.unarchived;
 
 			var url = Object.keys(urlParams).length > 0 ? '?' + $.param(urlParams) : '/';
 
@@ -204,7 +234,7 @@ $(document).ready(function() {
 		}
 
 		function buildHistoryState() {
-			var state = { action: 'galleries', data: { search: search, page: page - 1, order: order } };
+			var state = { action: 'galleries', data: { search: search, page: page - 1, order: order, unarchived: unarchived } };
 
 			if(order === 'random') {
 				state.data.seed = randomSeed;
@@ -233,6 +263,12 @@ $(document).ready(function() {
 		function randomiseSeed() {
 			randomSeed = Math.floor(Math.random() * 0x7ffffff).toString(36);
 		}
+
+        $('.unarchived').change(function() {
+            unarchived = $(this).prop('checked');
+
+            searchForm.submit();
+        });
 
 		$('.input-clear').click(function() {
 			if(order === 'weight') {
@@ -264,7 +300,13 @@ $(document).ready(function() {
 
 		galleryList.on('click', '.tag', function() {
 			var tag = $(this);
-			$('.search').val(tag.data('ns') + ':' + tag.data('tag'));
+            var searchTag = tag.data('ns') + ':' + tag.data('tag');
+
+            if(searchTag.indexOf(' ') >= 0) {
+                searchTag = '"' + searchTag + '"';
+            }
+
+			$('.search').val(searchTag);
 			$('.search-form').submit();
 
 			return false;
@@ -289,12 +331,14 @@ $(document).ready(function() {
 			topPage = page;
 			order = data.order;
 			randomSeed = data.seed;
+            unarchived = data.unarchived;
 
 			if(!randomSeed && order === 'random') {
 				randomiseSeed();
 			}
 
 			setOrderLabel();
+            $('.unarchived').prop('checked', unarchived);
 
 			$('.search').val(search);
 			searchCount.hide();
@@ -330,7 +374,8 @@ $(document).ready(function() {
 		var doc = $(document);
 		win.scroll(function() {
 			if(!end) {
-				if(win.scrollTop() + win.height() == doc.height()) {
+                var winHeight = win.height();
+				if(win.scrollTop() + (winHeight * 1.2) >= doc.height()) {
 					if(!loading) {
 						loadPage(true);
 					}
@@ -912,13 +957,6 @@ $(document).ready(function() {
 		*/
 	});
 
-	$(document).on('click', '.gallery-item', function() {
-		var galleryItem = $(this);
-		var gallery = galleryItem.data('gallery');
-
-		reader.trigger('loadgallery', [ gallery ]);
-	});
-
 	function setupDropdowns() {
 		var dropdowns = $('.dropdown-button');
 
@@ -961,7 +999,7 @@ $(document).ready(function() {
 	else {
 		var query = decodeQuery();
 		if(!query.action || query.action == 'galleries') {
-			$('.gallery-list').trigger('loadstate', [ { page: query.page, search: query.search, order: query.order, seed: query.seed } ]);
+			$('.gallery-list').trigger('loadstate', [ { page: query.page, search: query.search, order: query.order, seed: query.seed, unarchived: query.unarchived } ]);
 		}
 		else if(query.action == 'gallery') {
 			api('gallery', { id: query.id }, function(gallery) {

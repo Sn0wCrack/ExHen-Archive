@@ -54,7 +54,7 @@ class Cache {
         }
     }
 
-    public function deleteObject($objectType, $objectId, $data) {
+    public function deleteObject($objectType, $objectId) {
         if($this->connected) {
             $key = $this->createObjectKey($objectType, $objectId);
             $this->memcache->delete($key);
