@@ -13,7 +13,7 @@ class ExArchiver {
 		$this->client = new ExClient();
 
 		$this->config = Config::get();
-        $this->cache = Cache::get();
+        $this->cache = Cache::getInstance();
 
 		$this->archiveDir = $this->config->archiveDir.'/galleries';
 		if(!is_dir($this->archiveDir)) {

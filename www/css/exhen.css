@@ -109,7 +109,7 @@ input[type="checkbox"].fancy-switch:checked + div > div {-webkit-transform: tran
 .unarchived-outer label span {display: inline-block; margin-right: 10px; }
 .search-under {position: relative; height: 22px;margin-top: 20px;}
 .gallery-item.unarchived {background-size: contain; }
-
+.unarchived-outer label {cursor: pointer; }
 
 @-webkit-keyframes loader {
     0% { width: 16px; height: 16px; }

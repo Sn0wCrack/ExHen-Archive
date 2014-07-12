@@ -36,6 +36,15 @@ $(document).ready(function() {
 		}
 	}
 
+    function escapeTag(tag) {
+        if(tag.indexOf(' ') >= 0) {
+            return '"' + tag + '"'
+        }
+        else {
+            return tag;
+        }
+    }
+
 	$('.gallery-list').each(function() {
 		var galleryList = $(this);
 		var page = 0;
@@ -301,10 +310,7 @@ $(document).ready(function() {
 		galleryList.on('click', '.tag', function() {
 			var tag = $(this);
             var searchTag = tag.data('ns') + ':' + tag.data('tag');
-
-            if(searchTag.indexOf(' ') >= 0) {
-                searchTag = '"' + searchTag + '"';
-            }
+            searchTag = escapeTag(searchTag);
 
 			$('.search').val(searchTag);
 			$('.search-form').submit();
@@ -561,7 +567,7 @@ $(document).ready(function() {
 				}
 			}
 
-			newPre += keyword;
+			newPre += escapeTag(keyword);
 
 			if(newPre) {
 				var newValue = newPre + value.slice(selectionStart);
@@ -715,11 +721,12 @@ $(document).ready(function() {
 
 		$('.gallery-info .tags', container).on('click', '.tag', function() {
 			var tag = $(this);
-			var search = tag.data('ns') + ':' + tag.data('tag');
+			var searchTag = tag.data('ns') + ':' + tag.data('tag');
+            searchTag = escapeTag(searchTag);
 
 			close();
 
-			$('.gallery-list').trigger('loadstate', [ { search: search } ]);
+			$('.gallery-list').trigger('loadstate', [ { search: searchTag } ]);
 		});
 
 		reader.on('loadstate', function(e, data) {
