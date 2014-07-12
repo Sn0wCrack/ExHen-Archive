@@ -112,7 +112,7 @@ class ExArchiver {
 	protected function archiveGallery($gallery) {
 		Log::debug(self::LOG_TAG, 'Archiving gallery: #%d', $gallery->exhenid);
 
-        Cache::deleteObject('gallery', $gallery->id);
+        $this->cache->deleteObject('gallery', $gallery->id);
 
 		$galleryHtml = $this->client->gallery($gallery->exhenid, $gallery->hash);
 		$galleryPage = new ExPage_Gallery($galleryHtml);
