@@ -20,11 +20,13 @@
 </head>
 <body>
 	<header>
-		<form method="get" action="/" class="search-form">
-			<input type="text" class="search" placeholder="Search" name="search" />
-			<ul class="suggestions"></ul>
+		<form method="get" action="/" class="search-form" id="search-form">
+            <div class="input-wrap">
+                <input type="text" class="search" placeholder="Search" name="search" />
+                <ul class="suggestions"></ul>
+                <div class="input-clear"></div>
+            </div>
 			<div class="search-options">
-				<div class="input-clear"></div>
 				<div class="search-order dropdown-button">
 					<span class="label button">Order</span>
 					<div class="menu-outer">
@@ -39,9 +41,19 @@
 				<button class="search-button button">Search</button>
 			</div>
 		</form>
-		<div class="search-count">
+        <div class="search-under">
+		  <div class="search-count"></div>
 
-		</div>
+          <div class="unarchived-outer">
+                <label>
+                    <span>Show unarchived</span>
+                    <input type="checkbox" name="unarchived" value="1" class="fancy-switch unarchived" />
+                    <div>
+                        <div></div>
+                    </div>
+                </label>
+            </div>
+        </div>
 	</header>
 	
 	<div class="loaders loaders-top">

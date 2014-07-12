@@ -14,6 +14,10 @@ class ExPage_Gallery extends ExPage_Abstract {
 		return $this->find('div#gdc img')->attr('alt');
 	}
 
+    public function getThumbnailUrl() {
+        return $this->find('div#gd1 img')->attr('src');
+    }
+
 	public function getTags() {
 		$ret = array();
 
