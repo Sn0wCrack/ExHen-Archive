@@ -468,6 +468,9 @@ $(document).ready(function() {
 					selected.click();
 					return false;
 				}
+
+                list.empty();
+                list.removeClass('active');
 			}
 			else if(e.keyCode === 27) { //esc
 				list.empty();
