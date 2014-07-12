@@ -83,6 +83,6 @@ searchd {
     log = /var/log/sphinxsearch/searchd_exhen.log
     query_log = /var/log/sphinxsearch/query_exhen.log
     pid_file = /var/log/sphinxsearch/searchd_exhen.pid
-    max_matches = 50000
+    max_matches = 500000
     compat_sphinxql_magics = 0
 }
