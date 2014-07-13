@@ -211,6 +211,10 @@ class ApiHandler {
                 $pageFile = sprintf('%s/pages/%d.html', $config->archiveDir, $gallery->exhenid);
 
                 if(file_exists($pageFile)) {
+                    header('Last-Modified: '.gmdate('D, d M Y H:i:s', strtotime($gallery->posted).' GMT'));
+                    header('Expires: '.gmdate('D, d M Y H:i:s', strtotime('+1 year')).' GMT');
+                    header('Cache-Control: public');
+
                     $html = file_get_contents($pageFile);
                     $page = new ExPage_Gallery($html);
 
