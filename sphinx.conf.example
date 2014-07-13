@@ -44,7 +44,9 @@ source suggested_tags : connect {
     sql_attr_string = keyword
 
     sql_query_pre = set names utf8
-    sql_query = select id, tag.name as text, tag.name as keyword from exhen.tag
+    sql_query = select tag.id, tag.name as text, tag.name as keyword, count(*) as freq from exhen.tag \
+                left join gallery_tag on gallery_tag.tag_id = tag.id \
+                group by tag.id
 }
 
 index galleries {
