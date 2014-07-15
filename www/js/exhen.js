@@ -25,7 +25,12 @@ $(document).ready(function() {
 			for(var x in tags) {
 				var tag = tags[x];
 
-				var tagItem = $('<span/>');
+				var tagItem = $('<a/>');
+
+                var tagSearch = escapeTag(ns + ':' + tag);
+                var url = '?' + $.param({ search: tagSearch });
+                tagItem.prop('href', url);
+
 				tagItem.text(tag);
 				tagItem.addClass('tag tag-' + ns);
 				tagItem.data('tag', tag);
@@ -107,6 +112,9 @@ $(document).ready(function() {
 				$.each(galleries, function(i, gallery) {
 					var item = $('.template .gallery-item').clone();
 					item.data('gallery', gallery);
+
+                    var url = '?' + $.param({ action: 'gallery', id: gallery.id, index: 0 });
+                    item.prop('href', url);
 
 					if(i == 0) {
 						item.addClass('page-break');
@@ -217,6 +225,8 @@ $(document).ready(function() {
             else {
                 reader.trigger('loadgallery', [ gallery ]);    
             }
+
+            return false;
         });
 
 		function setHistoryState(replace, state) {
