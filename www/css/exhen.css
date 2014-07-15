@@ -1,13 +1,13 @@
 body { margin: 0; font-family: 'Open Sans', sans-serif; background: #222; font-weight: 300; color: #ddd;}
 .cf:before, .cf:after { content: " "; display: table; }
 .cf:after { clear: both; }
-.gallery-item { padding-top: 24.20%; display: inline-block; position: relative; background: no-repeat center; background-size: cover; width: 16.666%; margin-bottom: -5px; overflow: hidden; cursor: pointer;}
+.gallery-item { padding-top: 24.20%; display: inline-block; position: relative; background: no-repeat center; background-size: cover; width: 16.666%; margin-bottom: -5px; overflow: hidden; cursor: pointer; color: inherit;}
 .gallery-item.landscape { background-size: 100% auto; }
 .gallery-item .top, .gallery-item .bottom { position: absolute; background: rgba(0, 0, 0, 0.7); padding: 10px; left: 0; opacity: 0; transition: opacity 50ms; }
 .gallery-item .top { top: 0; }
 .gallery-item .bottom { bottom: 0; max-height: 70%; overflow-y: auto;}
 .tags { font-size: 11px;}
-.tags .tag { display: inline-block; margin: 0 4px 4px 0; padding: 2px 4px; border-radius: 3px; transition: all 100ms; cursor: pointer; }
+.tags .tag { display: inline-block; margin: 0 4px 4px 0; padding: 2px 4px; border-radius: 3px; transition: all 100ms; cursor: pointer; color: inherit; text-decoration: none;}
 .tags .tag:hover { box-shadow: 0px 0px 5px rgba(255, 255, 255, 0.51);}
 .tags .tag-character { background: rgba(134, 18, 18, 0.75); }
 .tags .tag-parody { background: rgba(90, 0, 133, 0.75); }
