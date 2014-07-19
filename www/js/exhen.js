@@ -113,7 +113,13 @@ $(document).ready(function() {
 					var item = $('.template .gallery-item').clone();
 					item.data('gallery', gallery);
 
-                    var url = '?' + $.param({ action: 'gallery', id: gallery.id, index: 0 });
+                    if(gallery.archived == 1) {
+                        var url = '?' + $.param({ action: 'gallery', id: gallery.id, index: 0 });
+                    }
+                    else {
+                        var url = 'http://exhentai.org/g/' + gallery.exhenid + '/' + gallery.hash;
+                    }
+
                     item.prop('href', url);
 
 					if(i == 0) {
@@ -240,10 +246,10 @@ $(document).ready(function() {
 			var url = Object.keys(urlParams).length > 0 ? '?' + $.param(urlParams) : '/';
 
 			if(replace) {
-				history.replaceState(state, document.title, url);
+                history.replaceState(state, document.title, url);
 			}
 			else {
-				history.pushState(state, document.title, url);
+                history.pushState(state, document.title, url);
 			}
 		}
 

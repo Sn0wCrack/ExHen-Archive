@@ -409,9 +409,16 @@ class ApiHandler {
 
 		ob_end_clean();
 
+        if(function_exists('ob_gzhandler')) {
+            ob_start('ob_gzhandler');
+        }
+        
 		header('Access-Control-Allow-Origin: *');
 		header('Content-Type: application/json');
 		echo $body;
+
+        ob_end_flush();
+
 		exit;
 	}
 
