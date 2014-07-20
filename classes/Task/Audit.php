@@ -24,7 +24,7 @@ class Task_Audit extends Task_Abstract {
             foreach($galleries as $gallery) {
                 $this->audit($gallery);
             }
-            
+
             $page++;
         }
 
@@ -34,6 +34,11 @@ class Task_Audit extends Task_Abstract {
         Log::debug(self::LOG_TAG, 'Auditing gallery: #%d - %s', $gallery->exhenid, $gallery->name);
 
         $galleryHtml = $this->client->gallery($gallery->exhenid, $gallery->hash);
+        if(!$galleryHtml) {
+            Log::error(self::LOG_TAG, 'Failed to retrieve page from server');
+            return;
+        }
+
         $galleryPage = new ExPage_Gallery($galleryHtml);
 
         $childGallery = $galleryPage->getNewestVersion();

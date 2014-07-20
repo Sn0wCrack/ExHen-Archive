@@ -39,6 +39,7 @@ class ExClient {
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
 
         $cookie = Config::buildCookie();
 		curl_setopt($ch, CURLOPT_COOKIE, $cookie);
