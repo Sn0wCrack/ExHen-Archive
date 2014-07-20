@@ -50,7 +50,7 @@ class Task_Audit extends Task_Abstract {
             $newTags = $galleryPage->getTags();
             $oldTags = $gallery->exportTags();
 
-            $diff = self::md_array_diff($oldTags, $newTags);
+            $diff = self::tagsDiff($oldTags, $newTags);
 
             if(count($diff) > 0) {
                 $humanDiff = array();
@@ -75,42 +75,45 @@ class Task_Audit extends Task_Abstract {
         R::store($gallery);
     }
 
-    static function md_array_diff($a1, $a2){
-        $diff = array();
+    static function tagsDiff($tags1, $tags2){
+        $ret = array();
 
-        foreach($a1 as $k => $v){
-            $dv = null;
-            if(is_int($k)){
-                // Compare values
-                if(array_search($v,$a2)===false) {
-                    $dv = $v;
+        foreach ($tags1 as $ns => $tags) {
+            if(!array_key_exists($ns, $tags2)) {
+                $ret[$ns] = $tags;
+                continue;
+            }
+
+            foreach($tags as $index => $tag) {
+                if(!in_array($tag, $tags2[$ns])) {
+                    if(!array_key_exists($ns, $ret) || !is_array($ret[$ns])) {
+                        $ret[$ns] = array();
+                    }
+
+                    $ret[$ns][] = $tag;
                 }
-                else if(is_array($v)) {
-                    $dv = self::md_array_diff($v, $a2[$k]);
-                }
-                
-                if($dv) {
-                    $diff[] = $dv;
+                else {
+                    $pos = array_search($tag, $tags2[$ns]);
+                    unset($tags2[$ns][$pos]);
                 }
             }
-            else {
-                // Compare noninteger keys
-                if(!array_key_exists($k, $a2)) {
-                    $dv = $v;
-                }
-                else if(is_array($v)) {
-                    $dv = self::md_array_diff($v, $a2[$k]);
+
+            if(count($tags2[$ns]) > 0) {
+                if(!array_key_exists($ns, $ret) || !is_array($ret[$ns])) {
+                    $ret[$ns] = array();
                 }
 
-                if($dv) {
-                    $diff[$k] = $dv;
-                }
-            }    
+                $ret[$ns] = array_merge($ret[$ns], $tags2[$ns]);
+            }
+
+            unset($tags2[$ns]);
         }
 
-        return $diff;
+        $ret = array_merge($ret, $tags2);
+
+        return $ret;
     }
-    
+
 }
 
 
