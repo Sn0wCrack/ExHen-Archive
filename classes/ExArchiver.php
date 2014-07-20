@@ -115,6 +115,11 @@ class ExArchiver {
         $this->cache->deleteObject('gallery', $gallery->id);
 
 		$galleryHtml = $this->client->gallery($gallery->exhenid, $gallery->hash);
+        if(!$galleryHtml) {
+            Log::error(self::LOG_TAG, 'Failed to retrieve page from server');
+            return;
+        }
+        
 		$galleryPage = new ExPage_Gallery($galleryHtml);
 
 		// save html
