@@ -12,19 +12,20 @@
 	<link href='//fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css' async="true" >
 	<link rel="stylesheet" href="css/exhen.css">
 
-	<script src="js/jquery-2.1.0.min.js"></script>
+	<script src="js/jquery-2.1.1.min.js"></script>
 	<script src="js/jquery-ui-1.10.3.custom.js"></script>
 	<script src="js/jquery.mousewheel.js"></script>
-	<script src="js/hammer.min.js"></script>
 	<script src="js/exhen.js"></script>
 </head>
 <body>
 	<header>
-		<form method="get" action="/" class="search-form">
-			<input type="text" class="search" placeholder="Search" name="search" />
-			<ul class="suggestions"></ul>
+		<form method="get" action="/" class="search-form" id="search-form">
+            <div class="input-wrap">
+                <input type="text" class="search" placeholder="Search" name="search" />
+                <ul class="suggestions"></ul>
+                <div class="input-clear"></div>
+            </div>
 			<div class="search-options">
-				<div class="input-clear"></div>
 				<div class="search-order dropdown-button">
 					<span class="label button">Order</span>
 					<div class="menu-outer">
@@ -39,9 +40,19 @@
 				<button class="search-button button">Search</button>
 			</div>
 		</form>
-		<div class="search-count">
+        <div class="search-under">
+		  <div class="search-count"></div>
 
-		</div>
+          <div class="unarchived-outer">
+                <label>
+                    <span>Show unarchived</span>
+                    <input type="checkbox" name="unarchived" value="1" class="fancy-switch unarchived" />
+                    <div>
+                        <div></div>
+                    </div>
+                </label>
+            </div>
+        </div>
 	</header>
 	
 	<div class="loaders loaders-top">
@@ -118,7 +129,7 @@
 		<div class="end-flash">End</div>
 	</div>
 	<div class="template">
-		<div class="gallery-item">
+		<a class="gallery-item" href="#">
 			<div class="top">
 				<div class="title"></div>
 			</div>
@@ -129,6 +140,6 @@
 					<span class="weight"></span>&nbsp;<span class="date"></span>
 				</div>
 			</div>
-		</div>
+		</a>
 	</div>
 </body>

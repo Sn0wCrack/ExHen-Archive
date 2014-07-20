@@ -17,9 +17,8 @@ class Suggested {
 			}
 
 			$match = rtrim($match, '|');
-
-			$query = sprintf("select keyword from suggested where match('%s') limit 0, 10", $match);
-			$result = SphinxQL::query($query);
+            
+			$result = SphinxQL::query('select keyword from suggested where match(:match) order by freq desc limit 0, 10', array('match' => $match));
 
 			$data = array();
 			foreach ($result as $row) {

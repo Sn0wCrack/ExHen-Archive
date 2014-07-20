@@ -2,6 +2,7 @@
 
 define('DS', DIRECTORY_SEPARATOR);
 
+set_include_path(realpath('lib').PATH_SEPARATOR.get_include_path());
 set_include_path(realpath('classes').PATH_SEPARATOR.get_include_path());
 
 spl_autoload_register(function($className) {
@@ -17,7 +18,7 @@ if(php_sapi_name() !== 'cli') {
 	//Auth::doAuth();
 }
 
-require 'classes/rb.php';
+require 'lib/rb.php';
 
 $config = Config::get();
 

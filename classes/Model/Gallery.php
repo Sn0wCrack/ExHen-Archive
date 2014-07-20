@@ -9,7 +9,7 @@ class Model_Gallery extends Model_Abstract {
 
 	const GP_PER_MB = 41.9435018158;
 
-	public static function search($page, $pagesize, $search, $order, $randomSeed = null) {
+	public static function search($page, $pagesize, $search, $order, $randomSeed = null, $unarchived = false) {
 		$query = new QueryHelper();
 
 		if($order === 'random') {
@@ -23,7 +23,11 @@ class Model_Gallery extends Model_Abstract {
 			$query->sql('select * from galleries');
 		}
 
-		$query->sql('where archived = 1 and deleted = 0');
+		$query->sql('where deleted = 0');
+
+        if(!$unarchived) {
+            $query->sql('and archived = 1');
+        }
 
 		if($search) {
 			$query->sql('and match(:match)')
@@ -59,7 +63,7 @@ class Model_Gallery extends Model_Abstract {
 				$query->sql('option ranker = none,');
 			}
 
-			$query->sql('max_matches = 50000');
+			$query->sql('max_matches = 500000');
 
 			$result = SphinxQL::query($query->getSql(), $query->getParams());
 			$meta = SphinxQL::getMeta();

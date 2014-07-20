@@ -15,12 +15,13 @@ class ApiHandler {
 		$search = $this->getParam('search');
 		$order = $this->getParam('order', 'posted');
 		$seed = $this->getParam('seed', 0);
+        $unarchived = $this->getParam('unarchived', false);
 
 		$seed = (int)base_convert($seed, 36, 10);
 
 		$search = trim($search);
 
-		$ret = Model_Gallery::search($page, $pagesize, $search, $order, $seed);
+		$ret = Model_Gallery::search($page, $pagesize, $search, $order, $seed, $unarchived);
 		$result = $ret['result'];
 		$data['meta'] = $ret['meta'];
 		$data['galleries'] = array();
@@ -65,9 +66,7 @@ class ApiHandler {
 
 				$export['fromcache'] = false;
 
-				if($thumb) {
-				    $cache->setObject('gallery', $galleryId, $export);
-				}
+				$cache->setObject('gallery', $galleryId, $export);
 			}
 
 			if(array_key_exists('ranked_weight', $row)) {
@@ -180,6 +179,11 @@ class ApiHandler {
 			if($gallery) {
 				$thumb = $gallery->getThumbnail($index, $type, true);
 				if($thumb) {
+                    if($index == 0) {
+                        $cache = Cache::getInstance();
+                        $cache->deleteObject('gallery', $gallery->id);
+                    }
+
 					header('Location: '.$thumb->getUrl());
 				}
 				else {
@@ -197,6 +201,41 @@ class ApiHandler {
 		exit;
 	}
 
+    protected function exgallerythumbAction() {
+        $id = $this->getParam('id');
+
+        if($id) {
+            $gallery = R::load('gallery', $id);
+            if($gallery) {
+                $config = Config::get();
+                $pageFile = sprintf('%s/pages/%d.html', $config->archiveDir, $gallery->exhenid);
+
+                if(file_exists($pageFile)) {
+                    header('Last-Modified: '.gmdate('D, d M Y H:i:s', strtotime($gallery->posted).' GMT'));
+                    header('Expires: '.gmdate('D, d M Y H:i:s', strtotime('+1 year')).' GMT');
+                    header('Cache-Control: public');
+
+                    $html = file_get_contents($pageFile);
+                    $page = new ExPage_Gallery($html);
+
+                    $url = $page->getThumbnailUrl();
+                    readfile($url);
+                }
+                else {
+                    http_response_code(404);
+                }
+            }
+            else {
+                http_response_code(404);
+            }
+        }
+        else {
+            http_response_code(400);
+        }
+
+        exit;
+    }
+
 	protected function addgalleryAction() {
 		list($gid, $hash) = $this->getParams('gid', 'token');
 
@@ -211,6 +250,7 @@ class ApiHandler {
 			elseif(!$gallery->download) {
                 $gallery->added = date('Y-m-d H:i:s');
 				$gallery->download = true;
+                $gallery->added = date('Y-m-d H:i:s');
 				R::store($gallery);
 			}
 
@@ -370,9 +410,16 @@ class ApiHandler {
 
 		ob_end_clean();
 
+        if(function_exists('ob_gzhandler')) {
+            ob_start('ob_gzhandler');
+        }
+        
 		header('Access-Control-Allow-Origin: *');
 		header('Content-Type: application/json');
 		echo $body;
+
+        ob_end_flush();
+
 		exit;
 	}
 

@@ -7,11 +7,13 @@ class ExArchiver {
 	protected $client;
 	protected $archiveDir;
 	protected $config;
+    protected $cache;
 
 	public function __construct() {
 		$this->client = new ExClient();
 
 		$this->config = Config::get();
+        $this->cache = Cache::getInstance();
 
 		$this->archiveDir = $this->config->archiveDir.'/galleries';
 		if(!is_dir($this->archiveDir)) {
@@ -28,7 +30,7 @@ class ExArchiver {
 		$archivedCount = 0;
 
 		//archive unarchived galleries
-		$unarchived = R::find('gallery', 'archived = 0 and deleted = 0 and download = 1');
+		$unarchived = R::find('gallery', '((archived = 0 and download = 1) or hasmeta = 0) and deleted = 0');
 		foreach($unarchived as $gallery) {
 			$this->archiveGallery($gallery);
 
@@ -109,6 +111,8 @@ class ExArchiver {
 
 	protected function archiveGallery($gallery) {
 		Log::debug(self::LOG_TAG, 'Archiving gallery: #%d', $gallery->exhenid);
+
+        $this->cache->deleteObject('gallery', $gallery->id);
 
 		$galleryHtml = $this->client->gallery($gallery->exhenid, $gallery->hash);
 		$galleryPage = new ExPage_Gallery($galleryHtml);
