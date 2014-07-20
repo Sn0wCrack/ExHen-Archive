@@ -9,13 +9,12 @@ class Task_Audit extends Task_Abstract {
     public function run($options = array()) {
         $this->client = new ExClient();
 
-        $page = 0;
         while(true) {
             $galleries = R::find('gallery',
                 'archived = 1 and deleted = 0 and
                 added <= date_sub(date(now()), interval 3 day) and
                 (lastaudit is null or lastaudit <= date_sub(date(now()), interval 7 day))
-                order by posted desc limit ?, 100', array($page * 100));
+                order by posted desc limit 100');
 
             if(count($galleries) === 0) {
                 break;
@@ -24,10 +23,7 @@ class Task_Audit extends Task_Abstract {
             foreach($galleries as $gallery) {
                 $this->audit($gallery);
             }
-
-            $page++;
         }
-
     }
 
     protected function audit($gallery) {
