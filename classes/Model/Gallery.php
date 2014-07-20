@@ -219,6 +219,40 @@ class Model_Gallery extends Model_Abstract {
 			}
 		}
 	}
+
+    public static function addGallery($gid, $hash) {
+        $gallery = R::findOne('gallery', 'exhenid = ?', array($gid));
+        if(!$gallery) {
+            $gallery = R::dispense('gallery');
+            $gallery->exhenid = $gid;
+            $gallery->hash = $hash;
+            R::store($gallery);
+        }
+        elseif(!$gallery->download) {
+            $gallery->download = true;
+            $gallery->added = date('Y-m-d H:i:s');
+            R::store($gallery);
+        }
+
+        return $gallery;
+    }
+
+    public function exportTags() {
+        $tagLinks = $this->ownGalleryTag;
+
+        R::preload($tagLinks, array('namespace' => 'tagnamespace'));
+
+        $export = array();
+        foreach($tagLinks as $link) {
+            if(!array_key_exists($link->namespace->name, $export)) {
+                $export[$link->namespace->name] = array();
+            }
+
+            $export[$link->namespace->name][] = $link->tag->name;
+        }
+
+        return $export;
+    }
 }
 
 ?>

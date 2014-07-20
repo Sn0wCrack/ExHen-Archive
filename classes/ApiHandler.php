@@ -60,7 +60,7 @@ class ApiHandler {
 
 				R::preload($tagLinks, array('namespace' => 'tagnamespace'));
 
-				$export['tags'] = $this->exportTags($gallery);
+				$export['tags'] = $gallery->exportTags();
 
 				$export['posted_formatted'] = date('d/m/Y', strtotime($gallery->posted));
 
@@ -90,30 +90,13 @@ class ApiHandler {
 
 			$data = $gallery->export();
 
-			$data['tags'] = $this->exportTags($gallery);
+			$data['tags'] = $gallery->exportTags();
 
 			$this->sendSuccess($data);
 		}
 		else {
 			$this->sendFail('Invalid params');
 		}
-	}
-
-	protected function exportTags($gallery) {
-		$tagLinks = $gallery->ownGalleryTag;
-
-		R::preload($tagLinks, array('namespace' => 'tagnamespace'));
-
-		$export = array();
-		foreach($tagLinks as $link) {
-			if(!array_key_exists($link->namespace->name, $export)) {
-				$export[$link->namespace->name] = array();
-			}
-
-			$export[$link->namespace->name][] = $link->tag->name;
-		}
-
-		return $export;
 	}
 
 	protected function archiveimageAction() {
@@ -240,18 +223,7 @@ class ApiHandler {
 		list($gid, $hash) = $this->getParams('gid', 'token');
 
 		if($gid && $hash) {
-			$gallery = R::findOne('gallery', 'exhenid = ?', array($gid));
-			if(!$gallery) {
-				$gallery = R::dispense('gallery');
-				$gallery->exhenid = $gid;
-				$gallery->hash = $hash;
-				R::store($gallery);
-			}
-			elseif(!$gallery->download) {
-				$gallery->download = true;
-                $gallery->added = date('Y-m-d H:i:s');
-				R::store($gallery);
-			}
+			$gallery = Model_Gallery::addGallery($gid, $hash);
 
 			$this->sendSuccess($gallery->export());
 		}
