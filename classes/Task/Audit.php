@@ -24,6 +24,11 @@ class Task_Audit extends Task_Abstract {
                 $this->audit($gallery);
             }
         }
+
+        if(isset(Config::get()->indexer->full)) {
+            $command = Config::get()->indexer->full;
+            system($command);
+        }
     }
 
     protected function audit($gallery) {
