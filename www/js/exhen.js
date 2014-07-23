@@ -162,10 +162,7 @@ $(document).ready(function() {
                         else {
                             var url = 'api.php?' + $.param({ action: 'exgallerythumb', id: gallery.id });
                         }
-
-                        console.log(gallery.archived, url);
-						
-
+                        
 						item.css({
 							backgroundImage: 'url(' + url + ')'
 						});
