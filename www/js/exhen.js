@@ -162,7 +162,7 @@ $(document).ready(function() {
                         else {
                             var url = 'api.php?' + $.param({ action: 'exgallerythumb', id: gallery.id });
                         }
-                        
+
 						item.css({
 							backgroundImage: 'url(' + url + ')'
 						});
@@ -201,7 +201,15 @@ $(document).ready(function() {
 				}
 
 				var displayCount = $('.gallery-item', galleryList).length;
-				searchCount.show().text('Displaying ' + displayCount + ' of ' + result.meta.total + ' results');
+                var totalCount = result.meta.total;
+
+
+                if(Intl && Intl.NumberFormat) {
+                    displayCount = Intl.NumberFormat().format(displayCount);
+                    totalCount = Intl.NumberFormat().format(totalCount);
+                }
+
+				searchCount.show().text('Displaying ' + displayCount + ' of ' + totalCount + ' results');
 
 				if(topPage != 0) {
 					$('.load-previous').addClass('active');
