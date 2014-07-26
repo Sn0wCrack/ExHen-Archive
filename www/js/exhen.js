@@ -945,6 +945,10 @@ $(document).ready(function() {
 
 				$('.gallery-list').trigger('loadstate', [ { search: search, order: 'weight' } ]);
 			}
+			else if(action == 'original') {
+				var url = 'http://exhentai.org/g/' + gallery.exhenid + '/' + gallery.hash;
+                window.open(url);
+			}
 
 			return false;
 		});
