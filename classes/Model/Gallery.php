@@ -30,6 +30,8 @@ class Model_Gallery extends Model_Abstract {
         }
 
 		if($search) {
+			$search = SphinxQL::halfEscapeMatch($search);
+			
 			$query->sql('and match(:match)')
 				->addParams(array('match' =>  $search));
 		}

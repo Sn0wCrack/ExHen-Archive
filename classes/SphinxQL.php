@@ -71,26 +71,47 @@ class SphinxQL {
 		return $ids;
 	}
 
-	public static function escape($input) {
-		return strtr($input, array(
-			'('=>'\\\\(',
-			')'=>'\\\\)',
-			'|'=>'\\\\|',
-			'-'=>'\\\\-',
-			'@'=>'\\\\@',
-			'~'=>'\\\\~',
-			'&'=>'\\\\&',
-			'\''=>'\\\'',
-			'<'=>'\\\\<',
-			'!'=>'\\\\!',
-			'"'=>'\\\\"',
-			'/'=>'\\\\/',
-			'*'=>'\\\\*',
-			'$'=>'\\\\$',
-			'^'=>'\\\\^',
-			'\\'=>'\\\\\\\\')
-		);
-	}
+	/**
+     * Escapes the query for the MATCH() function
+     * Allows some of the control characters to pass through for use with a search field: -, |, "
+     * It also does some tricks to wrap/unwrap within " the string and prevents errors
+     *
+     * @param string $string The string to escape for the MATCH
+     *
+     * @return string The escaped string
+     */
+    public function halfEscapeMatch($string)
+    {
+        $from_to = array(
+            '\\' => '\\\\',
+            '(' => '\(',
+            ')' => '\)',
+            '!' => '\!',
+            '@' => '\@',
+            '~' => '\~',
+            '&' => '\&',
+            '/' => '\/',
+            '^' => '\^',
+            '$' => '\$',
+            '=' => '\=',
+        );
+
+        $string = str_replace(array_keys($from_to), array_values($from_to), $string);
+
+        // this manages to lower the error rate by a lot
+        if (substr_count($string, '"') % 2 !== 0) {
+            $string .= '"';
+        }
+
+        $from_to_preg = array(
+            "'\"([^\s]+)-([^\s]*)\"'" => "\\1\-\\2",
+            "'([^\s]+)-([^\s]*)'" => "\"\\1\-\\2\""
+        );
+
+        $string = mb_strtolower(preg_replace(array_keys($from_to_preg), array_values($from_to_preg), $string));
+
+        return $string;
+    }
 }
 
 ?>
