@@ -42,6 +42,9 @@ class Task_Audit extends Task_Abstract {
 
         $galleryPage = new ExPage_Gallery($galleryHtml);
         if(!$galleryPage->isValid()) {
+            $gallery->lastaudit = date('Y-m-d H:i:s'); //gallery was probably deleted, so mark it as audited for now
+            R::store($gallery);
+
             Log::error(self::LOG_TAG, 'Invalid page');
             return;
         }
