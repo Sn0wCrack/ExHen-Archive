@@ -2,6 +2,11 @@
 
 class ExPage_Gallery extends ExPage_Abstract {
 
+	public function isValid() {
+		$result = $this->find('h1#gn, div#taglist, div#gdd');
+		return count($result) >= 3;
+	}
+
 	public function getName() {
 		return $this->find('h1#gn')->text();
 	}
@@ -67,6 +72,21 @@ class ExPage_Gallery extends ExPage_Abstract {
 
 		return false;
 	}
+
+    public function getNewestVersion() {
+        $elem = $this->find('div#gnd a:last-of-type');
+        if(count($elem) === 1) {
+            preg_match("~http://exhentai.org/g/(\d*)/(\w*)/~", $elem->attr('href'), $matches);
+
+            $ret =new stdClass();
+            $ret->exhenid = $matches[1];
+            $ret->hash = $matches[2];
+
+            return $ret;
+        }
+
+        return false;
+    }
 
 }
 

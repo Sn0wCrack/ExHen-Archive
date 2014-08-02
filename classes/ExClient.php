@@ -6,8 +6,7 @@ class ExClient {
 
 	private $ctr = 0;
 
-	public function index($search = '', $page = 0)
-	{
+	public function index($search = '', $page = 0) {
 		$params = array('page' => $page);
 
 		if($search) {
@@ -25,8 +24,7 @@ class ExClient {
 		return $this->exec($url);
 	}
 
-	public function gallery($id, $hash, $thumbPage = 0)
-	{
+	public function gallery($id, $hash, $thumbPage = 0) {
 		$url = sprintf('%s/g/%d/%s/?p=%d', self::BASE_URL, $id, $hash, $thumbPage);
 		return $this->exec($url);
 	}
@@ -41,6 +39,7 @@ class ExClient {
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
 
         $cookie = Config::buildCookie();
 		curl_setopt($ch, CURLOPT_COOKIE, $cookie);

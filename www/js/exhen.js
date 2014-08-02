@@ -163,9 +163,6 @@ $(document).ready(function() {
                             var url = 'api.php?' + $.param({ action: 'exgallerythumb', id: gallery.id });
                         }
 
-                        console.log(gallery.archived, url);
-						
-
 						item.css({
 							backgroundImage: 'url(' + url + ')'
 						});
@@ -204,7 +201,15 @@ $(document).ready(function() {
 				}
 
 				var displayCount = $('.gallery-item', galleryList).length;
-				searchCount.show().text('Displaying ' + displayCount + ' of ' + result.meta.total + ' results');
+                var totalCount = result.meta.total;
+
+
+                if(Intl && Intl.NumberFormat) {
+                    displayCount = Intl.NumberFormat().format(displayCount);
+                    totalCount = Intl.NumberFormat().format(totalCount);
+                }
+
+				searchCount.show().text('Displaying ' + displayCount + ' of ' + totalCount + ' results');
 
 				if(topPage != 0) {
 					$('.load-previous').addClass('active');
@@ -939,6 +944,10 @@ $(document).ready(function() {
 				var search = tagList.join(' | ');
 
 				$('.gallery-list').trigger('loadstate', [ { search: search, order: 'weight' } ]);
+			}
+			else if(action == 'original') {
+				var url = 'http://exhentai.org/g/' + gallery.exhenid + '/' + gallery.hash;
+                window.open(url);
 			}
 
 			return false;

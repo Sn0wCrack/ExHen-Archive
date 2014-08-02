@@ -9,7 +9,7 @@ class Suggested {
 			$match = '';
 
 			foreach($words as $word) {
-				$phrase = SphinxQL::escape(implode(' ', $words));
+				$phrase = SphinxQL::halfEscapeMatch(implode(' ', $words));
 
 				$match .= sprintf('"%s*"|', $phrase);
 
