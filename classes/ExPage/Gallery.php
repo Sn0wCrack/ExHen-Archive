@@ -2,6 +2,11 @@
 
 class ExPage_Gallery extends ExPage_Abstract {
 
+	public function isValid() {
+		$result = $this->find('h1#gn, div#taglist, div#gdd');
+		return count($result) >= 3;
+	}
+
 	public function getName() {
 		return $this->find('h1#gn')->text();
 	}
