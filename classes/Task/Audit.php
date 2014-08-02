@@ -41,6 +41,10 @@ class Task_Audit extends Task_Abstract {
         }
 
         $galleryPage = new ExPage_Gallery($galleryHtml);
+        if(!$galleryPage->isValid()) {
+            Log::error(self::LOG_TAG, 'Invalid page');
+            return;
+        }
 
         $childGallery = $galleryPage->getNewestVersion();
         if($childGallery) {
@@ -55,24 +59,26 @@ class Task_Audit extends Task_Abstract {
             $newTags = $galleryPage->getTags();
             $oldTags = $gallery->exportTags();
 
-            $diff = self::tagsDiff($oldTags, $newTags);
+            if(count($newTags) > 0) {
+                $diff = self::tagsDiff($oldTags, $newTags);
 
-            if(count($diff) > 0) {
-                $humanDiff = array();
-                foreach($diff as $ns => $tags) {
-                    foreach($tags as $tag) {
-                        $humanDiff[] = $ns.':'.$tag;
+                if(count($diff) > 0) {
+                    $humanDiff = array();
+                    foreach($diff as $ns => $tags) {
+                        foreach($tags as $tag) {
+                            $humanDiff[] = $ns.':'.$tag;
+                        }
                     }
+
+                    $humanDiff = implode(', ', $humanDiff);
+
+                    Log::debug(self::LOG_TAG, 'Different tags found for gallery: #%d - %s (%s)', $gallery->exhenid, $gallery->name, $humanDiff);
+                    $gallery->ownGalleryTag = array();
+                    $gallery->addTags($newTags);
+
+                    $cache = Cache::getInstance();
+                    $cache->deleteObject('gallery', $gallery->id);
                 }
-
-                $humanDiff = implode(', ', $humanDiff);
-
-                Log::debug(self::LOG_TAG, 'Different tags found for gallery: #%d - %s (%s)', $gallery->exhenid, $gallery->name, $humanDiff);
-                $gallery->ownGalleryTag = array();
-                $gallery->addTags($newTags);
-
-                $cache = Cache::getInstance();
-                $cache->deleteObject('gallery', $gallery->id);
             }
         }
 
