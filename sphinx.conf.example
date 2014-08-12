@@ -18,12 +18,12 @@ source galleries : connect {
     sql_query_pre = set session group_concat_max_len = 10240
     sql_query_pre = replace into sph_counter select 1, NOW()
     sql_query = select gallery.id, gallery.archived, gallery.deleted, UNIX_TIMESTAMP(gallery.posted) as posted, UNIX_TIMESTAMP(gallery.added) as added, gallery.id, gallery.exhenid, gallery.name, gallery.origtitle, gallery.type, group_concat(tag.name, ',', tagnamespace.name, ':', tag.name) as tags from exhen.gallery \
-        inner join gallery_tag on gallery_tag.gallery_id = gallery.id \
-        inner join tag on tag.id = gallery_tag.tag_id \
-        inner join tagnamespace on tagnamespace.id = gallery_tag.namespace_id \
+        left join gallery_tag on gallery_tag.gallery_id = gallery.id \
+        left join tag on tag.id = gallery_tag.tag_id and gallery_tag.id is not null \
+        left join tagnamespace on tagnamespace.id = gallery_tag.namespace_id and gallery_tag.id is not null \
         where updated <= (select last_updated from sph_counter where counter_id = 1) \
         group by gallery.id \
-	   limit 0, 1000000
+       limit 0, 1000000
 }
 
 source galleries_delta : galleries {
@@ -42,6 +42,7 @@ source galleries_delta : galleries {
 
 source suggested_tags : connect {
     sql_attr_string = keyword
+    sql_attr_uint = freq
 
     sql_query_pre = set names utf8
     sql_query = select tag.id, tag.name as text, tag.name as keyword, count(*) as freq from exhen.tag \
