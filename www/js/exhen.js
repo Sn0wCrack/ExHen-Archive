@@ -224,7 +224,7 @@ $(document).ready(function() {
 
 				loading = false;
 
-				if(fwd) {
+				if(fwd && !end) {
 					delete preloadedPages[params.page];
 
 					params.page++;
