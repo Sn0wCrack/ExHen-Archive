@@ -18,13 +18,16 @@
 			"pass": "changeme"
 		},
 		"sphinxql": {
-			"dsn": "mysql:host=localhost;port=9306;dbname=exhen",
+			"dsn": "mysql:host=127.0.0.1;port=9306;dbname=exhen",
 			"user": "root",
 			"pass": ""
 		},
 		"memcache": {
 			"host": "localhost",
 			"port": 11211
+		},
+		"indexer": {
+			"full": "sudo -u sphinxsearch indexer --rotate galleries suggested"
 		}
 	}
 }

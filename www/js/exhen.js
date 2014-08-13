@@ -66,6 +66,7 @@ $(document).ready(function() {
 		var end = false;
 		var randomSeed = 0;
         var unarchived = false;
+        var preloadedPages = { };
 
 		function loadPage(fwd) {
 			loading = true;
@@ -104,8 +105,8 @@ $(document).ready(function() {
                 params.unarchived = unarchived;
             }
 
-			xhr = api('galleries', params, function(result) {
-				var collection = [ ];
+            function renderResult(result) {
+            	var collection = [ ];
 				var galleries = result.galleries;
 				var topWeight = null;
 
@@ -222,7 +223,25 @@ $(document).ready(function() {
 				loadersBottom.removeClass('active');
 
 				loading = false;
-			});
+
+				if(fwd && !end) {
+					delete preloadedPages[params.page];
+
+					params.page++;
+					xhr = api('galleries', params, function(result) {
+						preloadedPages[params.page] = result;
+					});
+				}
+            }
+
+            if(preloadedPages[params.page]) {
+            	renderResult(preloadedPages[params.page]);
+            }
+            else {
+            	xhr = api('galleries', params, function(result) {
+					renderResult(result);
+				});
+            }
 		}
 
         galleryList.on('click', '.gallery-item', function() {
@@ -283,6 +302,7 @@ $(document).ready(function() {
 			galleryList.empty();
 			page = 0;
 			topPage = 0;
+			preloadedPages = { };
 			randomiseSeed();
 			loadPage(true);
 			setHistory(false);
