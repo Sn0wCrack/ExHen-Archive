@@ -6,8 +6,12 @@ class ExClient {
 
 	private $ctr = 0;
 
-	public function index($search = '', $page = 0) {
+	public function index($search = '', $page = 0, $extraParams = array()) {
 		$params = array('page' => $page);
+
+		if(is_array($extraParams)) {
+			$params = array_merge($params, $extraParams);
+		}
 
 		if($search) {
 			$params = array_merge($params, array( //todo - move to config
