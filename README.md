@@ -143,7 +143,7 @@ Open up http://exhen.localhost/ in a browser and you should see the default layo
 
 #### Adding galleries
 
-Adding galleries is done via a userscript. Open the provided `userscript.js` file in a text editor and change the two values at the top. The `baseUrl` in this example would be http://exhen.localhost and key would be the `accessKey` value in the config.json file.
+Adding galleries is done via a userscript. Open the provided `userscript.js` file in a text editor and change the two values at the top of the code. The `baseUrl` in this example would be http://exhen.localhost and `key` would be the `accessKey` value in the config.json file.
 
 Once edited, add to your browser via Greasemonkey/Tampermonkey.
 
