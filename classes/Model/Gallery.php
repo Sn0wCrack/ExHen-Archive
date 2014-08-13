@@ -57,24 +57,19 @@ class Model_Gallery extends Model_Abstract {
 				));
 		}
 
-		try {
-			if($order === 'weight') {
-				$query->sql('option ranker = wordcount,');
-			}
-			else {
-				$query->sql('option ranker = none,');
-			}
-
-			$query->sql('max_matches = 500000');
-
-			$result = SphinxQL::query($query->getSql(), $query->getParams());
-			$meta = SphinxQL::getMeta();
-
-			return array('result' => $result, 'meta' => $meta);
+		if($order === 'weight') {
+			$query->sql('option ranker = wordcount,');
 		}
-		catch(Exception $e) {
-			return array();
+		else {
+			$query->sql('option ranker = none,');
 		}
+
+		$query->sql('max_matches = 500000');
+
+		$result = SphinxQL::query($query->getSql(), $query->getParams());
+		$meta = SphinxQL::getMeta();
+
+		return array('result' => $result, 'meta' => $meta);
 	}
 
 	public function getArchiveFilepath() {
