@@ -52,7 +52,7 @@ class ExArchiver {
 				if($feed->expunged) {
 					$params['f_sh'] = 1;
 				}
-
+				
 				$indexHtml = $this->client->index($feed->term, $page, $params);
 				$indexPage = new ExPage_Index($indexHtml);
 				
