@@ -182,4 +182,4 @@ If you find the search results are out of sync with the database, you may need t
 
 Feeds are ways of adding galleries to the database automatically through search terms. The Archive task will run through all feeds in the database, adding new galleries, and optionally downloading these galleries. Support for managing these in a friendly way does not exist.
 
-If you wish to play around with feeds, get a MySQL database admin tool (MySQL Workbench) and take a look at the feeds table. Create a new row with the `term` matching the search term you want (i.e "comic x-ero"), then download should be 1 or 0, depending on if you want the archiver to also download the gallery zips.
+If you wish to play around with feeds, get a MySQL database admin tool (MySQL Workbench) and take a look at the feeds table. Create a new row with the `term` matching the search term you want (i.e "comic x-ero"), then `download` should be 1 or 0, depending on if you want the archiver to also download the gallery zips.

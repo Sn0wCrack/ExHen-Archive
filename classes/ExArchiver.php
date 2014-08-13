@@ -74,6 +74,11 @@ class ExArchiver {
 							if($gallery->feed == $feed && $feed->archived) {
 								$hasGallery = true;
 							}
+
+							if($feed->download && !$gallery->deleted) {
+								$gallery->download = true;
+								R::store($gallery);
+							}
 						}
 
 						if((!$gallery->archived && $gallery->download) || !$gallery->hasmeta) {
