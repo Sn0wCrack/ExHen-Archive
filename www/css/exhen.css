@@ -111,10 +111,6 @@ input[type="checkbox"].fancy-switch:checked + div > div {transform: translate3d(
 .gallery-item.unarchived {background-size: contain; }
 .unarchived-outer label {cursor: pointer; }
 
-.progress-container {position: fixed; top: -6px; left: 0; width: 100%; transition: top 250ms;}
-.progress-container.active { top: 0; }
-.progress-container > .progress-fill {height: 6px; background: rgb(255, 169, 169); width: 0%; transition: width 400ms; transition-timing-function: ease-out; background-image: linear-gradient(45deg, rgba(0, 0, 0, 0.15) 25%, transparent 25%, transparent 50%, rgba(0, 0, 0, 0.15) 50%, rgba(0, 0, 0, 0.15) 75%, transparent 75%, transparent);background-size: 40px 40px;-webkit-animation: progress-bar-stripes 2s linear infinite;}
-
 @keyframes loader {
     0% { width: 16px; height: 16px; }
     50% { width: 24px; height: 24px; }
@@ -125,16 +121,6 @@ input[type="checkbox"].fancy-switch:checked + div > div {transform: translate3d(
     0% { width: 16px; height: 16px; }
     50% { width: 24px; height: 24px; }
     100% { width: 16px; height: 16px; }
-}
-
-@keyframes progress-bar-stripes {
-  from { background-position: 40px 0; }
-  to { background-position: 0 0; }
-}
-
-@-webkit-keyframes progress-bar-stripes {
-  from { background-position: 40px 0; }
-  to { background-position: 0 0; }
 }
 
 @media (max-width: 1400px) {
