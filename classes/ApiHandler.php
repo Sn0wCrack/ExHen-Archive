@@ -133,6 +133,11 @@ class ApiHandler {
 								header('Content-Type: image/png');
 								break;
 						}
+
+						$fileSize = filesize($imagePath);
+						if($fileSize) {
+							header('Content-Length: '.$fileSize);
+						}
 						
 						readfile($imagePath);
 					}

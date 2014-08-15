@@ -652,6 +652,8 @@ $(document).ready(function() {
 		var resizeFactor = 10;
 		var firstImage = false;
 		var endFlash = $('.end-flash');
+		var progressBar = $('.progress-container');
+		var progressFill = $('.progress-fill', progressBar);
 
 		imageHolder.on('load', function() {
 			if(this.width > 0 && this.height > 0) {
@@ -724,7 +726,31 @@ $(document).ready(function() {
 		function loadImage(index, setHistory, replaceHistory) {
 			if(gallery && index < gallery.numfiles) {
 				var url = getImageUrl(index);
-				imageHolder.prop('src', url);
+
+				preload.prop('src', '');
+
+				var xhr = new XMLHttpRequest();
+				xhr.onprogress = function(e) {
+					if (e.lengthComputable) {
+						var pc = (e.loaded / e.total) * 100;
+						progressBar.addClass('active');
+						progressFill.width(pc + '%');
+					}
+					else {
+						progressBar.removeClass('active');
+					}
+				};
+
+				xhr.open('GET', url, true);
+				xhr.onreadystatechange = function(e) {
+					if(this.readyState === 4) {
+						progressBar.removeClass('active');
+						progressFill.width(0);
+						imageHolder.prop('src', url);
+					}
+				};
+				
+				xhr.send(null);
 
 				if(setHistory) {
 					if(replaceHistory) {
