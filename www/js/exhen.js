@@ -722,7 +722,7 @@ $(document).ready(function() {
 		}
 
 		function loadImage(index, setHistory, replaceHistory) {
-			if(gallery && index < gallery.numfiles) {
+			if(gallery && index < gallery.numfiles && index >= 0) {
 				var url = getImageUrl(index);
 				imageHolder.prop('src', url);
 
@@ -737,7 +737,7 @@ $(document).ready(function() {
 
 				currentIndex = index;
 			}
-			else {
+			else if(index >= gallery.numfiles) {
 				endFlash.removeClass('transition').addClass('active');
 
 				setTimeout(function() {
