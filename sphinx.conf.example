@@ -63,11 +63,6 @@ index galleries {
     ngram_chars = U+4E00..U+9FBF, U+3040..U+309F, U+30A0..U+30FF # kanji, hiragana, katakana
 }
 
-index galleries_delta : galleries {
-    source = galleries_delta
-    path = /var/lib/sphinxsearch/data/exhen/galleries_delta
-}
-
 index suggested {
     source = suggested_tags
     path = /var/lib/sphinxsearch/data/exhen/suggested

@@ -11,7 +11,7 @@ class Task_Audit extends Task_Abstract {
 
         while(true) {
             $galleries = R::find('gallery',
-                'archived = 1 and deleted = 0 and'.
+                'archived = 1 and deleted = 0 and source = 0 and'.
                 '((added <= date_sub(date(now()), interval 3 day) and'. // if added more than 3 days ago...
                 '(lastaudit is null or lastaudit <= date_sub(date(now()), interval 7 day))) or'. // ...and not yet audited, or audited more than 7 days ago
 				'((added >= date_sub(date(now()), interval 7 day) and added <= date_sub(date(now()), interval 1 day)) and'. // OR, added less than 7 days ago (but more than 24 hours ago)...

@@ -26,14 +26,8 @@ if(file_exists($pidFile)) {
 
 file_put_contents($pidFile, getmypid());
 
-$opts = array();
-foreach ($argv as $param) {
-	preg_match('~--(.*)=(.*)~', $param, $matches);
-	if(count($matches) == 3) {
-		$opts[$matches[1]] = $matches[2];
-	}
-}
-
+$opts = $argv;
+$opts = array_slice($opts, 2);
 
 Log::debug(LOG_TAG, 'Running task %s', $name);
 $task = new $name();

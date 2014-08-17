@@ -4,6 +4,9 @@ use PHPImageWorkshop\ImageWorkshop;
 
 class Model_Gallery extends Model_Abstract {
 
+	const SOURCE_EXHENTAI = 0;
+	const SOURCE_MANUAL = 1;
+
 	const THUMB_LARGE = 1;
 	const THUMB_SMALL = 2;
 
@@ -72,8 +75,14 @@ class Model_Gallery extends Model_Abstract {
 		return array('result' => $result, 'meta' => $meta);
 	}
 
+	// this really needs redoing..
 	public function getArchiveFilepath() {
-		return sprintf('%s/galleries/%d.zip', Config::get()->archiveDir, $this->exhenid);
+		if($this->source === self::SOURCE_EXHENTAI) {
+			return sprintf('%s/galleries/%d.zip', Config::get()->archiveDir, $this->exhenid);
+		}
+		else {
+			return sprintf('%s/galleries/%d-%d.zip', Config::get()->archiveDir, $this->source, $this->id);
+		}
 	}
 
 	public function getImageFilepath($index) {
