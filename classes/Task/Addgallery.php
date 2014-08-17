@@ -1,14 +1,14 @@
 <?php
 
-class Task_Addgallery extends Task_Abstract {
+class Task_AddGallery extends Task_Abstract {
 
-	const LOG_TAG = 'Task_Addgallery';
+	const LOG_TAG = 'Task_AddGallery';
 
 	public function run($options = array()) {
 
 		if(count($options) !== 2) {
 			printf("Invalid options.\n");
-			printf("Example: TaskRunner addgallery input.zip galleryname\n\n");
+			printf("Example: TaskRunner AddGallery input.zip galleryname\n\n");
 			return;
 		}
 

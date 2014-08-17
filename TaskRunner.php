@@ -8,7 +8,7 @@ if($argc < 2) {
 	printf("Usage: TaskRunner.php <name of task>\n");
 }
 
-$name = 'Task_'.ucfirst(strtolower($argv[1]));
+$name = 'Task_'.$argv[1];
 if(!class_exists($name)) {
 	Log::error(LOG_TAG, 'Failed to load class: %s', $name);
 	return;

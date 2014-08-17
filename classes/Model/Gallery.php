@@ -190,6 +190,18 @@ class Model_Gallery extends Model_Abstract {
 		return $stats;
 	}
 
+	public function hasTag($ns, $tag) {
+		$tagBean = R::findOne('tag', 'name = ?', array($tag));
+		$nsBean = R::findOne('tagnamespace', 'name = ?', array($ns));
+
+		if(!$tagBean || !$nsBean) {
+			return false;
+		}
+
+		$result = $this->unbox()->withCondition('tag_id = ? and namespace_id = ?', array($tagBean->id, $nsBean->id))->ownGalleryTag;
+		return (count($result) > 0);
+	}
+
 	public function addTags($tagList) {
 		foreach($tagList as $tagNamespace => $tags) {
 			$ns = R::findOne('tagnamespace', 'name = ?', array($tagNamespace));
