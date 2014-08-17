@@ -49,6 +49,11 @@ class Task_Addgallery extends Task_Abstract {
 			R::trash($gallery);
 			return;
 		}
+
+		if(isset(Config::get()->indexer->full)) {
+			$command = Config::get()->indexer->full;
+    		system($command);
+    	}
 	}
 	
 }
