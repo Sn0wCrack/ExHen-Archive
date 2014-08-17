@@ -77,7 +77,7 @@ class Model_Gallery extends Model_Abstract {
 
 	// this really needs redoing..
 	public function getArchiveFilepath() {
-		if($this->source === self::SOURCE_EXHENTAI) {
+		if($this->source == self::SOURCE_EXHENTAI) {
 			return sprintf('%s/galleries/%d.zip', Config::get()->archiveDir, $this->exhenid);
 		}
 		else {
