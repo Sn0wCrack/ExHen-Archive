@@ -10,7 +10,7 @@ class Task_EditGallery extends Task_Abstract {
 			printf("Invalid options.\n");
 			printf("Example: TaskRunner EditGallery id action params...\n");
 			printf("Valid actions:\n");
-			printf("\taddtag namespace:tag\n");
+			printf("\taddtag namespace:tag ...\n");
 			printf("\n");
 			return;
 		}
@@ -31,21 +31,22 @@ class Task_EditGallery extends Task_Abstract {
 				return;
 			}
 
-			$tagParam = $params[0];
-			$bits = explode(':', $tagParam);
-			if(count($bits) !== 2) {
-				Log::error(self::LOG_TAG, 'Missing tag namespace');
-				return;
-			}
+			foreach($params as $tagParam) {
+				$bits = explode(':', $tagParam);
+				if(count($bits) !== 2) {
+					Log::error(self::LOG_TAG, 'Missing tag namespace: %s', $tagParam);
+					continue;
+				}
 
-			list($ns, $tag) = $bits;
+				list($ns, $tag) = $bits;
 
-			if($gallery->hasTag($ns, $tag)) {
-				Log::error(self::LOG_TAG, 'Gallery already has tag: %s:%s', $ns, $tag);
-				return;
-			}
-			else {
-				$gallery->addTags(array($ns => array($tag)));
+				if($gallery->hasTag($ns, $tag)) {
+					Log::error(self::LOG_TAG, 'Gallery already has tag: %s:%s', $ns, $tag);
+					continue;
+				}
+				else {
+					$gallery->addTags(array($ns => array($tag)));
+				}
 			}
 		}
 		else {
