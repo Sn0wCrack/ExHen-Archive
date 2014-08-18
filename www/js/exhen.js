@@ -652,6 +652,7 @@ $(document).ready(function() {
 		var resizeFactor = 10;
 		var firstImage = false;
 		var endFlash = $('.end-flash');
+		var pagesContainer = $('.pages-container', container);
 
 		imageHolder.on('load', function() {
 			if(this.width > 0 && this.height > 0) {
@@ -713,10 +714,7 @@ $(document).ready(function() {
 		function getImageUrl(index) {
 			var params = { action: 'archiveimage', id: gallery.id, index: index };
 			
-			var trueWidth = Math.round(window.devicePixelRatio * window.screen.availWidth);
-			if(trueWidth <= 1000) {
-				params.resize = trueWidth;
-			}
+			params.resize = Math.ceil(window.screen.availWidth / 128) * 128;
 
 			return 'api.php?' + $.param(params);
 		}
@@ -818,6 +816,15 @@ $(document).ready(function() {
 				index = 0;
 			}
 
+			var pagesTarget = $('.inner', pagesContainer);
+			pagesTarget.empty();
+			for(var i = 0; i < gallery.numfiles; i++) {
+				var pageImg = $('<img />');
+				var url = getImageUrl(i);
+				pageImg.prop('src', url);
+				pagesTarget.append(pageImg);
+			}
+
 			firstImage = true;
 			if(history.state && history.state.action != 'gallery') {
 				loadImage(index, true, false);
@@ -825,38 +832,10 @@ $(document).ready(function() {
 			else {
 				loadImage(index, true, true);
 			}
-
-			var win = $(window);
-			win.on('resize.reader', function() {
-				var width = win.width();
-				var height = win.height();
-				var oldWidth = win.data('oldWidth');
-				var oldHeight = win.data('oldHeight');
-
-				if(oldWidth && oldHeight) {
-					imageHolder.css({
-						top: '+=' + ((height - oldHeight) / 2),
-						left: '+=' + ((width - oldWidth) / 2)
-					});
-				}
-
-				win.data('oldWidth', width);
-				win.data('oldHeight', height);
-			});
-
-			$(document).on('mousewheel.reader', onMousewheel);
 		}
 
 		container.on('loadgallery', function(e, newGallery, index) {
 			loadGallery(newGallery, index);
-		});
-
-		$('.control-next').click(function() {
-			loadImage(currentIndex + 1, true, false);
-		});
-
-		$('.control-prev').click(function() {
-			loadImage(currentIndex - 1, true, false);
 		});
 
 		imageHolder.click(function(e) {
@@ -880,36 +859,6 @@ $(document).ready(function() {
 			var index = $(this).data('index');
 			loadImage(index, true, false);
 		});
-
-		function onMousewheel(e) {
-			if(keyShiftDown || imageMouseDown) {
-				var delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : -e.deltaY; //firefox/chrome use different when shift key is pressed
-
-				var curWidth = imageHolder.width();
-				var curHeight = imageHolder.height();
-				var origWidth = imageHolder.data('origWidth');
-				var origHeight = imageHolder.data('origHeight');
-				var newWidth = curWidth - (delta * resizeFactor);
-				var newHeight = (origHeight / origWidth) * newWidth;
-
-				imageHolder.width(newWidth);
-				imageHolder.css({
-					top: '-=' + ((newHeight - curHeight) / 2),
-					left: '-=' + ((newWidth - curWidth) / 2)
-				});
-
-				hasResized = true;
-
-				return false;
-			}
-			else {
-				imageHolder.css({
-					top: '+=' + (e.deltaY * scrollFactor)
-				});
-
-				return false;
-			}
-		}
 
 		$(document).on('keydown.reader keyup.reader', 'html.reader-active', function(e) {
 			if(e.keyCode == 16) { //shift

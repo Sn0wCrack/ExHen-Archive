@@ -116,6 +116,11 @@ class ApiHandler {
 						header('Content-Type: image/jpeg');
 
 						$layer = ImageWorkshop::initFromPath($imagePath);
+						
+						if($layer->getWidth() < $resize) {
+							$resize = $layer->getWidth();
+						}
+
 						$layer->resizeInPixel($resize, null, true);
 						$image = $layer->getResult();
 
