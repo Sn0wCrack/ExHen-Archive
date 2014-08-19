@@ -677,6 +677,10 @@ $(document).ready(function() {
 				index = 0;
 			}
 
+            if((index - currentIndex) <= 3) {
+                loadImage(index, false, false, false, false);
+            }
+
 			preloadImage(index + 1);
 		});
 
@@ -706,7 +710,7 @@ $(document).ready(function() {
 							var nextPage = page.next('.page');
 
 							if(nextPage.length > 0 && !nextPage.hasClass('loaded') && !nextPage.hasClass('loading')) {
-								loadImage(i + 1, false, true, false);
+								loadImage(i + 1, false, true, false, true);
 								return false;
 							}
 						}
@@ -754,7 +758,7 @@ $(document).ready(function() {
 			}
 		}
 
-		function loadImage(index, setHistory, replaceHistory, scroll) {
+		function loadImage(index, setHistory, replaceHistory, scroll, updateCurIndex) {
 			if(gallery && index < gallery.numfiles && index >= 0) {
 				var page = pages.eq(index);
 				var img = page.find('img');
@@ -775,14 +779,18 @@ $(document).ready(function() {
 					createSpinner(index);
 				}
 				else {
-					scrollToPage(index);
+                    if(scroll) {
+                        scrollToPage(index);
+                    }
 				}
 
 				if(setHistory) {
 					setHistoryState(index, replaceHistory);
 				}
 
-				currentIndex = index;
+                if(updateCurIndex) {
+				    currentIndex = index;
+                }
 			}
 			else if(index >= gallery.numfiles) {
 				endFlash.removeClass('transition').addClass('active');
@@ -825,7 +833,7 @@ $(document).ready(function() {
 				loadGallery(data.gallery, data.index);
 			}
 			else {
-				loadImage(data.index, false, false, false);
+				loadImage(data.index, false, false, false, true);
 			}
 		});
 
@@ -881,10 +889,10 @@ $(document).ready(function() {
 
 			firstImage = true;
 			if(history.state && history.state.action != 'gallery') {
-				loadImage(index, true, false, false);
+				loadImage(index, true, false, false, true);
 			}
 			else {
-				loadImage(index, true, true, false);
+				loadImage(index, true, true, false, true);
 			}
 		}
 
@@ -894,7 +902,7 @@ $(document).ready(function() {
 
 		thumbsList.on('click', '.gallery-thumb', function() {
 			var index = $(this).data('index');
-			loadImage(index, true, false, true);
+			loadImage(index, true, false, true, true);
 		});
 
 		$(document).on('keydown.reader keyup.reader', 'html.reader-active', function(e) {
