@@ -645,54 +645,27 @@ $(document).ready(function() {
 		var preload = $('<img/>');
 		var gallery = null;
 		var currentIndex = 0;
-		var keyShiftDown = false;
-		var imageMouseDown = false;
-		var hasResized = false;
-		var scrollFactor = 5;
-		var resizeFactor = 10;
 		var firstImage = false;
 		var endFlash = $('.end-flash');
 		var pagesContainer = $('.pages-container', container);
+		var pages = null;
+		var scrollProc = null;
+		var scrolling = false;
 
-		imageHolder.on('load', function() {
+		function onImageLoad() {
 			if(this.width > 0 && this.height > 0) {
-				var win = $(window);
-				var pos = imageHolder.position();
-
-				if(firstImage) {
-					if(this.width > win.width()) {
-						imageHolder.width(win.width());
-					}
-					
-					if(this.height > win.height()) {
-						imageHolder.width((this.width / this.height) * win.height());
-					}
-
-					imageHolder.css({
-						left: (win.width() - this.width) / 2,
-						top: (win.height() - this.height) / 2
-					});
-
-					imageHolder.removeClass('init');
-
-					firstImage = false;
-				}
-				else if(this.height > win.height() || pos.top < 0) {
-					imageHolder.stop().animate({
-						top: 0
-					}, Math.abs(pos.top) * 0.7);
-				}
-
-				imageHolder
-					.data('origWidth', this.width)
-					.data('origHeight', this.height);
+				var img = $(this);
+				var page = img.parent('.page');
+				page.addClass('loaded');
+				page.removeClass('loading');
+				page.next('.spinner').remove();
 			}
 
 			preloadImage(currentIndex + 1);
-		});
+		}
 
 		function preloadImage(index) {
-			if(index < gallery.numfiles && (index > preload.data('index') || !preload.data('index'))) {
+			if(index < gallery.numfiles) {
 				preload.data('index', index);
 				preload.prop('src', getImageUrl(index));
 			}
@@ -707,8 +680,52 @@ $(document).ready(function() {
 			preloadImage(index + 1);
 		});
 
-		imageHolder.draggable({
-			distance: 10
+		function createSpinner(index) {
+			var spinner = $('.template .spinner').clone();
+			pages.eq(index).after(spinner);
+		}
+
+		function onScroll() {
+			var scrollTop = pagesContainer.scrollTop();
+			var winHeight = $(window).innerHeight();
+			var inView = false;
+
+			pages.each(function(i) {
+				var page = pages.eq(i);
+				var pageHeight = page.height();
+
+				if(page.hasClass('loaded')) {
+					var pos = page.position();
+
+					if(scrollTop < (pos.top + pageHeight)) {
+						if(scrollTop >= pos.top) {
+							inView = i;
+						}
+
+						if((scrollTop + winHeight) >= (pos.top + pageHeight)) {
+							var nextPage = page.next('.page');
+
+							if(nextPage.length > 0 && !nextPage.hasClass('loaded') && !nextPage.hasClass('loading')) {
+								loadImage(i + 1, false, true, false);
+								return false;
+							}
+						}
+					}
+				}
+			});
+
+			if(inView) {
+				currentIndex = inView;
+				setHistoryState(inView, true);
+			}
+		}
+
+		pagesContainer.scroll(function() {
+			clearTimeout(scrollProc);
+
+			if(!scrolling) {
+				scrollProc = setTimeout(onScroll, 100);
+			}
 		});
 
 		function getImageUrl(index) {
@@ -719,18 +736,50 @@ $(document).ready(function() {
 			return 'api.php?' + $.param(params);
 		}
 
-		function loadImage(index, setHistory, replaceHistory) {
+		function scrollToPage(index) {
+			scrolling = true;
+
+			var page = pages.eq(index);
+			pagesContainer.animate({ scrollTop: page.position().top }, 500, function() {
+				scrolling = false;
+			});
+		}
+
+		function setHistoryState(index, replaceHistory) {
+			if(replaceHistory) {
+				history.replaceState({ action: 'gallery', data: { gallery: gallery, index: index } }, document.title, '?' + $.param({ action: 'gallery', id: gallery.id, index: index }));
+			}
+			else {
+				history.pushState({ action: 'gallery', data: { gallery: gallery, index: index } }, document.title, '?' + $.param({ action: 'gallery', id: gallery.id, index: index }));
+			}
+		}
+
+		function loadImage(index, setHistory, replaceHistory, scroll) {
 			if(gallery && index < gallery.numfiles && index >= 0) {
-				var url = getImageUrl(index);
-				imageHolder.prop('src', url);
+				var page = pages.eq(index);
+				var img = page.find('img');
+
+				if(!page.hasClass('loading') && !page.hasClass('loaded')) {
+					var preloadIndex = preload.data('index');
+					if(preloadIndex != index) {
+						preload.prop('src', '');
+					}
+
+					page.addClass('loading');
+					img.prop('src', img.data('src'));
+
+					if(scroll) {
+						scrollToPage(index);
+					}
+
+					createSpinner(index);
+				}
+				else {
+					scrollToPage(index);
+				}
 
 				if(setHistory) {
-					if(replaceHistory) {
-						history.replaceState({ action: 'gallery', data: { gallery: gallery, index: index } }, document.title, '?' + $.param({ action: 'gallery', id: gallery.id, index: index }));
-					}
-					else {
-						history.pushState({ action: 'gallery', data: { gallery: gallery, index: index } }, document.title, '?' + $.param({ action: 'gallery', id: gallery.id, index: index }));
-					}
+					setHistoryState(index, replaceHistory);
 				}
 
 				currentIndex = index;
@@ -776,7 +825,7 @@ $(document).ready(function() {
 				loadGallery(data.gallery, data.index);
 			}
 			else {
-				loadImage(data.index, false, false);
+				loadImage(data.index, false, false, false);
 			}
 		});
 
@@ -819,18 +868,23 @@ $(document).ready(function() {
 			var pagesTarget = $('.inner', pagesContainer);
 			pagesTarget.empty();
 			for(var i = 0; i < gallery.numfiles; i++) {
-				var pageImg = $('<img />');
+				var page = $('.template .page').clone();
+				var pageImg = $('img', page);
 				var url = getImageUrl(i);
-				pageImg.prop('src', url);
-				pagesTarget.append(pageImg);
+				pageImg.data('src', url);
+				pageImg.load(onImageLoad);
+				$('.index', page).text(i + 1);
+				pagesTarget.append(page);
 			}
+
+			pages = $('.page', pagesContainer);
 
 			firstImage = true;
 			if(history.state && history.state.action != 'gallery') {
-				loadImage(index, true, false);
+				loadImage(index, true, false, false);
 			}
 			else {
-				loadImage(index, true, true);
+				loadImage(index, true, true, false);
 			}
 		}
 
@@ -838,39 +892,14 @@ $(document).ready(function() {
 			loadGallery(newGallery, index);
 		});
 
-		imageHolder.click(function(e) {
-			if(e.button == 0 && !hasResized) {
-				loadImage(currentIndex + 1, true, false);
-			}
-
-			imageMouseDown = false;
-		});
-
-		imageHolder.mouseup(function() {
-			imageMouseDown = false;
-		});
-
-		imageHolder.mousedown(function() {
-			imageMouseDown = true;
-			hasResized = false;
-		});
-
 		thumbsList.on('click', '.gallery-thumb', function() {
 			var index = $(this).data('index');
-			loadImage(index, true, false);
+			loadImage(index, true, false, true);
 		});
 
 		$(document).on('keydown.reader keyup.reader', 'html.reader-active', function(e) {
-			if(e.keyCode == 16) { //shift
-				keyShiftDown = e.type == 'keydown';
-			}
-			else if(e.type == 'keydown') {
-				if(e.keyCode == 39) { //key right
-					loadImage(currentIndex + 1, true);
-				}
-				else if(e.keyCode == 37) { //key left
-					loadImage(currentIndex - 1, true);
-				}
+			if(e.keyCode === 39 || e.keyCode === 68) { // right arrow or WAS(D)
+				//loadImage(currentIndex + 1, true, true, true);
 			}
 		});
 
@@ -921,44 +950,6 @@ $(document).ready(function() {
 
 			return false;
 		});
-
-		/*
-		function setupTouchResize() {
-			var origWidth = null;
-			var origHeight = null;
-			var pos = null;
-
-			new Hammer(imageHolder.get(0), { preventDefault: true, gesture: true }).on('touch pinch drag tap', function(e) {
-				if(e.type === 'touch') {
-					origWidth = imageHolder.width();
-					origHeight = imageHolder.height();
-					pos = imageHolder.position();
-				}
-				else if(e.type === 'pinch') {
-					var newWidth = origWidth * e.gesture.scale;
-					
-					if(newWidth < 300) {
-						newWidth = 300;
-					}
-
-					imageHolder.width(newWidth);
-				}
-				else if(e.type === 'drag') {
-					imageHolder.css({
-						top: pos.top + e.gesture.deltaY,
-						left: pos.left + e.gesture.deltaX
-					});
-				}
-				else if(e.type === 'tap') {
-					//loadImage(currentIndex + 1, true, false);
-				}
-
-				return true;
-			});
-		}
-
-		setupTouchResize();
-		*/
 	});
 
 	function setupDropdowns() {
