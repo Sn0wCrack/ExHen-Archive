@@ -23,7 +23,7 @@ body { margin: 0; font-family: 'Open Sans', sans-serif; background: #222; font-w
 .template { display: none; }
 .reader-container { display: none; position: fixed; width: 100%; height: 100%; background: inherit; top: 0; left: 0; }
 html.reader-active .reader-container { display: block; }
-html.reader-active, html.reader-active body { height: 100%; overflow: hidden; }
+html.reader-active, html.reader-active body { overflow: hidden; }
 .reader-container .close.button { width: 40px; }
 .reader-container .image-holder { position: relative; top: 0; left: 0; -webkit-user-drag: none; -webkit-user-select: none; }
 .reader-container .image-holder.init { opacity: 0; }
