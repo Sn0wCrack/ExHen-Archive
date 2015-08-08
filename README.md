@@ -13,5 +13,5 @@ Setup
 
 List of setup guides:
 
-* [Linux Setup (Old)](https://github.com/Sn0wCrack/ExHentai-Archive/tree/master/www/Linux-Setup.md)
-* Window's setup guide coming soon, if you know what you're doing, read the [Linux Setup](https://github.com/Sn0wCrack/ExHentai-Archive/tree/master/www/Linux-Setup.md).
+* [Linux Setup (Old)](https://github.com/Sn0wCrack/ExHentai-Archive/blob/master/setup/Linux-Setup.md)
+* Window's setup guide coming soon, if you know what you're doing, read the [Linux Setup](https://github.com/Sn0wCrack/ExHentai-Archive/blob/master/setup/Linux-Setup.md).
