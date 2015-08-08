@@ -142,6 +142,11 @@ interface RedBean_Driver
 class RedBean_Driver_PDO implements RedBean_Driver
 {
 	/**
+	 * @var integer
+	 */
+	protected $max;
+
+	/**
 	 * @var string
 	 */
 	protected $dsn;
@@ -212,7 +217,7 @@ class RedBean_Driver_PDO implements RedBean_Driver
 			if ( is_integer( $key ) ) {
 				if ( is_null( $value ) ) {
 					$statement->bindValue( $key + 1, NULL, PDO::PARAM_NULL );
-				} elseif ( !$this->flagUseStringOnlyBinding && RedBean_QueryWriter_AQueryWriter::canBeTreatedAsInt( $value ) && $value < 2147483648 ) {
+				} elseif ( !$this->flagUseStringOnlyBinding && RedBean_QueryWriter_AQueryWriter::canBeTreatedAsInt( $value ) && $value <= $this->max ) {
 					$statement->bindParam( $key + 1, $value, PDO::PARAM_INT );
 				} else {
 					$statement->bindParam( $key + 1, $value, PDO::PARAM_STR );
@@ -220,7 +225,7 @@ class RedBean_Driver_PDO implements RedBean_Driver
 			} else {
 				if ( is_null( $value ) ) {
 					$statement->bindValue( $key, NULL, PDO::PARAM_NULL );
-				} elseif ( !$this->flagUseStringOnlyBinding && RedBean_QueryWriter_AQueryWriter::canBeTreatedAsInt( $value ) && $value < 2147483648 ) {
+				} elseif ( !$this->flagUseStringOnlyBinding && RedBean_QueryWriter_AQueryWriter::canBeTreatedAsInt( $value ) && $value <= $this->max ) {
 					$statement->bindParam( $key, $value, PDO::PARAM_INT );
 				} else {
 					$statement->bindParam( $key, $value, PDO::PARAM_STR );
@@ -353,6 +358,13 @@ class RedBean_Driver_PDO implements RedBean_Driver
 			$this->dsn = $dsn;
 
 			$this->connectInfo = array( 'pass' => $pass, 'user' => $user );
+		}
+		
+		//PHP 5.3 PDO SQLite has a bug with large numbers:
+		if ( strpos( $this->dsn, 'sqlite' ) === 0 && PHP_MAJOR_VERSION === 5 && PHP_MINOR_VERSION === 3) {
+			$this->max = 2147483647; //otherwise you get -2147483648 ?! demonstrated in build #603 on Travis.
+		} else {
+			$this->max = PHP_INT_MAX; //the normal value of course (makes it possible to use large numbers in LIMIT clause)
 		}
 	}
 
@@ -662,7 +674,7 @@ class RedBean_OODBBean implements IteratorAggregate, ArrayAccess, Countable
 
 	/**
 	 * Whether to skip beautification of columns or not.
-	 * 
+	 *
 	 * @var boolean
 	 */
 	private $flagSkipBeau = FALSE;
@@ -715,7 +727,7 @@ class RedBean_OODBBean implements IteratorAggregate, ArrayAccess, Countable
 	 * @var string
 	 */
 	private $via = NULL;
-	
+
 	/**
 	 * @var boolean
 	 */
@@ -766,6 +778,7 @@ class RedBean_OODBBean implements IteratorAggregate, ArrayAccess, Countable
 
 		$this->withSql    = '';
 		$this->withParams = array();
+		$this->via = NULL;
 
 		return $beans;
 	}
@@ -897,9 +910,9 @@ class RedBean_OODBBean implements IteratorAggregate, ArrayAccess, Countable
 	 * an array with the properties container as its contents.
 	 * This method is meant for PHP and allows you to access beans as if
 	 * they were arrays, i.e. using array notation:
-	 * 
+	 *
 	 * $bean[ $key ] = $value;
-	 * 
+	 *
 	 * Note that not all PHP functions work with the array interface.
 	 *
 	 * @return ArrayIterator
@@ -1275,7 +1288,7 @@ class RedBean_OODBBean implements IteratorAggregate, ArrayAccess, Countable
 	 * Clears state.
 	 * Internal method. Clears the state of the query modifiers of the bean.
 	 * Query modifiers are: with(), withCondition(), alias() and fetchAs().
-	 * 
+	 *
 	 * @return void
 	 */
 	private function clear() {
@@ -1283,6 +1296,7 @@ class RedBean_OODBBean implements IteratorAggregate, ArrayAccess, Countable
 		$this->withParams = array();
 		$this->aliasName  = NULL;
 		$this->fetchType  = NULL;
+		$this->via        = NULL;
 	}
 
 	/**
@@ -1555,7 +1569,7 @@ class RedBean_OODBBean implements IteratorAggregate, ArrayAccess, Countable
 	/**
 	 * Implementation of __toString Method
 	 * Routes call to Model. If the model implements a __toString() method this
-	 * method will be called and the result will be returned. In case of an 
+	 * method will be called and the result will be returned. In case of an
 	 * echo-statement this result will be printed. If the model does not
 	 * implement a __toString method, this method will return a JSON
 	 * representation of the current bean.
@@ -1969,6 +1983,7 @@ class RedBean_OODBBean implements IteratorAggregate, ArrayAccess, Countable
 
 		}
 
+		$this->via        = NULL;
 		$this->withSql    = '';
 		$this->withParams = array();
 
@@ -3323,7 +3338,8 @@ abstract class RedBean_QueryWriter_AQueryWriter { //bracket must be here - other
 				$insertvalues[]  = $pair['value'];
 			}
 
-			return $this->insertRecord( $table, $insertcolumns, array( $insertvalues ) );
+			//Otherwise psql returns string while MySQL/SQLite return numeric causing problems with additions (array_diff)
+			return (string) $this->insertRecord( $table, $insertcolumns, array( $insertvalues ) );
 		}
 
 		if ( $id && !count( $updatevalues ) ) {
@@ -3677,6 +3693,14 @@ abstract class RedBean_QueryWriter_AQueryWriter { //bracket must be here - other
 	public function renameAssocTable( $from, $to = NULL )
 	{
 		self::renameAssociation( $from, $to );
+	}
+
+	/**
+	 * Clears all renames.
+	 */
+	public static function clearRenames()
+	{
+		self::$renames = array();
 	}
 
 	/**
@@ -5689,17 +5713,13 @@ class RedBean_OODB extends RedBean_Observable
 	 */
 	private function processTrashcan( $bean, $ownTrashcan )
 	{
-		$myFieldLink = $bean->getMeta( 'type' ) . '_id';
-		if ( is_array( $ownTrashcan ) && count( $ownTrashcan ) > 0 ) {
-			$first = reset( $ownTrashcan );
-			if ( $first instanceof RedBean_OODBBean ) {
-				$alias = $bean->getMeta( 'sys.alias.' . $first->getMeta( 'type' ) );
-				if ( $alias ) {
-					$myFieldLink = $alias . '_id';
-				}
-			}
-		}
+
 		foreach ( $ownTrashcan as $trash ) {
+			
+			$myFieldLink = $bean->getMeta( 'type' ) . '_id';
+			$alias = $bean->getMeta( 'sys.alias.' . $trash->getMeta( 'type' ) );
+			if ( $alias ) $myFieldLink = $alias . '_id';
+			
 			if ( isset( $this->dep[$trash->getMeta( 'type' )] ) && in_array( $bean->getMeta( 'type' ), $this->dep[$trash->getMeta( 'type' )] ) ) {
 				$this->trash( $trash );
 			} else {
@@ -5776,18 +5796,13 @@ class RedBean_OODB extends RedBean_Observable
 	 */
 	private function processAdditions( $bean, $ownAdditions )
 	{
-		$myFieldLink = $bean->getMeta( 'type' ) . '_id';
-		if ( $bean && count( $ownAdditions ) > 0 ) {
-			$first = reset( $ownAdditions );
-			if ( $first instanceof RedBean_OODBBean ) {
-				$alias = $bean->getMeta( 'sys.alias.' . $first->getMeta( 'type' ) );
-				if ( $alias ) {
-					$myFieldLink = $alias . '_id';
-				}
-			}
-		}
+		$beanType = $bean->getMeta( 'type' );
 		foreach ( $ownAdditions as $addition ) {
 			if ( $addition instanceof RedBean_OODBBean ) {
+				
+				$myFieldLink = $beanType . '_id';
+				$alias = $bean->getMeta( 'sys.alias.' . $addition->getMeta( 'type' ) );
+				if ( $alias ) $myFieldLink = $alias . '_id';
 				$addition->$myFieldLink = $bean->id;
 				$addition->setMeta( 'cast.' . $myFieldLink, 'id' );
 				$this->store( $addition );
@@ -12536,7 +12551,7 @@ class RedBean_DuplicationManager
 			$this->columns = array();
 		}
 
-		return $this->duplicate( $rs, $trail, $preserveIDs );
+		return $rs;
 	}
 
 	/**

@@ -15,7 +15,7 @@ use PHPImageWorkshop\Exception\ImageWorkshopException as ImageWorkshopException;
  * 
  * Use this class as a factory to initialize ImageWorkshop layers
  *
- * @version 2.0.5
+ * @version 2.0.6
  * @link http://phpimageworkshop.com
  * @author Sybio (Clément Guillemain / @Sybio01)
  * @license http://en.wikipedia.org/wiki/MIT_License
@@ -36,7 +36,7 @@ class ImageWorkshop
     /**
      * @var integer
      */
-    const ERROR_NOT_WRITABLE_FILE = 3;
+    const ERROR_NOT_READABLE_FILE = 3;
     
     /**
      * @var integer
@@ -49,48 +49,60 @@ class ImageWorkshop
      * From an upload form, you can give the "tmp_name" path
      * 
      * @param string $path
+     * @param bool $fixOrientation
      * 
      * @return ImageWorkshopLayer
      */
-    public static function initFromPath($path)
+    public static function initFromPath($path, $fixOrientation = false)
     {
-        if (file_exists($path) && !is_dir($path)) {
-            
-            if (!is_readable($path)) {
-                throw new ImageWorkshopException('Can\'t open the file at "'.$path.'" : file is not writable, did you check permissions (755 / 777) ?', static::ERROR_NOT_WRITABLE_FILE);
-            }
-            
-            $imageSizeInfos = @getImageSize($path);
-            $mimeContentType = explode('/', $imageSizeInfos['mime']);
-            
-            if (!$mimeContentType || !array_key_exists(1, $mimeContentType)) {
-                throw new ImageWorkshopException('Not an image file (jpeg/png/gif) at "'.$path.'"', static::ERROR_NOT_AN_IMAGE_FILE);
-            }
-            
-            $mimeContentType = $mimeContentType[1];
-            
-            switch ($mimeContentType) {
-                case 'jpeg':
-                    $image = imageCreateFromJPEG($path);
-                break;
-
-                case 'gif':
-                    $image = imageCreateFromGIF($path);
-                break;
-
-                case 'png':
-                    $image = imageCreateFromPNG($path);
-                break;
-
-                default:
-                    throw new ImageWorkshopException('Not an image file (jpeg/png/gif) at "'.$path.'"', static::ERROR_NOT_AN_IMAGE_FILE);
-                break;
-            }
-            
-            return new ImageWorkshopLayer($image);
+        if (false === filter_var($path, FILTER_VALIDATE_URL) && !file_exists($path)) {
+            throw new ImageWorkshopException(sprintf('File "%s" not exists.', $path), static::ERROR_IMAGE_NOT_FOUND);
         }
-        
-        throw new ImageWorkshopException('No such file found at "'.$path.'"', static::ERROR_IMAGE_NOT_FOUND);
+
+        if (false === ($imageSizeInfos = @getImageSize($path))) {
+            throw new ImageWorkshopException('Can\'t open the file at "'.$path.'" : file is not readable, did you check permissions (755 / 777) ?', static::ERROR_NOT_READABLE_FILE);
+        }
+
+        $mimeContentType = explode('/', $imageSizeInfos['mime']);
+        if (!$mimeContentType || !isset($mimeContentType[1])) {
+            throw new ImageWorkshopException('Not an image file (jpeg/png/gif) at "'.$path.'"', static::ERROR_NOT_AN_IMAGE_FILE);
+        }
+
+        $mimeContentType = $mimeContentType[1];
+        $exif = array();
+
+        switch ($mimeContentType) {
+            case 'jpeg':
+                $image = imageCreateFromJPEG($path);
+                if (false === ($exif = @read_exif_data($path))) {
+                    $exif = array();
+                }
+            break;
+
+            case 'gif':
+                $image = imageCreateFromGIF($path);
+            break;
+
+            case 'png':
+                $image = imageCreateFromPNG($path);
+            break;
+
+            default:
+                throw new ImageWorkshopException('Not an image file (jpeg/png/gif) at "'.$path.'"', static::ERROR_NOT_AN_IMAGE_FILE);
+            break;
+        }
+
+        if (false === $image) {
+            throw new ImageWorkshopException('Unable to create image with file found at "'.$path.'"');
+        }
+
+        $layer = new ImageWorkshopLayer($image, $exif);
+
+        if ($fixOrientation) {
+            $layer->fixOrientation();
+        }
+
+        return $layer;
     }
     
     /**
@@ -128,7 +140,7 @@ class ImageWorkshop
     {
         $opacity = 0;
         
-        if (!$backgroundColor || $backgroundColor == 'transparent') {
+        if (null === $backgroundColor || $backgroundColor == 'transparent') {
             $opacity = 127;
             $backgroundColor = 'ffffff';
         }
