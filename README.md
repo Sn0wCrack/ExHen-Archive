@@ -13,11 +13,11 @@ Setup
 ### Requirements
 
 
-* Apache (other servers are untested, but should work)
+* Apache or nginx (other servers are untested, but should work)
 * PHP 5.4+
-* MySQL 5.5+
+* MySQL 5.5+ or MariaDB 5.5+
 * memcached
-* Sphinx (2.0+)
+* Sphinx any version from 2.0 to 2.1.8 (anything above is untested and may not work due to deprecated function)
 * e-hentai account with ExHentai access
 * GP to download galleries
 
