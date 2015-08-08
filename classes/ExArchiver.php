@@ -30,10 +30,11 @@ class ExArchiver {
 		$archivedCount = 0;
 
 		//archive unarchived galleries
-		$unarchived = R::find('gallery', '((archived = 0 and download = 1) or hasmeta = 0) and deleted = 0 and source = 0');
+		$unarchived = R::find('gallery', '((archived = 0 and download = 1) or hasmeta = 0) and deleted = 0');
 		foreach($unarchived as $gallery) {
+			
 			$this->archiveGallery($gallery);
-
+			
 			if($gallery->archived) {
 				$archivedCount++;
 			}
@@ -169,7 +170,14 @@ class ExArchiver {
 				Log::error(self::LOG_TAG, 'Failed to find archiver link for gallery: %s (#%d)', $gallery->name, $gallery->exhenid);
 				return;
 			}
+			
+			$buttonPress = $this->client->buttonPress($archiverUrl);
 
+			if(strcmp($buttonPress, '#continue') === 0) {
+				Log::error(self::LOG_TAG, 'Download check not submitted.');
+				exit;
+			}
+			
 			$archiverHtml = $this->client->exec($archiverUrl);
 			$archiverPage = new ExPage_Archiver($archiverHtml);
 

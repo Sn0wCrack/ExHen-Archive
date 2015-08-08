@@ -66,6 +66,25 @@ class ExClient {
 
 		return $ret;
 	}
+	
+	public function buttonPress($url) {
+		
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, "dlcheck=true");
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+
+        $cookie = Config::buildCookie();
+		curl_setopt($ch, CURLOPT_COOKIE, $cookie);
+		curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36');
+		
+		$ret = curl_exec($ch);
+		curl_close($ch);
+		
+		return $ret;
+	}
 }
 
 ?>
