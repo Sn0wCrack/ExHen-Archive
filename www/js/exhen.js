@@ -907,7 +907,13 @@ $(document).ready(function() {
 
 		$(document).on('keydown.reader keyup.reader', 'html.reader-active', function(e) {
 			if(e.keyCode === 39 || e.keyCode === 68) { // right arrow or WAS(D)
-				//loadImage(currentIndex + 1, true, true, true);
+				loadImage(currentIndex + 1, true, true, true);
+			}
+		});
+		
+		$(document).on('keydown.reader keyup.reader', 'html.reader-active', function(e) {
+			if(e.keyCode === 37 || e.keyCode === 65 { // left arrow or W(A)SD
+				loadImage(currentIndex - 1, true, true, true);
 			}
 		});
 
