@@ -40,6 +40,7 @@ Open the `config.json.win32` in a text editor an edit the following values.
 * SphinxQL change the `full` option to point to where ever you installed Sphinx too.
 * memcached should stay the same.
 
+Afterwards, rename `config.json.win32` to `config.json`.
 
 #### Apache
 

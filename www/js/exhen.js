@@ -477,7 +477,7 @@ $(document).ready(function() {
 		}
 
 		input.keydown(function(e) {
-			if(e.keyCode === 38) { //arrow up
+			if(e.keyCode === 38 || e.keyCode === 87) { //arrow up or (W)ASD
 				var selected = $('li.active', list);
 				if(selected.length > 0) {
 					if(selected.is(':not(:first-child)')) {
@@ -490,7 +490,7 @@ $(document).ready(function() {
 
 				return false;
 			}
-			else if(e.keyCode === 40) { //arrow down
+			else if(e.keyCode === 40 || e.keyCode == 83) { //arrow down or WA(S)D
 				var selected = $('li.active', list);
 				if(selected.length > 0) {
 					if(selected.is(':not(:last-child)')) {
@@ -912,7 +912,7 @@ $(document).ready(function() {
 		});
 		
 		$(document).on('keydown.reader keyup.reader', 'html.reader-active', function(e) {
-			if(e.keyCode === 37 || e.keyCode === 65 { // left arrow or W(A)SD
+			if(e.keyCode === 37 || e.keyCode === 65) { // left arrow or W(A)SD
 				loadImage(currentIndex - 1, true, true, true);
 			}
 		});
