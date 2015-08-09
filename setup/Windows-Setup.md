@@ -10,6 +10,7 @@ Windows Setup
 * memcached
 * Sphinx any version from 2.0 to 2.1.8 (anything above is untested and may not work due to now deprecated function)
 * phpMyAdmin
+* Either Firefox or Chrome with Greasemonkey or Tampermonkey installed.
 * e-hentai account with ExHentai access
 * GP to download galleries
 
@@ -86,7 +87,7 @@ Open up http://exhen.localhost/ in a browser and you should see the default layo
 
 #### phpMyAdmin and MariaDB / MySQL
 
-Extract the phpmyAdmin-version-all.7z file into the Apache folder `htdocs` under a folder named `phpMyAdmin` (so `apache\htdocs\phpMyAdmin\...`)
+Extract the phpmyAdmin-version#-all.7z file into the Apache folder `htdocs` under a folder named `phpMyAdmin` (so `apache\htdocs\phpMyAdmin\...`)
 
 Run `httpd.exe` and `mysqld.exe`. and go to `http://localhost/phpMyAdmin` in your browser.
 
@@ -99,31 +100,36 @@ This will setup the database for you.
 
 #### Sphinx
 
-On Debian there are two ways of doing this. You can use the repo version, which doesn't support random ordering, or you can compile the latest release from source.
+To setup Sphinx you must first rename the file `sphinx.conf.win32` to `sphinx.conf` and then open it.
+Under the `source connect` structure change the `sql_user`, `sql_pass` and any other value to suit your MySQL / MariaDB setup. 
 
-If you can live without random ordering, grab the repo version.
+On Windows you have the option to install Sphinx as a service, this way it will start with your computer whenever you turn it on.
 
-    apt-get install sphinxsearch
+This can be done by opening a command window in the `bin` directory of the Sphinx root folder and running this command:
 
-Enable Sphinx to start on boot, edit `/etc/default/sphinxsearch` and change `START=yes`.
+	searchd.exe --install --config "C:\path\to\sphinx.conf"
 
-Copy the example Sphinx configuration.
+Of course you can just open Sphinx manually every time you want to run it with this command:
 
-    cp sphinx.conf.example /etc/sphinxsearch/sphinx.conf
-    cd /etc/sphinxsearch
+	searchd.exe --config "C:\path\to\sphinx.conf"
 
-Open `sphinx.conf` in an editor and change the `sql_pass` parameter at the top to match your MySQL password.
+After you have either setup a script to open Sphinx using the previous command or have installed it as a service, close it down / end the service and run this command from the `bin` directory
 
-Now create the directories to hold the generated indexes.
+    indexer.exe --config "C:\path\to\sphinx.conf --all --rotate
 
-    mkdir -p /var/lib/sphinxsearch/data/exhen
-    chown sphinxsearch:sphinxsearch /var/lib/sphinxsearch/data/exhen
+This will setup all the needed indexes for Sphinx syncing with the data from the database. 
 
-Build the initial indexes.
+#### memcahced
 
-    sudo -u sphinxsearch indexer --all --rotate
+Open a command window in the memcached folder and type in the command:
 
+	memcached.exe -d start
 
+This will install memcached as a service on Windows and will start with your computer from now on.
+
+You can change the memory pool size (currently defaults to 64MB, which seems fine for me) with the command:
+
+	memcached.exe -m SIZE_IN_MBS
 
 #### Adding galleries
 
@@ -142,13 +148,21 @@ The task should download the galleries and reindex Sphinx.
 
 Once completed, reload http://exhen.localhost and you should see your galleries appear!
 
-#### Cron
+#### Task Scheduler
 
-For ideal automation, tasks should be setup in the crontab of your system. Below is an example I use.
+You can setup a Task through Windows built in Task Scheduler.
 
-    */10 * * * * cd /var/www/vhosts/exhen/ && php TaskRunner.php Archive >> log.txt 2>&1
-    0 4 * * * cd /var/www/vhosts/exhen/ && php TaskRunner.php Thumbnails >> log.txt 2>&1
-    0 5 * * * cd /var/www/vhosts/exhen/ && php TaskRunner.php Audit >> log.txt 2>&1
+First create a simple script using Batch or any language of your choice that will automate the download process
+
+Below is an example:
+
+	@echo off
+	E:\NPMDB\php\php.exe TaskRunner.php Archive
+	E:\NPMDB\php\php.exe TaskRunner.php Thumbnails
+	E:\NPMDB\php\php.exe TaskRunner.php Audit
+	exit
+
+Then opening up the Task Scheduler and right click and go to `Create Basic Task...` and follow the prompts. When asked for a script or program open the script you've created.
 
 There are 3 main tasks in use.
 
@@ -160,9 +174,11 @@ There are 3 main tasks in use.
 
 If you find the search results are out of sync with the database, you may need to reindex Sphinx:
 
-    sudo -u sphinxsearch indexer --rotate --all
+	indexer --config "C:\path\to\sphinx.conf --rotate --all
 
 ##### Feeds
+
+**NOTE**: I've never used this personally, so this is the same as the old guide.
 
 Feeds are ways of adding galleries to the database automatically through search terms. The Archive task will run through all feeds in the database, adding new galleries, and optionally downloading these galleries. Support for managing these in a friendly way does not exist.
 
