@@ -45,42 +45,39 @@ Afterwards, rename `config.json.win32` to `config.json`.
 
 #### Apache
 
-Enter `/etc/apache2/sites-enabled` and create a `exhen.localhost` config file.
+Enter `apache\conf\` and open the `httpd.conf` file in your text editor.
 
-Copy the following, you may need to change the /images alias and <Directory> directive to match the location of your images dir.
+Change any references of `c:/Apache##/` with the location of your Apache server's location.
 
-    <VirtualHost *:80>
-        ServerName exhen.localhost
-        ServerAlias exhen.localhost
-        ServerAlias exhen.debian
+Copy the following, you may need to change the /images alias and <Directory> directive to match the location of your images directory.
 
-        DocumentRoot /var/www/vhosts/exhen/www
-        <Directory /var/www/vhosts/exhen/www>
-            Options FollowSymLinks ExecCGI
-            AllowOverride None
-            Order allow,deny
-            allow from all
-        </Directory>
+	DocumentRoot C:\path\to\apache\htdocs\exhen
+	<Directory C:\path\to\apache\www\htcdocs\exhen>
+    	Options FollowSymLinks ExecCGI
+    	AllowOverride None
+    	Order allow,deny
+    	allow from all
+ 	</Directory>
 
-        Alias /images /var/www/vhosts/exhen/images
-        <Directory /var/www/vhosts/exhen/images>
-            AllowOverride None
-            Order allow,deny
-            allow from all
-        </Directory>
+	Alias /images C:\path\to\apache\htdocs\exhen\images
+	<Directory C:\path\to\apache\htdocs\exhen\images>
+    	AllowOverride None
+    	Order allow,deny
+    	allow from all
+	</Directory>
 
-        ErrorLog ${APACHE_LOG_DIR}/exhen-error.log
-        CustomLog ${APACHE_LOG_DIR}/exhen-access.log combined
+	ErrorLog ${APACHE_LOG_DIR}/exhen-error.log
+	CustomLog ${APACHE_LOG_DIR}/exhen-access.log combined
 
-    </VirtualHost>
+Restart Apache.
 
-Restart apache.
+Add the appropriate hostname to your `C:\Windows\system32\drivers\etc\hosts` file.
 
-    sudo apache2ctl -k graceful
+Open it in the text editor of choice and add the line 
 
-Add the appropriate hostname to your `/etc/hosts` file.
+	127.0.0.1 exhen.localhost
 
-    sudo sh -c 'echo "127.0.0.1 exhen.localhost" >> /etc/hosts'
+Change exhen.localhost with whatever your server's name is. You don't have to do this if you just want to keep localhost or use 127.0.0.1.
 
 Open up http://exhen.localhost/ in a browser and you should see the default layout with "Displaying 0 of 0 results".
 

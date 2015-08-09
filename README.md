@@ -12,7 +12,7 @@ Setup
 
 List of setup guides:
 
-* [Linux Setup (Old)](https://github.com/Sn0wCrack/ExHentai-Archive/blob/master/setup/Linux-Setup.md)
+* [Linux Setup](https://github.com/Sn0wCrack/ExHentai-Archive/blob/master/setup/Linux-Setup.md) - kimoi's guide
 * [Windows Setup](https://github.com/Sn0wCrack/ExHentai-Archive/blob/master/setup/Windows-Setup.md)
 
 
@@ -20,6 +20,7 @@ TODO
 ---
 
 Major - Takes a long amount time.
+
 Minor - Takes a short amount of time.
 
 **Major:**
