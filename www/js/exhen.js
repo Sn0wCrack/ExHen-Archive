@@ -890,6 +890,12 @@ $(document).ready(function() {
 			}
 
 			pages = $('.page', pagesContainer);
+			
+			if(gallery.source == 1) {
+				$('.actions-menu ul li[data-action=\'source\']').text('File');
+			} else if (gallery.source == 0) {
+				$('.actions-menu ul li[data-action=\'source\']').text('ExHentai');
+			}
 
 			firstImage = true;
 			if(history.state && history.state.action != 'gallery') {
@@ -962,8 +968,12 @@ $(document).ready(function() {
 				$('.gallery-list').trigger('loadstate', [ { search: search, order: 'weight' } ]);
 			}
 			else if(action == 'original') {
-				var url = 'http://exhentai.org/g/' + gallery.exhenid + '/' + gallery.hash;
-                window.open(url);
+				if ($('.actions-menu ul li[data-action=\'source\']').text() == 'File') {
+					alert('1-' + gallery.id '.zip');
+				} else {
+					var url = 'http://exhentai.org/g/' + gallery.exhenid + '/' + gallery.hash;
+					window.open(url);
+				}
 			}
 
 			return false;
