@@ -969,7 +969,7 @@ $(document).ready(function() {
 			}
 			else if(action == 'original') {
 				if ($('.actions-menu ul li[data-action=\'source\']').text() == 'File') {
-					alert('1-' + gallery.id '.zip');
+					alert('1-' + gallery.id + '.zip');
 				} else {
 					var url = 'http://exhentai.org/g/' + gallery.exhenid + '/' + gallery.hash;
 					window.open(url);

@@ -13,5 +13,5 @@ Alias /images C:\path\to\apache\www\images
     allow from all
 </Directory>
 
-    ErrorLog ${APACHE_LOG_DIR}/exhen-error.log
-    CustomLog ${APACHE_LOG_DIR}/exhen-access.log combined
+ErrorLog ${APACHE_LOG_DIR}/exhen-error.log
+CustomLog ${APACHE_LOG_DIR}/exhen-access.log combined
