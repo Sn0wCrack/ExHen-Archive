@@ -138,7 +138,7 @@ The script will add a "Send to archive" link to the search results page (in thum
 
 After you have added a few galleries, you can now run the `Archive` task that will download them.
 
-    cd /var/www/vhosts/exhen
+    cd  C:\path\to\apache\htdocs\exhen\
     php TaskRunner.php Archive
 
 The task should download the galleries and reindex Sphinx.
