@@ -131,8 +131,10 @@ $(document).ready(function() {
                     if(gallery.archived == 0) {
                         item.addClass('unarchived');
                     }
-
-					$('.title', item).text(gallery.name);
+					
+					var source = ""
+					if(gallery.source == 0) { source = "ExHentai"; } else if (gallery.source == 1) { source = "Self"; } else { source = "Error"; }
+					$('.title', item).text(gallery.name + " - " + source);
 					$('.date', item).text(gallery.posted_formatted);
 
 					if(gallery.ranked_weight) {
@@ -857,8 +859,10 @@ $(document).ready(function() {
 
 				thumb.appendTo(thumbsList);
 			}
-
-			$('.title', infoContainer).text(gallery.name);
+			
+			var source = "";
+			if(gallery.source == 0) { source = "ExHentai"; } else if (gallery.source == 1) { source = "Self"; } else { source = "Error"; }
+			$('.title', infoContainer).text(gallery.name + " - " + source);
 			if(gallery.origtitle && gallery.origtitle != gallery.name) {
 				$('.origtitle', infoContainer).show().text(gallery.origtitle);
 			}

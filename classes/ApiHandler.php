@@ -65,6 +65,8 @@ class ApiHandler {
 				$export['posted_formatted'] = date('d/m/Y', strtotime($gallery->posted));
 
 				$export['fromcache'] = false;
+				
+				$export['source'] = $gallery->exportSource();
 
 				$cache->setObject('gallery', $galleryId, $export);
 			}
@@ -91,6 +93,8 @@ class ApiHandler {
 			$data = $gallery->export();
 
 			$data['tags'] = $gallery->exportTags();
+			
+			$data['source'] = $gallery->exportSource();
 
 			$this->sendSuccess($data);
 		}
