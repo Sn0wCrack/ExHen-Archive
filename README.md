@@ -25,7 +25,7 @@ List of setup guides:
 
 * [Linux Setup](https://github.com/Sn0wCrack/ExHentai-Archive/blob/master/setup/Linux-Setup.md) - kimoi's guide
 * [Windows Setup](https://github.com/Sn0wCrack/ExHentai-Archive/blob/master/setup/Windows-Setup.md)
-
+* [Userscript Setup](https://github.com/Sn0wCrack/ExHentai-Archive/blob/master/setup/Userscript-Setup.md)
 
 TODO
 ---
