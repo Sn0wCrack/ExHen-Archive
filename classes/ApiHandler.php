@@ -280,9 +280,15 @@ class ApiHandler {
 				$this->sendFail('Gallery not found or already deleted');
 			}
 			else {
-				$gallery->deleted = true;
-				R::store($gallery);
-				
+				if (Config::get()->hardDelete) {
+					unlink(Config::get()->archiveDir . '/galleries/' . $gallery->exhenid);
+					R::trash($gallery);
+				}
+				else {
+					$gallery->deleted = true;
+					R::store($gallery);
+				}
+
 				$this->sendSuccess(true);
 			}
 		}

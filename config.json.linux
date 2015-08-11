@@ -1,6 +1,7 @@
 {
 	"base": {
 		"accessKey": "changeme",
+		"hardDelete": false,
 		"cookie": {
             "ipb_member_id": "changeme",
             "ipb_pass_hash": "changeme",
