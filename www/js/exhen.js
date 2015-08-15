@@ -49,6 +49,31 @@ $(document).ready(function() {
             return tag;
         }
     }
+	
+	// Change HTML to conform with desired gallery view.
+	$.getJSON("../config.json", function(data) {
+		if (data.base.viewType == "spv" && $(".pages-container").length) {
+			console.log("Switching to Single Page Viewer");
+			$(".pages-container").remove();
+			
+			$(".reader-container").add("img").addClass("image-holder");
+			
+			$(".reader-container").add("div").addClass("control-hotspot control-hotspot-prev");
+			$(".reader-container").add("div").addClass("control control-prev");
+			
+			$(".reader-container").add("div").addClass("control-hotspot control-hotspot-next");
+			$(".reader-container").add("div").addClass("control control-next");
+		}
+		else if (data.base.viewType == "mpv" && $(".image-holder").length) {
+			console.log("Switching to Multi Page Viewer");
+			$(".image-holder").remove();
+			$(".control-hotspot").remove();
+			$(".control").remove();
+			
+			$(".reader-container").add("div").addClass("pages-container");
+			$(".pages-container").add("div").addClass("inner");
+		}
+	});
 
 	$('.gallery-list').each(function() {
 		var galleryList = $(this);
