@@ -1,4 +1,6 @@
 $(document).ready(function() {
+	
+	
 	function api(action, params, callback) {
 		params = $.extend(params, { action: action });
 
@@ -50,30 +52,38 @@ $(document).ready(function() {
         }
     }
 	
+	function getConfig() {
+		return $.ajax({
+			type: 'GET',
+			url: 'config.json',
+			dataType: 'json',
+			success: function(data) { return data.responseJSON; },
+			data: {},
+			async: false
+		}).responseJSON;
+	}
+	
 	// Change HTML to conform with desired gallery view.
-	$.getJSON("../config.json", function(data) {
-		if (data.base.viewType == "spv" && $(".pages-container").length) {
-			console.log("Switching to Single Page Viewer");
-			$(".pages-container").remove();
+	if (getConfig().base.viewType == "spv" && $(".pages-container").length) {
+		console.log("Switching to Single Page Viewer");
+		$(".pages-container").remove();
 			
-			$(".reader-container").add("img").addClass("image-holder");
+		$(".reader-container").append("<img src alt class='image-holder'>");
 			
-			$(".reader-container").add("div").addClass("control-hotspot control-hotspot-prev");
-			$(".reader-container").add("div").addClass("control control-prev");
+		$(".reader-container").append("<div class='control-hotspot control-hotspot-prev'></div>")
+		$(".reader-container").append("<div class='control control-prev'></div>")
 			
-			$(".reader-container").add("div").addClass("control-hotspot control-hotspot-next");
-			$(".reader-container").add("div").addClass("control control-next");
-		}
-		else if (data.base.viewType == "mpv" && $(".image-holder").length) {
-			console.log("Switching to Multi Page Viewer");
-			$(".image-holder").remove();
-			$(".control-hotspot").remove();
-			$(".control").remove();
+		$(".reader-container").append("<div class='control-hotspot control-hotspot-next'></div>");
+		$(".reader-container").append("<div class='control control-next'></div>")
+	}
+	else if (getConfig().base.viewType == "mpv" && $(".image-holder").length) {
+		console.log("Switching to Multi Page Viewer");
+		$(".image-holder").remove();
+		$(".control-hotspot").remove();
+		$(".control").remove();
 			
-			$(".reader-container").add("div").addClass("pages-container");
-			$(".pages-container").add("div").addClass("inner");
-		}
-	});
+		$(".reader-container").append("<div class='pages-container'><div class='inner'></div</div>")
+	}
 
 	$('.gallery-list').each(function() {
 		var galleryList = $(this);
@@ -678,6 +688,7 @@ $(document).ready(function() {
 		var pages = null;
 		var scrollProc = null;
 		var scrolling = false;
+		var configData = getConfig();
 
 		function onImageLoad() {
 			if(this.width > 0 && this.height > 0) {
@@ -762,7 +773,16 @@ $(document).ready(function() {
 		function getImageUrl(index) {
 			var params = { action: 'archiveimage', id: gallery.id, index: index };
 			
-			params.resize = Math.ceil(window.screen.availWidth / 128) * 128;
+			if (configData.base.viewType == "spv") {
+				var trueWidth = Math.round(window.devicePixelRation * window.screen.availWidth);
+				if (trueWidth <= 1000) {
+					params.resize = trueWidth;
+				}
+			}
+			else if (configData.base.viewType == "mpv") {
+				params.resize = Math.ceil(window.screen.availWidth / 128) * 128;
+			}
+			
 
 			return 'api.php?' + $.param(params);
 		}
@@ -930,16 +950,44 @@ $(document).ready(function() {
 				loadImage(index, true, true, false, true);
 			}
 		}
-
+		
+		if (configData.base.viewType == "spv") {
+			var win = $(window);
+			win.on('resize.reader', function() {
+				var width = win.width();
+				var height = win.height();
+				var oldWidth = win.data('oldWidth');
+				var oldHeight = win.data('oldHeight');
+				
+				if (oldWidth && oldheight) {
+					imageHolder.css({
+						top: '+=' + ((height - oldHeight) / 2),
+						left: '+=' + ((width - oldWidth) / 2)
+					});
+				}
+				
+				win.data('oldWidth', width)
+				win.data('oldHeight', height);
+			});
+		}
+		
 		container.on('loadgallery', function(e, newGallery, index) {
 			loadGallery(newGallery, index);
+		});
+		
+		$('.control-next').click(function() {
+			loadImage(currentIndex + 1, true, true, true);
+		});
+		
+		$('.control-prev').click(function() {
+			loadImage(currentIndex - 1, true, true, true);
 		});
 
 		thumbsList.on('click', '.gallery-thumb', function() {
 			var index = $(this).data('index');
 			loadImage(index, true, false, true, true);
 		});
-
+		
 		$(document).on('keydown.reader keyup.reader', 'html.reader-active', function(e) {
 			if(e.keyCode === 39 || e.keyCode === 68) { // right arrow or WAS(D)
 				loadImage(currentIndex + 1, true, true, true);
