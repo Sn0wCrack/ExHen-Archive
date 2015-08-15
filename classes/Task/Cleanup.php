@@ -24,6 +24,7 @@ class Task_Cleanup extends Task_Abstract {
 		}
 		
 		Log::debug(self::LOG_TAG, 'Checking for any galleries marked as deleted.');
+		
 		$entries = R::getAll('SELECT * FROM gallery WHERE deleted = 1');
 		if (count($entries) > 0) {
 			$count = 0;
@@ -37,6 +38,7 @@ class Task_Cleanup extends Task_Abstract {
 				// Get all image entries associated with the gallery_thumb then delete those, then delete the gallery_thumb entry
 				foreach ($gallery_thumb as $thumb) {
 					$images = R::getAll('SELECT * FROM image WHERE id = ?', array($thumb["image_id"]));
+					// Delete all associated images and the thumbnails
 					foreach ($images as $image) {
 						$book = R::load('image', $image["id"]);
 						$bookImage = Model_Image::loadBean($book);
@@ -46,6 +48,17 @@ class Task_Cleanup extends Task_Abstract {
 					$book = R::load('gallery_thumb', $thumb["id"]);
 					R::trash($book);
 				}
+				
+				// Delete all associated properties.
+				foreach ($galleryproperty as $prop) {
+					$book = R::load('galleryproperty', $prop["id"]);
+					R::trash($book);
+				}
+				
+				// Delete archive
+				$bookGallery = Model_Gallery::loadBean($gallery);
+				unlink($bookGallery::getArchiveFilepath());
+				
 				R::trash($gallery);
 				$count++
 			}
