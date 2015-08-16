@@ -689,7 +689,39 @@ $(document).ready(function() {
 		var scrollProc = null;
 		var scrolling = false;
 		var configData = getConfig();
-
+		
+		imageHolder.on('load', function() {
+			if (this.width > 0 && this.height > 0) {
+				var win = $(window);
+				var pos = imageHolder.position();
+				
+				if (firstImage) {
+					if (this.width > win.width()) {
+						imageHolder.width(win.width());
+					}
+					
+					if (this.height > win.height()) {
+						imageHolder.width((this.width / this.height) * win.height());
+					}
+					
+					imageHolder.css({
+						left : (win.width() - this.width) / 2,
+						top: (win.height() - this.height) / 2
+					});
+					
+					imageHolder.removeClass('init');
+					
+					firstImage = false;
+				}
+				else if (this.height > win.height() || pos.top < 0) {
+					imageHolder.stop().aniamtie({
+						top: 0
+					}, Math.abs(post.top) * 0.7);
+				}
+			}
+			preloadImage(currentIndex + 1);
+		});
+		
 		function onImageLoad() {
 			if(this.width > 0 && this.height > 0) {
 				var img = $(this);
@@ -698,7 +730,6 @@ $(document).ready(function() {
 				page.removeClass('loading');
 				page.next('.spinner').remove();
 			}
-
 			preloadImage(currentIndex + 1);
 		}
 
@@ -714,7 +745,7 @@ $(document).ready(function() {
 			if(!index) {
 				index = 0;
 			}
-
+			
             if((index - currentIndex) <= 3) {
                 loadImage(index, false, false, false, false);
             }
@@ -774,7 +805,7 @@ $(document).ready(function() {
 			var params = { action: 'archiveimage', id: gallery.id, index: index };
 			
 			if (configData.base.viewType == "spv") {
-				var trueWidth = Math.round(window.devicePixelRation * window.screen.availWidth);
+				var trueWidth = Math.round(window.devicePixelRatio * window.screen.availWidth);
 				if (trueWidth <= 1000) {
 					params.resize = trueWidth;
 				}
@@ -807,30 +838,38 @@ $(document).ready(function() {
 
 		function loadImage(index, setHistory, replaceHistory, scroll, updateCurIndex) {
 			if(gallery && index < gallery.numfiles && index >= 0) {
-				var page = pages.eq(index);
-				var img = page.find('img');
-
-				if(!page.hasClass('loading') && !page.hasClass('loaded')) {
-					var preloadIndex = preload.data('index');
-					if(preloadIndex != index) {
-						preload.prop('src', '');
-					}
-
-					page.addClass('loading');
-					img.prop('src', img.data('src'));
-
-					if(scroll) {
-						scrollToPage(index);
-					}
-
-					createSpinner(index);
+				if (configData.base.viewType == 'mpv') {
+					var page = pages.eq(index);
+					var img = page.find('img');
 				}
-				else {
-                    if(scroll) {
-                        scrollToPage(index);
-                    }
+				else if (configData.base.viewType == 'spv') {
+					var url = getImageUrl(index);
+					imageHolder.prop('src', url);
 				}
+				
+				if (configData.base.viewType == 'mpv') {
+					if(!page.hasClass('loading') && !page.hasClass('loaded')) {
+						var preloadIndex = preload.data('index');
+						if(preloadIndex != index) {
+							preload.prop('src', '');
+						}
 
+						page.addClass('loading');
+						img.prop('src', img.data('src'));
+
+						if(scroll) {
+							scrollToPage(index);
+						}
+
+						createSpinner(index);
+					}
+					else {
+						if(scroll) {
+							scrollToPage(index);
+						}
+					}
+				}
+				
 				if(setHistory) {
 					setHistoryState(index, replaceHistory);
 				}
@@ -922,19 +961,21 @@ $(document).ready(function() {
 				index = 0;
 			}
 
-			var pagesTarget = $('.inner', pagesContainer);
-			pagesTarget.empty();
-			for(var i = 0; i < gallery.numfiles; i++) {
-				var page = $('.template .page').clone();
-				var pageImg = $('img', page);
-				var url = getImageUrl(i);
-				pageImg.data('src', url);
-				pageImg.load(onImageLoad);
-				$('.index', page).text(i + 1);
-				pagesTarget.append(page);
+			if (configData.base.viewType == 'mpv') {
+				var pagesTarget = $('.inner', pagesContainer);
+				pagesTarget.empty();
+				for(var i = 0; i < gallery.numfiles; i++) {
+					var page = $('.template .page').clone();
+					var pageImg = $('img', page);
+					var url = getImageUrl(i);
+					pageImg.data('src', url);
+					pageImg.load(onImageLoad);
+					$('.index', page).text(i + 1);
+					pagesTarget.append(page);
+				}
+				pages = $('.page', pagesContainer);
 			}
-
-			pages = $('.page', pagesContainer);
+			
 			
 			if(gallery.source == 1) {
 				$('.actions-menu ul li[data-action=\'source\']').text('File');
@@ -959,7 +1000,7 @@ $(document).ready(function() {
 				var oldWidth = win.data('oldWidth');
 				var oldHeight = win.data('oldHeight');
 				
-				if (oldWidth && oldheight) {
+				if (oldWidth && oldHeight) {
 					imageHolder.css({
 						top: '+=' + ((height - oldHeight) / 2),
 						left: '+=' + ((width - oldWidth) / 2)
@@ -976,27 +1017,48 @@ $(document).ready(function() {
 		});
 		
 		$('.control-next').click(function() {
-			loadImage(currentIndex + 1, true, true, true);
+			loadImage(currentIndex + 1, true, true, false, true);
 		});
 		
 		$('.control-prev').click(function() {
-			loadImage(currentIndex - 1, true, true, true);
+			loadImage(currentIndex - 1, true, true, false, true);
 		});
 
 		thumbsList.on('click', '.gallery-thumb', function() {
 			var index = $(this).data('index');
-			loadImage(index, true, false, true, true);
+			if (configData.base.viewType == 'mpv') {
+				loadImage(index, true, false, true, true, true);
+			}
+			else if (configData.base.viewType == 'spv') {
+				loadImage(index, true, false, false, true, true);
+			}
 		});
 		
 		$(document).on('keydown.reader keyup.reader', 'html.reader-active', function(e) {
 			if(e.keyCode === 39 || e.keyCode === 68) { // right arrow or WAS(D)
-				loadImage(currentIndex + 1, true, true, true);
+				if (configData.base.viewType == 'mpv') {
+					loadImage(currentIndex + 1, true, true, true, true);
+				}
+				else if (configData.base.viewType == 'spv') {
+					loadImage(currentIndex + 1, true, true, false, true);
+				}
 			}
 		});
 		
 		$(document).on('keydown.reader keyup.reader', 'html.reader-active', function(e) {
 			if(e.keyCode === 37 || e.keyCode === 65) { // left arrow or W(A)SD
-				loadImage(currentIndex - 1, true, true, true);
+				if (configData.base.viewType == 'mpv') {
+					loadImage(currentIndex - 1, true, true, true, true);
+				}
+				else if (configData.base.viewType == 'spv') {
+					loadImage(currentIndex - 1, true, true, false, true);
+				}
+			}
+		});
+		
+		$(document).on('keydown.reader keyup.reader', 'html.reader-active', function(e) {
+			if(e.keyCode === 27) { // ESC
+				close();
 			}
 		});
 
