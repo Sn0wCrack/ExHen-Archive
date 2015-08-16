@@ -746,10 +746,13 @@ $(document).ready(function() {
 				index = 0;
 			}
 			
-            if((index - currentIndex) <= 3) {
-                loadImage(index, false, false, false, false);
-            }
-
+			/* I'm really uncertain what this does specially, but it fixes every issue with the SPV
+			 * Needs more MPV testing to see what it really does.
+             * if((index - currentIndex) <= 3) {
+             *     loadImage(index, false, false, false, false);
+             * }
+			 */
+			 
 			preloadImage(index + 1);
 		});
 
@@ -838,16 +841,14 @@ $(document).ready(function() {
 
 		function loadImage(index, setHistory, replaceHistory, scroll, updateCurIndex) {
 			if(gallery && index < gallery.numfiles && index >= 0) {
-				if (configData.base.viewType == 'mpv') {
-					var page = pages.eq(index);
-					var img = page.find('img');
-				}
-				else if (configData.base.viewType == 'spv') {
+				if (configData.base.viewType == 'spv') {
 					var url = getImageUrl(index);
 					imageHolder.prop('src', url);
 				}
 				
 				if (configData.base.viewType == 'mpv') {
+					var page = pages.eq(index);
+					var img = page.find('img');
 					if(!page.hasClass('loading') && !page.hasClass('loaded')) {
 						var preloadIndex = preload.data('index');
 						if(preloadIndex != index) {
@@ -1017,20 +1018,20 @@ $(document).ready(function() {
 		});
 		
 		$('.control-next').click(function() {
-			loadImage(currentIndex + 1, true, true, false, true);
+			loadImage(currentIndex + 1, true, false, false, true);
 		});
 		
 		$('.control-prev').click(function() {
-			loadImage(currentIndex - 1, true, true, false, true);
+			loadImage(currentIndex - 1, true, false, false, true);
 		});
 
 		thumbsList.on('click', '.gallery-thumb', function() {
 			var index = $(this).data('index');
 			if (configData.base.viewType == 'mpv') {
-				loadImage(index, true, false, true, true, true);
+				loadImage(index, true, false, true, true);
 			}
 			else if (configData.base.viewType == 'spv') {
-				loadImage(index, true, false, false, true, true);
+				loadImage(index, true, false, false, true);
 			}
 		});
 		
