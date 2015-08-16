@@ -36,11 +36,14 @@ Minor - Takes a short amount of time.
 
 **Major:**
 
-* Add way to switch between both Single Page and Multi Page Viewer.
-* Make navigation better on the Multi Page Viewer (better page detection)
-* Fix bug when an image loads and the page auto scrolls down in the Multi Page Viewer.
+* Add way to switch between both Single Page and Multi Page Viewer. - **90% complete**
+* Make navigation better on the Multi Page Viewer. (better page detection)
+* Fix Multi Page Viewer on Mobile.
 
 **Minor:**
 
 * Get people submitting requests for features.
 * OSX setup guide.
+* Add setting for the use of the history feature.
+* Make View Type setting.
+* Consider reimplementing Touch controls.
