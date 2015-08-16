@@ -742,6 +742,9 @@ input[type="checkbox"].fancy-switch:checked + div > div {
     .gallery-item .bottom {
         display: none !important;
     }
+	.search-count {
+		float: left;
+	}
     .gallery-info {
         display: none;
     }
@@ -751,6 +754,9 @@ input[type="checkbox"].fancy-switch:checked + div > div {
     .search-form {
         flex-wrap: wrap;
     }
+	.search-count {
+		float: left;
+	}
     .search-options {
         flex-grow: 1;
         margin-top: 12px;
