@@ -41,7 +41,10 @@ function processExists($pid) {
 		return posix_kill($pid, 0);
 	}
 	else {
-		return false; //windows
+		// Clunky, but it works I guess.
+		$output = array();
+		exec('tasklist /FI "PID eq' . $pid . '"', $output);
+		return strpos($output[5], $pid);
 	}
 }
 
