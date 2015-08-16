@@ -36,8 +36,7 @@ Minor - Takes a short amount of time.
 
 **Major:**
 
-* Add way to switch between both Single Page and Multi Page Viewer. - **90% complete**
-* Make navigation better on the Multi Page Viewer. (better page detection)
+* Make key navigation better on the Multi Page Viewer. (better page detection)
 * Fix Multi Page Viewer on Mobile.
 
 **Minor:**
