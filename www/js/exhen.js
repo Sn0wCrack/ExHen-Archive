@@ -1,5 +1,12 @@
 $(document).ready(function() {
 	
+	var storage = false;
+	
+	if (typeof(Storage) != "undefined") {
+		console.log("Storage avaliable on your Browser");
+		storage = true;
+		// localStorage.setItem("viewType", "spv");
+	}
 	
 	function api(action, params, callback) {
 		params = $.extend(params, { action: action });
@@ -64,27 +71,52 @@ $(document).ready(function() {
 	}
 	
 	// Change HTML to conform with desired gallery view.
-	if (getConfig().base.viewType == "spv" && $(".pages-container").length) {
-		console.log("Switching to Single Page Viewer");
-		$(".pages-container").remove();
+	if (storage) {
+		if (localStorage.getItem("viewType") == "spv"  && $(".pages-container").length) {
+			console.log("Storage: Switching to Single Page Viewer");
+			$(".pages-container").remove();
 			
-		$(".reader-container").append("<img src alt class='image-holder'>");
+			$(".reader-container").append("<img src alt class='image-holder'>");
 			
-		$(".reader-container").append("<div class='control-hotspot control-hotspot-prev'></div>")
-		$(".reader-container").append("<div class='control control-prev'></div>")
+			$(".reader-container").append("<div class='control-hotspot control-hotspot-prev'></div>");
+			$(".reader-container").append("<div class='control control-prev'></div>");
 			
-		$(".reader-container").append("<div class='control-hotspot control-hotspot-next'></div>");
-		$(".reader-container").append("<div class='control control-next'></div>")
+			$(".reader-container").append("<div class='control-hotspot control-hotspot-next'></div>");
+			$(".reader-container").append("<div class='control control-next'></div>");
+		} 
+		else if (localStorage.getItem("viewType") == "mpv" && $(".image-holder").length) {
+			console.log("Storage: Switching to Multi Page Viewer");
+			$(".image-holder").remove();
+			$(".control-hotspot").remove();
+			$(".control").remove();
+			
+			$(".reader-container").append("<div class='pages-container'><div class='inner'></div</div>");
+		}
 	}
-	else if (getConfig().base.viewType == "mpv" && $(".image-holder").length) {
-		console.log("Switching to Multi Page Viewer");
-		$(".image-holder").remove();
-		$(".control-hotspot").remove();
-		$(".control").remove();
+	else {
+		if (getConfig().base.viewType == "spv" && $(".pages-container").length) {
+			console.log("Config: Switching to Single Page Viewer");
+			$(".pages-container").remove();
 			
-		$(".reader-container").append("<div class='pages-container'><div class='inner'></div</div>")
+			$(".reader-container").append("<img src alt class='image-holder'>");
+			
+			$(".reader-container").append("<div class='control-hotspot control-hotspot-prev'></div>");
+			$(".reader-container").append("<div class='control control-prev'></div>");
+			
+			$(".reader-container").append("<div class='control-hotspot control-hotspot-next'></div>");
+			$(".reader-container").append("<div class='control control-next'></div>");
+		}
+		else if (getConfig().base.viewType == "mpv" && $(".image-holder").length) {
+			console.log("Config: Switching to Multi Page Viewer");
+			$(".image-holder").remove();
+			$(".control-hotspot").remove();
+			$(".control").remove();
+			
+			$(".reader-container").append("<div class='pages-container'><div class='inner'></div</div>");
+		}
 	}
 
+	
 	$('.gallery-list').each(function() {
 		var galleryList = $(this);
 		var page = 0;
@@ -1035,7 +1067,7 @@ $(document).ready(function() {
 			}
 		});
 		
-		$(document).on('keydown.reader keyup.reader', 'html.reader-active', function(e) {
+		$(document).on('keyup.reader', 'html.reader-active', function(e) {
 			if(e.keyCode === 39 || e.keyCode === 68) { // right arrow or WAS(D)
 				if (configData.base.viewType == 'mpv') {
 					loadImage(currentIndex + 1, true, true, true, true);
@@ -1046,7 +1078,7 @@ $(document).ready(function() {
 			}
 		});
 		
-		$(document).on('keydown.reader keyup.reader', 'html.reader-active', function(e) {
+		$(document).on('keyup.reader', 'html.reader-active', function(e) {
 			if(e.keyCode === 37 || e.keyCode === 65) { // left arrow or W(A)SD
 				if (configData.base.viewType == 'mpv') {
 					loadImage(currentIndex - 1, true, true, true, true);
