@@ -1,7 +1,6 @@
 {
 	"base": {
 		"accessKey": "changeme",
-		"hardDelete": false,
 		"viewType": "mpv",
 		"cookie": {
             "ipb_member_id": "changeme",
