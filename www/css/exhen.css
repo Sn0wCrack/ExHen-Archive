@@ -1,6 +1,11 @@
 @font-face {
 	font-family: 'Open Sans';
-	src: url('font/OpenSans.ttf');
+	src: url('font/OpenSans.eot');
+	src: url('font/OpenSans.eot?#iefix') format('embedded-opentype'),
+		 url('font/OpenSans.woff2') format('woff2'),
+		 url('font/OpenSans.woff') format('woff'),
+		 url('font/OpenSans.ttf') format('truetype'),
+		 url('font/OpenSans.svg#OpenSansRegular') format('svg');
 }
 
 body {
