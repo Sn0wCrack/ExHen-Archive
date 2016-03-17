@@ -31,9 +31,10 @@ class Task_Cleanup extends Task_Abstract {
 			Log::debug(Self::LOG_TAG, 'Deleting galleries now. This may take a while.');
 			foreach ($entries as $entry) {
 				$gallery = R::load('gallery', $entry["id"]);
+				Log::debug(Self::LOG_TAG, 'Deleting Gallery ' . $entry["name"] . ' (' . $entry["id"] . ')');
 				$galleryproperty = R::getAll('SELECT * FROM galleryproperty WHERE gallery_id = ?', array($entry["id"]));
-				$gallery_tag = R::getAll('SELECT * FROM gallery_tag WHERE gallery_id = ?', array($entry["id"));
-				$gallery_thumb = R::getAll('SELECT * FROM gallery_thumb WHERE gallery_id = ?', array($entry["id"));
+				$gallery_tag = R::getAll('SELECT * FROM gallery_tag WHERE gallery_id = ?', array($entry["id"]));
+				$gallery_thumb = R::getAll('SELECT * FROM gallery_thumb WHERE gallery_id = ?', array($entry["id"]));
 				
 				// Get all image entries associated with the gallery_thumb then delete those, then delete the gallery_thumb entry
 				foreach ($gallery_thumb as $thumb) {
@@ -41,8 +42,8 @@ class Task_Cleanup extends Task_Abstract {
 					// Delete all associated images and the thumbnails
 					foreach ($images as $image) {
 						$book = R::load('image', $image["id"]);
-						$bookImage = Model_Image::loadBean($book);
-						$bookImage::delete();
+						$imageName = str_pad($book["id"], 6, '0', STR_PAD_LEFT) . '.jpeg';
+						unlink(Config::get()->imagesDir . '/' . $imageName);
 						R::trash($book);
 					}
 					$book = R::load('gallery_thumb', $thumb["id"]);
@@ -56,17 +57,18 @@ class Task_Cleanup extends Task_Abstract {
 				}
 				
 				// Delete archive
-				$bookGallery = Model_Gallery::loadBean($gallery);
-				unlink($bookGallery::getArchiveFilepath());
+				$archiveName = $gallery["exhenid"] . '.zip';
+				unlink(Config::get()->archiveDir . '/galleries/' . $archiveName);
 				
 				R::trash($gallery);
-				$count++
+				$count++;
 			}
 			Log::debug(self::LOG_TAG, 'All galleries marked as deleted were deleted. Total deleted was %d', $count);
 		}
 		else {
 			Log::debug(self::LOG_TAG, 'No galleries found that were marked as deleted.');
 		}
+		
 	}
 	
 }
