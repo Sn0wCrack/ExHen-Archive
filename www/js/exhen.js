@@ -5,19 +5,25 @@ $(document).ready(function() {
 	if (typeof(Storage) != "undefined") {
 		console.log("Storage avaliable on your Browser");
 		storage = true;
-		// localStorage.setItem("viewType", "spv");
+		localStorage.setItem("viewType", "spv");
 	}
 	
 	function api(action, params, callback) {
 		params = $.extend(params, { action: action });
 
-		var ret = $.getJSON('api.php', params, function(resp) {
-			if(!resp.ret) {
-				alert('API error: ' + resp.message);
-			}
-			else {
-				if($.isFunction(callback)) {
-					callback(resp.data);
+		var ret = $.ajax({
+			url: 'api.php',
+			dataType: 'json',
+			aysnc: false,
+			data: params, 
+			success: function(resp) {
+				if(!resp.ret) {
+					alert('API error: ' + resp.message);
+				}
+				else {
+					if($.isFunction(callback)) {
+						callback(resp.data);
+					}
 				}
 			}
 		});
@@ -546,7 +552,7 @@ $(document).ready(function() {
 		}
 
 		input.keydown(function(e) {
-			if(e.keyCode === 38 || e.keyCode === 87) { //arrow up or (W)ASD
+			if(e.keyCode === 38) { //arrow up or (W)ASD
 				var selected = $('li.active', list);
 				if(selected.length > 0) {
 					if(selected.is(':not(:first-child)')) {
@@ -559,7 +565,7 @@ $(document).ready(function() {
 
 				return false;
 			}
-			else if(e.keyCode === 40 || e.keyCode == 83) { //arrow down or WA(S)D
+			else if(e.keyCode === 40) { //arrow down or WA(S)D
 				var selected = $('li.active', list);
 				if(selected.length > 0) {
 					if(selected.is(':not(:last-child)')) {
@@ -1068,7 +1074,7 @@ $(document).ready(function() {
 		});
 		
 		$(document).on('keyup.reader', 'html.reader-active', function(e) {
-			if(e.keyCode === 39 || e.keyCode === 68) { // right arrow or WAS(D)
+			if(e.keyCode === 39) { // right arrow or WAS(D)
 				if (configData.base.viewType == 'mpv') {
 					loadImage(currentIndex + 1, true, true, true, true);
 				}
@@ -1079,7 +1085,7 @@ $(document).ready(function() {
 		});
 		
 		$(document).on('keyup.reader', 'html.reader-active', function(e) {
-			if(e.keyCode === 37 || e.keyCode === 65) { // left arrow or W(A)SD
+			if(e.keyCode === 37) { // left arrow or W(A)SD
 				if (configData.base.viewType == 'mpv') {
 					loadImage(currentIndex - 1, true, true, true, true);
 				}
