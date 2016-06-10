@@ -41,8 +41,5 @@ Minor - Takes a short amount of time.
 
 **Minor:**
 
-* Get people submitting requests for features.
 * OSX setup guide.
-* Add setting for the use of the history feature.
-* Make View Type setting.
 * Consider reimplementing Touch controls.
