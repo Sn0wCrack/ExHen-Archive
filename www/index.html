@@ -41,15 +41,26 @@
         <div class="search-under">
 		  <div class="search-count"></div>
 
-          <div class="unarchived-outer">
+          <div class="switches-outer">
                 <label>
                     <span>Show unarchived</span>
-                    <input type="checkbox" name="unarchived" value="1" class="fancy-switch unarchived" />
+                    <input type="checkbox" name="unarchived" value="0" class="fancy-switch unarchived" />
                     <div>
                         <div></div>
                     </div>
                 </label>
+                <label>
+                    <span>MPV</span>
+                    <input type="checkbox" name="viewertype" value="1" class="fancy-switch viewtype" />
+                    <div>
+                        <div></div>
+                    </div>
+                    </span>SPV</span>
+                </label>
             </div>
+        </div>
+        <div class="unarchived-outer">
+
         </div>
 	</header>
 
@@ -97,6 +108,7 @@
 		</div>
 		
 		<div class="gallery-actions">
+            <span class="page-count"></span>
 			<div class="actions-menu dropdown-button">
 				<span class="label button">Actions</span>
 				<div class="menu-outer">

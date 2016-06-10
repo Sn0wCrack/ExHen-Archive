@@ -3,10 +3,27 @@ $(document).ready(function() {
 	var storage = false;
 	
 	if (typeof(Storage) != "undefined") {
-		console.log("Storage avaliable on your Browser");
 		storage = true;
-		localStorage.setItem("viewType", "spv");
+        if (localStorage.viewType === null) {
+            localStorage.setItem("viewType", "spv");
+        }
+        
+        if (localStorage.viewType == "spv") {
+            $(".viewtype").prop("checked", true);
+        } else if (localStorage.viewType == "mpv") {
+            $(".viewtype").prop("chceked", false);
+        }
+        
 	}
+    
+    $(".viewtype").change(function() {
+       if($(this).prop("checked")) {
+           localStorage.setItem("viewType", "spv");
+       } else {
+           localStorage.setItem("viewType", "mpv");
+       }
+       console.log(localStorage.viewType);
+    });
 	
 	function api(action, params, callback) {
 		params = $.extend(params, { action: action });
@@ -121,7 +138,6 @@ $(document).ready(function() {
 			$(".reader-container").append("<div class='pages-container'><div class='inner'></div</div>");
 		}
 	}
-
 	
 	$('.gallery-list').each(function() {
 		var galleryList = $(this);
@@ -821,6 +837,7 @@ $(document).ready(function() {
 
 							if(nextPage.length > 0 && !nextPage.hasClass('loaded') && !nextPage.hasClass('loading')) {
 								loadImage(i + 1, false, true, false, true);
+                                $('.page-count').text((parseInt(i) + 1) + "/" + gallery.numfiles);
 								return false;
 							}
 						}
@@ -986,6 +1003,7 @@ $(document).ready(function() {
 			var source = "";
 			if(gallery.source == 0) { source = "ExHentai"; } else if (gallery.source == 1) { source = "Self"; } else { source = "Error"; }
 			$('.title', infoContainer).text(gallery.name + " - " + source);
+            $('.page-count').text((parseInt(index) + 1) + "/" + gallery.numfiles)
 			if(gallery.origtitle && gallery.origtitle != gallery.name) {
 				$('.origtitle', infoContainer).show().text(gallery.origtitle);
 			}
@@ -1057,19 +1075,23 @@ $(document).ready(function() {
 		
 		$('.control-next').click(function() {
 			loadImage(currentIndex + 1, true, false, false, true);
+            $('.page-count').text((currentIndex + 1) + "/" + gallery.numfiles);
 		});
 		
 		$('.control-prev').click(function() {
 			loadImage(currentIndex - 1, true, false, false, true);
+            $('.page-count').text((currentIndex + 1) + "/" + gallery.numfiles);
 		});
 
 		thumbsList.on('click', '.gallery-thumb', function() {
 			var index = $(this).data('index');
 			if (configData.base.viewType == 'mpv') {
 				loadImage(index, true, false, true, true);
+                $('.page-count').text((index + 1) + "/" + gallery.numfiles)
 			}
 			else if (configData.base.viewType == 'spv') {
 				loadImage(index, true, false, false, true);
+                $('.page-count').text((index + 1) + "/" + gallery.numfiles)
 			}
 		});
 		
@@ -1077,9 +1099,11 @@ $(document).ready(function() {
 			if(e.keyCode === 39) { // right arrow or WAS(D)
 				if (configData.base.viewType == 'mpv') {
 					loadImage(currentIndex + 1, true, true, true, true);
+                    $('.page-count').text((currentIndex + 1) + "/" + gallery.numfiles)
 				}
 				else if (configData.base.viewType == 'spv') {
 					loadImage(currentIndex + 1, true, true, false, true);
+                    $('.page-count').text((currentIndex + 1) + "/" + gallery.numfiles)
 				}
 			}
 		});
@@ -1088,9 +1112,11 @@ $(document).ready(function() {
 			if(e.keyCode === 37) { // left arrow or W(A)SD
 				if (configData.base.viewType == 'mpv') {
 					loadImage(currentIndex - 1, true, true, true, true);
+                    $('.page-count').text((currentIndex + 1) + "/" + gallery.numfiles)
 				}
 				else if (configData.base.viewType == 'spv') {
 					loadImage(currentIndex - 1, true, true, false, true);
+                    $('.page-count').text((currentIndex + 1) + "/" + gallery.numfiles)
 				}
 			}
 		});
