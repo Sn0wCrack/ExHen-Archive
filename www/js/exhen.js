@@ -4,13 +4,13 @@ $(document).ready(function() {
 	
 	if (typeof(Storage) != "undefined") {
 		storage = true;
-        if (localStorage.viewType === null) {
+        if (localStorage.getItem("viewType") === null) {
             localStorage.setItem("viewType", "spv");
         }
         
-        if (localStorage.viewType == "spv") {
+        if (localStorage.getItem("viewType") == "spv") {
             $(".viewtype").prop("checked", true);
-        } else if (localStorage.viewType == "mpv") {
+        } else if (localStorage.getItem("viewType") == "mpv") {
             $(".viewtype").prop("chceked", false);
         }
         
@@ -22,7 +22,6 @@ $(document).ready(function() {
        } else {
            localStorage.setItem("viewType", "mpv");
        }
-       console.log(localStorage.viewType);
     });
 	
 	function api(action, params, callback) {
@@ -862,17 +861,17 @@ $(document).ready(function() {
 		function getImageUrl(index) {
 			var params = { action: 'archiveimage', id: gallery.id, index: index };
 			
-			if (configData.base.viewType == "spv") {
-				var trueWidth = Math.round(window.devicePixelRatio * window.screen.availWidth);
-				if (trueWidth <= 1000) {
-					params.resize = trueWidth;
-				}
-			}
-			else if (configData.base.viewType == "mpv") {
-				params.resize = Math.ceil(window.screen.availWidth / 128) * 128;
-			}
+            if (localStorage.getItem("viewType") == "spv") {
+                var trueWidth = Math.round(window.devicePixelRatio * window.screen.availWidth);
+                if (trueWidth <= 1000) {
+                    params.resize = trueWidth;
+                }
+            }
+                
+            if (localStorage.getItem("viewType") == "mpv") {
+                params.resize = Math.ceil(window.screen.availWidth / 128) * 128;
+            }
 			
-
 			return 'api.php?' + $.param(params);
 		}
 
@@ -896,36 +895,36 @@ $(document).ready(function() {
 
 		function loadImage(index, setHistory, replaceHistory, scroll, updateCurIndex) {
 			if(gallery && index < gallery.numfiles && index >= 0) {
-				if (configData.base.viewType == 'spv') {
-					var url = getImageUrl(index);
-					imageHolder.prop('src', url);
-				}
-				
-				if (configData.base.viewType == 'mpv') {
-					var page = pages.eq(index);
-					var img = page.find('img');
-					if(!page.hasClass('loading') && !page.hasClass('loaded')) {
-						var preloadIndex = preload.data('index');
-						if(preloadIndex != index) {
-							preload.prop('src', '');
-						}
+                if (localStorage.getItem("viewType") == "spv") {
+                    var url = getImageUrl(index);
+                    imageHolder.prop('src', url);
+                }
+                    
+                if (localStorage.getItem("viewType") == "mpv") {
+                    var page = pages.eq(index);
+                    var img = page.find('img');
+                    if(!page.hasClass('loading') && !page.hasClass('loaded')) {
+                        var preloadIndex = preload.data('index');
+                        if (preloadIndex != index) {
+                            preload.prop('src', '');
+                        }
 
-						page.addClass('loading');
-						img.prop('src', img.data('src'));
+                        page.addClass('loading');
+                        img.prop('src', img.data('src'));
 
-						if(scroll) {
-							scrollToPage(index);
-						}
+                        if (scroll) {
+                            scrollToPage(index);
+                        }
 
-						createSpinner(index);
-					}
-					else {
-						if(scroll) {
-							scrollToPage(index);
-						}
-					}
-				}
-				
+                        createSpinner(index);
+                    } else {
+                        if (scroll) {
+                            scrollToPage(index);
+                        }
+                    }
+                }
+
+
 				if(setHistory) {
 					setHistoryState(index, replaceHistory);
 				}
@@ -1002,6 +1001,8 @@ $(document).ready(function() {
 			
 			var source = "";
 			if(gallery.source == 0) { source = "ExHentai"; } else if (gallery.source == 1) { source = "Self"; } else { source = "Error"; }
+			$('.title', infoContainer).text(gallery.name + " - " + source);
+            $('.page-count').text((parseInt(index) + 1) + "/" + gallery.numfiles);
 			if(gallery.origtitle && gallery.origtitle != gallery.name) {
 				$('.origtitle', infoContainer).show().text(gallery.origtitle);
 			}
@@ -1017,22 +1018,23 @@ $(document).ready(function() {
 			}
             
             $('.page-count').text((parseInt(index) + 1) + "/" + gallery.numfiles);
+            
+            if (localStorage.getItem("viewType") == "mpv") {
+                var pagesTarget = $('.inner', pagesContainer);
+                pagesTarget.empty();
+                for(var i = 0; i < gallery.numfiles; i++) {
+                    var page = $('.template .page').clone();
+                    var pageImg = $('img', page);
+                    var url = getImageUrl(i);
+                    pageImg.data('src', url);
+                    pageImg.load(onImageLoad);
+                    $('.index', page).text(i + 1);
+                    pagesTarget.append(page);
+                }
+                pages = $('.page', pagesContainer);
+            }
+                
 
-			if (configData.base.viewType == 'mpv') {
-				var pagesTarget = $('.inner', pagesContainer);
-				pagesTarget.empty();
-				for(var i = 0; i < gallery.numfiles; i++) {
-					var page = $('.template .page').clone();
-					var pageImg = $('img', page);
-					var url = getImageUrl(i);
-					pageImg.data('src', url);
-					pageImg.load(onImageLoad);
-					$('.index', page).text(i + 1);
-					pagesTarget.append(page);
-				}
-				pages = $('.page', pagesContainer);
-			}
-			
 			
 			if(gallery.source == 1) {
 				$('.actions-menu ul li[data-action=\'source\']').text('File');
@@ -1049,26 +1051,26 @@ $(document).ready(function() {
 			}
 		}
 		
-		if (configData.base.viewType == "spv") {
-			var win = $(window);
-			win.on('resize.reader', function() {
-				var width = win.width();
-				var height = win.height();
-				var oldWidth = win.data('oldWidth');
-				var oldHeight = win.data('oldHeight');
-				
-				if (oldWidth && oldHeight) {
-					imageHolder.css({
-						top: '+=' + ((height - oldHeight) / 2),
-						left: '+=' + ((width - oldWidth) / 2)
-					});
-				}
-				
-				win.data('oldWidth', width)
-				win.data('oldHeight', height);
-			});
-		}
-		
+        if (localStorage.getItem("viewType") == "spv") {
+            var win = $(window);
+            win.on('resize.reader', function() {
+                var width = win.width();
+                var height = win.height();
+                var oldWidth = win.data('oldWidth');
+                var oldHeight = win.data('oldHeight');
+            
+                if (oldWidth && oldHeight) {
+                    imageHolder.css({
+                        top: '+=' + ((height - oldHeight) / 2),
+                        left: '+=' + ((width - oldWidth) / 2)
+                    });
+                }
+                
+                win.data('oldWidth', width)
+                win.data('oldHeight', height);
+            });
+        }
+
 		container.on('loadgallery', function(e, newGallery, index) {
 			loadGallery(newGallery, index);
 		});
@@ -1085,11 +1087,11 @@ $(document).ready(function() {
 
 		thumbsList.on('click', '.gallery-thumb', function() {
 			var index = $(this).data('index');
-			if (configData.base.viewType == 'mpv') {
+			if (localStorage.getItem("viewType") == 'mpv') {
 				loadImage(index, true, false, true, true);
                 $('.page-count').text((index + 1) + "/" + gallery.numfiles)
 			}
-			else if (configData.base.viewType == 'spv') {
+			else if (localStorage.getItem("viewType") == 'spv') {
 				loadImage(index, true, false, false, true);
                 $('.page-count').text((index + 1) + "/" + gallery.numfiles)
 			}
@@ -1097,11 +1099,11 @@ $(document).ready(function() {
 		
 		$(document).on('keyup.reader', 'html.reader-active', function(e) {
 			if(e.keyCode === 39) { // right arrow or WAS(D)
-				if (configData.base.viewType == 'mpv') {
+				if (localStorage.getItem("viewType") == 'mpv') {
 					loadImage(currentIndex + 1, true, true, true, true);
                     $('.page-count').text((currentIndex + 1) + "/" + gallery.numfiles)
 				}
-				else if (configData.base.viewType == 'spv') {
+				else if (localStorage.getItem("viewType") == 'spv') {
 					loadImage(currentIndex + 1, true, true, false, true);
                     $('.page-count').text((currentIndex + 1) + "/" + gallery.numfiles)
 				}
@@ -1110,11 +1112,11 @@ $(document).ready(function() {
 		
 		$(document).on('keyup.reader', 'html.reader-active', function(e) {
 			if(e.keyCode === 37) { // left arrow or W(A)SD
-				if (configData.base.viewType == 'mpv') {
+				if (localStorage.getItem("viewType") == 'mpv') {
 					loadImage(currentIndex - 1, true, true, true, true);
                     $('.page-count').text((currentIndex + 1) + "/" + gallery.numfiles)
 				}
-				else if (configData.base.viewType == 'spv') {
+				else if (localStorage.getItem("viewType") == 'spv') {
 					loadImage(currentIndex - 1, true, true, false, true);
                     $('.page-count').text((currentIndex + 1) + "/" + gallery.numfiles)
 				}
