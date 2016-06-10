@@ -1002,8 +1002,6 @@ $(document).ready(function() {
 			
 			var source = "";
 			if(gallery.source == 0) { source = "ExHentai"; } else if (gallery.source == 1) { source = "Self"; } else { source = "Error"; }
-			$('.title', infoContainer).text(gallery.name + " - " + source);
-            $('.page-count').text((parseInt(index) + 1) + "/" + gallery.numfiles)
 			if(gallery.origtitle && gallery.origtitle != gallery.name) {
 				$('.origtitle', infoContainer).show().text(gallery.origtitle);
 			}
@@ -1017,6 +1015,8 @@ $(document).ready(function() {
 			if(!index || index >= gallery.numfiles) {
 				index = 0;
 			}
+            
+            $('.page-count').text((parseInt(index) + 1) + "/" + gallery.numfiles);
 
 			if (configData.base.viewType == 'mpv') {
 				var pagesTarget = $('.inner', pagesContainer);
