@@ -9,18 +9,18 @@ $(document).ready(function() {
         }
         
         if (localStorage.getItem("viewType") == "spv") {
-            $(".viewtype").prop("checked", true);
+            $(".viewtype").prop("checked", false);
         } else if (localStorage.getItem("viewType") == "mpv") {
-            $(".viewtype").prop("chceked", false);
+            $(".viewtype").prop("chceked", true);
         }
         
 	}
     
     $(".viewtype").change(function() {
        if($(this).prop("checked")) {
-           localStorage.setItem("viewType", "spv");
-       } else {
            localStorage.setItem("viewType", "mpv");
+       } else {
+           localStorage.setItem("viewType", "spv");
        }
     });
 	
