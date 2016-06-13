@@ -213,8 +213,23 @@ $(document).ready(function() {
                     } else {
                         $("#read", item).prop("checked", false);
                     }
-
-                    item.prop('href', url);
+                    
+                    $("#read", item).click(function(e) {
+                       e.stopPropagation(); 
+                    });
+                    
+                    $("#read", item).change(function() {
+                        var result = $(this).prop("checked") ? 1 : 0;
+                        api("update", {id: gallery.id, readStatus: result}, function(data) {
+                            if (data.ret == false) {
+                                alert("Error updating read status of gallery.");
+                            }
+                        });
+                    });
+                    
+                    $(item).click(function(e) {
+                        window.location.url = url;
+                    });
 
 					if (i == 0) {
 						item.addClass('page-break');
@@ -1214,7 +1229,7 @@ $(document).ready(function() {
 	}
 
 	setupDropdowns();
-
+    
 	$(window).on('popstate', function(e) {
 		if(e.originalEvent.state) {
 			switch(e.originalEvent.state.action) {
