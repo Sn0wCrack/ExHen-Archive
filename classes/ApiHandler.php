@@ -363,6 +363,31 @@ class ApiHandler {
 
 		die();
 	}
+    
+    public function updateAction() {
+        $id = $this->getParam('id');
+        $status = $this->getParam('readStatus');
+        
+        $gallery = R::load('gallery', $id);
+        
+        if($gallery) {
+            $gallery->read = $status;
+            R::store($gallery);
+            
+            $cache = Cache::getInstance();
+            $cache->deleteObject('gallery', $gallery->id);
+
+            if(isset(Config::get()->indexer->full)) {
+                $command = Config::get()->indexer->full;
+                system($command);
+            }
+
+            $this->sendSuccess($gallery->read);
+            
+        } else {
+            $this->sendFail();
+        }
+    }
 
 	protected function sendSuccess($data) {
 		$data = array(

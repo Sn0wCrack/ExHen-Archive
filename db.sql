@@ -59,6 +59,7 @@ CREATE TABLE `gallery` (
   `hasmeta` tinyint(4) DEFAULT '0',
   `download` tinyint(4) DEFAULT '1',
   `source` tinyint(4) DEFAULT '0',
+  `read` tinyint(4) DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `exhenid_UNIQUE` (`exhenid`),
   KEY `index_foreignkey_gallery_feed` (`feed_id`)

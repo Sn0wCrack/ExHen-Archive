@@ -202,16 +202,21 @@ $(document).ready(function() {
 					var item = $('.template .gallery-item').clone();
 					item.data('gallery', gallery);
 
-                    if(gallery.archived == 1) {
+                    if (gallery.archived == 1) {
                         var url = '?' + $.param({ action: 'gallery', id: gallery.id, index: 0 });
-                    }
-                    else {
+                    } else {
                         var url = 'http://exhentai.org/g/' + gallery.exhenid + '/' + gallery.hash;
+                    }
+                    
+                    if (gallery.read == 1) {
+                        $("#read", item).prop("checked", true);
+                    } else {
+                        $("#read", item).prop("checked", false);
                     }
 
                     item.prop('href', url);
 
-					if(i == 0) {
+					if (i == 0) {
 						item.addClass('page-break');
 						item.data('page', loadPage);
 					}
@@ -767,9 +772,9 @@ $(document).ready(function() {
 					firstImage = false;
 				}
 				else if (this.height > win.height() || pos.top < 0) {
-					imageHolder.stop().aniamtie({
+					imageHolder.stop().animate({
 						top: 0
-					}, Math.abs(post.top) * 0.7);
+					}, Math.abs(pos.top) * 0.7);
 				}
 			}
 			preloadImage(currentIndex + 1);
@@ -947,6 +952,14 @@ $(document).ready(function() {
 		});
 
 		function close() {
+            var pecentRead = (gallery.numfiles / (currentIndex + 1)) * 100;
+            if (pecentRead >= 80) {
+                api("update", {id: gallery.id, readStatus: 1}, function(data) {
+                    if (data.ret == false) {
+                        alert("Error updating read status of gallery.");
+                    }
+                });
+            }
 			$('html').removeClass('reader-active');
 			imageHolder.prop('src', '');
 			gallery = null;
