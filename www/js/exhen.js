@@ -952,8 +952,8 @@ $(document).ready(function() {
 		});
 
 		function close() {
-            var pecentRead = (gallery.numfiles / (currentIndex + 1)) * 100;
-            if (pecentRead >= 80) {
+            var percentRead = ((currentIndex + 1) / gallery.numfiles) * 100;
+            if (percentRead >= 80) {
                 api("update", {id: gallery.id, readStatus: 1}, function(data) {
                     if (data.ret == false) {
                         alert("Error updating read status of gallery.");
