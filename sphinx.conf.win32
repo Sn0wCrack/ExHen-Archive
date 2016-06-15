@@ -52,7 +52,6 @@ source suggested_tags : connect {
 index galleries {
     source = galleries
     path = C:\path\to\sphinx\data\exhen\galleries
-    charset_type = utf-8
     min_word_len = 2
 
     blend_chars = :, @
@@ -65,7 +64,6 @@ index galleries {
 index suggested {
     source = suggested_tags
     path = C:\path\to\sphinx\data\exhen\suggested
-    charset_type = utf-8
     min_prefix_len = 1
     enable_star = 1
 }
@@ -80,6 +78,4 @@ searchd {
     log = C:\path\to\sphinx\searchd_exhen.log
     query_log = C:\path\to\sphinx\query_exhen.log
     pid_file = C:\path\to\sphinx\searchd_exhen.pid
-    max_matches = 500000
-    compat_sphinxql_magics = 0
 }

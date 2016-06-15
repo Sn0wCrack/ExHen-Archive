@@ -2,5 +2,10 @@ log.txt
 images/*
 temp/*
 io/*
+.vagrant/
+*.box
+.bashrc
 config.json
 sphinx.conf
+.env
+.evn.example

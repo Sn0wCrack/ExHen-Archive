@@ -53,7 +53,6 @@ source suggested_tags : connect {
 index galleries {
     source = galleries
     path = /var/lib/sphinxsearch/data/exhen/galleries
-    charset_type = utf-8
     min_word_len = 2
 
     blend_chars = :, @
@@ -66,7 +65,6 @@ index galleries {
 index suggested {
     source = suggested_tags
     path = /var/lib/sphinxsearch/data/exhen/suggested
-    charset_type = utf-8
     min_prefix_len = 1
     enable_star = 1
 }
@@ -80,7 +78,5 @@ searchd {
     listen = 9306:mysql41
     log = /var/log/sphinxsearch/searchd_exhen.log
     query_log = /var/log/sphinxsearch/query_exhen.log
-    pid_file = /var/log/sphinxsearch/searchd_exhen.pid
-    max_matches = 500000
-    compat_sphinxql_magics = 0
+    pid_file = /var/run/sphinxsearch/searchd.pid
 }
