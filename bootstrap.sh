@@ -26,6 +26,7 @@ apt-get -y install \
     php5-gd \
     php5-memcache \
     mysql-client \
+    unixodbc \
     libpq5 \
     memcached
 
@@ -140,9 +141,9 @@ usermod --append --groups vagrant www-data
 # Reload changes
 apache2ctl -k restart
 
-wget -q http://sphinxsearch.com/files/sphinxsearch_2.1.8-release-1~wheezy_amd64.deb
-sudo dpkg -i sphinxsearch_2.1.8-release-1~wheezy_amd64.deb
-rm sphinxsearch_2.1.8-release-1~wheezy_amd64.deb
+wget -q http://sphinxsearch.com/files/sphinxsearch_2.2.10-release-1~jessie_amd64.deb
+sudo dpkg -i sphinxsearch_2.2.10-release-1~jessie_amd64.deb
+rm sphinxsearch_2.2.10-release-1~jessie_amd64.deb
 cp /vagrant/sphinx.conf.linux /etc/sphinxsearch/sphinx.conf
 sudo mkdir /var/lib/sphinxsearch/data/exhen/
 
@@ -164,7 +165,7 @@ chown vagrant:vagrant ~vagrant/.my.cnf
 sudo -u vagrant mysql -e "source /vagrant/db.sql" -D ""
 
 # Sync DB to sphinxsearch
-sudo indexer --rotate galleries suggested
+sudo indexer --rotate --all
 
 # Copy over out config files
 sudo cp /vagrant/config.json.linux /vagrant/www/config.json

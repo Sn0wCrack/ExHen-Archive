@@ -8,4 +8,4 @@ io/*
 config.json
 sphinx.conf
 .env
-.evn.example
+.env.example
