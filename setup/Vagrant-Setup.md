@@ -5,7 +5,7 @@ Windows Setup
 
  * Vagrant ( [https://www.vagrantup.com/downloads.html]([https://www.vagrantup.com/downloads.html) )
  * VirtualBox ( [https://www.virtualbox.org/wiki/Downloads](https://www.virtualbox.org/wiki/Downloads) )
- * VirtualBox Extension Pack ( [https://www.virtualbox.org/wiki/Downloads]( (https://www.virtualbox.org/wiki/Downloads](https://www.virtualbox.org/wiki/Downloads) )
+ * VirtualBox Extension Pack ( [https://www.virtualbox.org/wiki/Downloads]( [https://www.virtualbox.org/wiki/Downloads](https://www.virtualbox.org/wiki/Downloads) )
  * ExHentai-Archive ( [https://github.com/Sn0wCrack/ExHentai-Archive/archive/master.zip](https://github.com/Sn0wCrack/ExHentai-Archive/archive/master.zip) )
  
 
