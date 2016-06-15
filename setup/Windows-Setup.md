@@ -24,7 +24,7 @@ First, install dependencies:
 * PHP: [http://windows.php.net/download/](http://windows.php.net/download/) - Get the **Thread Safe x86 version**
 * MariaDB / MySQL: [https://downloads.mariadb.org/mariadb/5.5.45/#file_type=zip&os_group=windows](https://downloads.mariadb.org/mariadb/5.5.45/#file_type=zip&os_group=windows)
 * memcached: [http://code.jellycan.com/files/memcached-1.2.6-win32-bin.zip](http://code.jellycan.com/files/memcached-1.2.6-win32-bin.zip)
-* Sphinx 2.1.8: [http://sphinxsearch.com/downloads/sphinx-2.1.8-release-win32.zip/thankyou.html](http://sphinxsearch.com/downloads/sphinx-2.1.8-release-win32.zip/thankyou.html)
+* Sphinx: [http://sphinxsearch.com/downloads/release/](http://sphinxsearch.com/downloads/release/l)
 * phpMyAdmin: [https://www.phpmyadmin.net/downloads/](https://www.phpmyadmin.net/downloads/)
 
 Create a folder somewhere and call it whatever you want, for example `server` or `exhen`.
