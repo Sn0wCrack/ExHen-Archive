@@ -161,7 +161,11 @@ html.reader-active body {
     top: 0;
     left: 0;
     -webkit-user-drag: none;
+    -moz-user-drag: none;
+    user-drag: none;
     -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
 }
 
 .reader-container .image-holder.init {
@@ -206,6 +210,8 @@ header {
     color: inherit;
     cursor: pointer;
     -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
 }
 
 .search-form {
@@ -235,6 +241,8 @@ header {
     display: none;
     opacity: 0;
     -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
     cursor: pointer;
     transition: opacity 200ms;
 }
@@ -517,11 +525,13 @@ header {
     position: absolute;
     top: 10px;
     right: 120px;
+    z-index: 99999;
 }
 
-.page-count {
+.gallery-actions .page-count {
     font-size: 20px;
     margin-right: 10px;
+    text-shadow: 1px 1px 2px #000;
 }
 
 .dropdown-button .menu-outer {
@@ -569,6 +579,10 @@ header {
 }
 
 *::-webkit-input-placeholder {
+    color: #aaa;
+}
+
+*::-moz-placeholder {
     color: #aaa;
 }
 
@@ -772,7 +786,7 @@ input[type="checkbox"].viewtype:checked + div > div {
 
 ::-webkit-scrollbar-thumb {
     border-radius: 10px;
-    border: 1px solid #999;
+    border: 1px solid #ddd;
 }
 
 @media (max-width: 1400px) {
