@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name       ExHentai archive
-// @match      http://exhentai.org/*
-// @require  http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js
+// @match      *://exhentai.org/*
+// @match      *://g.e-hentai.org/*
+// @require    http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js
 // ==/UserScript==
 
-var baseUrl = 'http://your.archive.url.com/';
+var baseUrl = '//your.archive.url.com/';
 var key = 'changeme';
 
 function createArchiveLink(gid, token) {
@@ -36,7 +37,7 @@ $('div#gd5').each(function() { //archive button on gallery detail
     
     $.getJSON(baseUrl + 'api.php', { action: 'hasgallery', gid: gid, key: key }, function(data, result) {
         if(data.data.exists) {
-            var p = $('<p class="g2"><img src="http://st.exhentai.net/img/mr.gif"> </p>');
+            var p = $('<p class="g2"><img src="//exhentai.org/img/mr.gif"> </p>');
             var link = $('<a href="#" target="_blank">Archived</a>');
             
             if(data.data.archived) {
@@ -50,13 +51,11 @@ $('div#gd5').each(function() { //archive button on gallery detail
             }
             
             link.appendTo(p);
-            
             $('.g2', container).last().after(p);
         }
         else {
-            var p = $('<p class="g2"><img src="http://st.exhentai.net/img/mr.gif"> </p>');
+            var p = $('<p class="g2"><img src="//exhentai.org/img/mr.gif"> </p>');
             var link = createArchiveLink(gid, token);
-            
             link.appendTo(p);
             
             $('.g2', container).last().after(p);
@@ -72,9 +71,11 @@ $('div.itg').each(function() { //gallery search
     galleries.each(function() {
         var galleryContainer = $(this);
         var link = $('div.id2 a', galleryContainer).prop('href');
-        var bits = link.match(/http:\/\/exhentai.org\/g\/(\d*)\/(\w*)\//).slice(1);
-        var gid = bits[0];
-        var token = bits[1];
+        
+        var bits = link.split("/");
+        
+        var gid = bits[4];
+        var token = bits[5];
         
         gids.push(gid);
         
