@@ -16,6 +16,10 @@ if(!class_exists($name)) {
 
 $pidFile = Config::get()->tempDir.DS.$name.'.pid';
 
+if (!file_exists(Config::get()->tempDir)) {
+    mkdir(Config::get()->tempDir);
+}
+
 if(file_exists($pidFile)) {
 	$pid = file_get_contents($pidFile);
 	if(processExists($pid)) {
