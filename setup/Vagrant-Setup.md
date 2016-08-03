@@ -75,7 +75,7 @@ Open a new command prompt winodw in the directory where your extracted ExHentai-
 
 Afterwards everything should be running smoothly and your vagrant box should be up and running, you can check this by going to ```https://localhost``` in your web browser of choice. **The https is highly important.**
 
-After this you can proceed to [userscript setup](https://github.com/Sn0wCrack/ExHentai-Archive/blob/master/setup/Userscript-Setup.md) using the baseUrl as "//localhost/" and key as whatever you set previously.
+After this you can proceed to [userscript setup](https://github.com/Sn0wCrack/ExHentai-Archive/blob/master/setup/Userscript-Setup.md) using the baseUrl as "https://localhost/" and key as whatever you set previously.
 
 If you're on Windows (I assume most using this guide would be) then you can schedule a task to run to open the vagrant box at start up so you don't have to it manually by making a batch file called ```startup.bat``` in the ExHentai-Archive folder similar to the following:
 ```
