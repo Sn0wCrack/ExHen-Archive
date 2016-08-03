@@ -64,7 +64,7 @@ class ExPage_Gallery extends ExPage_Abstract {
 	public function getArchiverUrl() {
 		$elem = $this->find('a[onclick*="archiver.php"]');
 		if(count($elem) > 0) {
-			preg_match("~(http://exhentai.org/archiver.php.*)'~", $elem->attr('onclick'), $matches);
+			preg_match("~(https://exhentai.org/archiver.php.*)'~", $elem->attr('onclick'), $matches);
 			if(count($matches) >= 2) {
 				return $matches[1];
 			}

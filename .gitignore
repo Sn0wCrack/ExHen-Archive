@@ -1,5 +1,6 @@
 log.txt
 images/*
+archive/
 temp/*
 io/*
 .vagrant/
@@ -9,3 +10,4 @@ config.json
 sphinx.conf
 .env
 .env.example
+phpMyAdmin/

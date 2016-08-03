@@ -2,7 +2,7 @@
 
 class ExClient {
 
-	const BASE_URL = 'https://exhentai.org/';
+	const BASE_URL = 'https://exhentai.org';
 
 	private $ctr = 0;
 
@@ -45,6 +45,7 @@ class ExClient {
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_FAILONERROR, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_MAXREDIRS, 300);
 
         $cookie = Config::buildCookie();
 		curl_setopt($ch, CURLOPT_COOKIE, $cookie);

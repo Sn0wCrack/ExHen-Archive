@@ -68,14 +68,14 @@ After that, install Vagrant to your system, and make sure to have restarted your
 Open a command prompt window and type in ```vagrant plugin install vagrant-vbguest``` and then close the command prompt window after it has finished downloading the plugin.
 
 If you've changed any other passwords in the config.json.linux file please change the following to the be the same:
- * sphinx.conf.linx under ```source connect``` option called ```sql_pass```
+ * sphinx.conf.linux under ```source connect``` option called ```sql_pass```
  * bootstrap.sh option called ```MYSQL_PASSWORD```
 
 Open a new command prompt winodw in the directory where your extracted ExHentai-Archive too and type in ```vagrant up``` this will begin a lengthy process of installing and downloading updates so please give it some time.
 
-Afterwards everything should be running smoothly and your vagrant box should be up and running, you can check this by going to ```localhost:8080``` in your web browser of choice.
+Afterwards everything should be running smoothly and your vagrant box should be up and running, you can check this by going to ```https://localhost``` in your web browser of choice. **The https is highly important.**
 
-After this you can proceed to [userscript setup](https://github.com/Sn0wCrack/ExHentai-Archive/blob/master/setup/Userscript-Setup.md) using the baseUrl as "http://localhost:8080/" and key as whatever you set previously.
+After this you can proceed to [userscript setup](https://github.com/Sn0wCrack/ExHentai-Archive/blob/master/setup/Userscript-Setup.md) using the baseUrl as "//localhost/" and key as whatever you set previously.
 
 If you're on Windows (I assume most using this guide would be) then you can schedule a task to run to open the vagrant box at start up so you don't have to it manually by making a batch file called ```startup.bat``` in the ExHentai-Archive folder similar to the following:
 ```
@@ -85,7 +85,13 @@ exit
 ```
 Then opening "Task Scheduler" and pressing "Action" and "Create Basic Action" setting a name for it, then the rest is self explanatory, when it ask for a program file the .bat file you just made.\
 
-Now you can access localhost:8080 without doing a thing.
+Now you can access https://localhost without doing a thing.
 
+
+### Archiving
+
+After the initial setup is complete and you've setup your userscript in your browser of choice, to download your archives you'll want to goto ```https://localhost/vagrant/TaskRunner.php?task=Full``` in your browser, this will invoke the Archive, Thumbnails and Auit actions, however due to some limitations you won't be able to get amazingly formatted output.
+
+After sending galleries to archive, you **NEED** to do this, this is what actually downloads and archives the files to your computer.
 
 Enjoy it.

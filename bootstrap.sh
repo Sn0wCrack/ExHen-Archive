@@ -28,12 +28,23 @@ apt-get -y install \
     mysql-client \
     unixodbc \
     libpq5 \
-    memcached
+    memcached \
+    p7zip
 
 # Update hostname
 echo "127.0.1.1 $NEW_HOSTNAME" >> /etc/hosts
 echo "$NEW_HOSTNAME" > /etc/hostname
 hostname -F /etc/hostname
+
+# Make required directories
+if [ -f /vagrant/images ] || [ -f /vagrant/temp ];
+then
+    echo "required directories already exist"
+else
+    mkdir /vagrant/images
+    mkdir /vagrant/temp
+fi
+
 
 # Set ServerName directive on apache globally to suppress warnings on start
 if [ -f /etc/apache2/sites-available/server-name.conf ];
@@ -86,7 +97,7 @@ EOF
     cat << 'EOF' > /root/.ssh/id_rsa.pub
     # DO NOT USE THIS KEY FOR PUBLICKEY AUTHENTICATION FOR ANY SERVERS/SERVICES (minus this VM) YOU HAVE BEEN WARNED
     ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDCD+aL3klK4/xodxQTIr4G7ky3ojL0M5SHUcjbpQy5bTwrRghlmcJcVBwrQjba+rH6ZjlHSqD/b1xFHg8MqTwqZ/vlWXqy9SEuUDh1Ggf9wnrauMnROT8RNuVo6RAoXz2pRjFOLpPVSJ+L7eK4V0wH6DZHfekgWgcCvcNci4kT9o50qDksWDThrPY55PC68rF/BdtM1jJX3AZvlgkIL9UZVyUk2FOFQFvI8BzcE0Db0i7VyBV+MbISLfmUXqsmo6Gq7FcYms9ODkfMMKt1Y6YdaCpa3T7CayubElgv713QaKpEXbtVMcn4pt5RV9XbU9owAaTr4gKNmZ4nwz1ABQaf root@jessie64
-    EOF
+EOF
 
     # Set proper perms on key files
     chmod 0600 /root/.ssh/id_rsa
@@ -106,10 +117,13 @@ fi
 # Enable apache modules
 a2enmod rewrite
 a2enmod cgi
+a2enmod ssl
+sudo mkdir -p /etc/apache2/ssl
+sudo cp /vagrant/ssl/{server.crt,server.csr,server.key} /etc/apache2/ssl
 
 # Add apache vhost config for application
 cat << 'EOF' > /etc/apache2/sites-available/vagrant.conf
-<VirtualHost *:80>
+<VirtualHost _default_:80>
     DocumentRoot /vagrant/www
     <Directory /vagrant/www>
         Options FollowSymLinks ExecCGI
@@ -120,15 +134,61 @@ cat << 'EOF' > /etc/apache2/sites-available/vagrant.conf
 
     Alias /images /vagrant/images
     <Directory /vagrant/images>
+        Options +Indexes
+        AllowOverride None
+        Order deny,allow
+        Require all granted
+    </Directory>
+    
+    Alias /vagrant /vagrant
+    <Directory /vagrant>
+        Options +Indexes +FollowSymLinks +ExecCGI
+        AllowOverride None
+        Order deny,allow
+        Require all granted
+    </Directory>
+    ErrorLog ${APACHE_LOG_DIR}/exhen-error.log
+    CustomLog ${APACHE_LOG_DIR}/exhen-access.log combined
+</VirtualHost>
+<VirtualHost _default_:443>
+    SSLEngine On
+    SSLCipherSuite ALL:!aNULL:!ADH:!eNULL:!LOW:!EXP:RC4+RSA:+HIGH:+MEDIUM:+SSLv3
+    
+    SSLCertificateFile /etc/apache2/ssl/server.crt
+    SSLCertificateKeyFile /etc/apache2/ssl/server.key
+    
+    DocumentRoot /vagrant/www
+    <Directory /vagrant/www>
+        Options FollowSymLinks ExecCGI
         AllowOverride None
         Order deny,allow
         Require all granted
     </Directory>
 
+    Alias /images /vagrant/images
+    <Directory /vagrant/images>
+        Options +Indexes
+        AllowOverride None
+        Order deny,allow
+        Require all granted
+    </Directory>
+    
+    Alias /vagrant /vagrant
+    <Directory /vagrant>
+        Options +Indexes +FollowSymLinks +ExecCGI
+        AllowOverride None
+        Order deny,allow
+        Require all granted
+    </Directory>
     ErrorLog ${APACHE_LOG_DIR}/exhen-error.log
     CustomLog ${APACHE_LOG_DIR}/exhen-access.log combined
 </VirtualHost>
 EOF
+
+sudo cat << 'EOF' > /etc/sudoers.d/www-data
+www-data ALL=(ALL) NOPASSWD:ALL
+EOF
+
 
 # Disable the default apache vhost and enable our new one
 a2dissite 000-default
@@ -140,12 +200,19 @@ usermod --append --groups vagrant www-data
 
 # Reload changes
 apache2ctl -k restart
+service apache2 restart
+service apache2 reload
 
 wget -q http://sphinxsearch.com/files/sphinxsearch_2.2.10-release-1~jessie_amd64.deb
 sudo dpkg -i sphinxsearch_2.2.10-release-1~jessie_amd64.deb
 rm sphinxsearch_2.2.10-release-1~jessie_amd64.deb
 cp /vagrant/sphinx.conf.linux /etc/sphinxsearch/sphinx.conf
 sudo mkdir /var/lib/sphinxsearch/data/exhen/
+
+wget -q https://files.phpmyadmin.net/phpMyAdmin/4.6.3/phpMyAdmin-4.6.3-all-languages.7z
+mkdir /vagrant/phpMyAdmin
+p7zip -d phpMyAdmin-4.6.3-all-languages.7z
+cp -a phpMyAdmin-4.6.3-all-languages/. /vagrant/phpMyAdmin
 
 # Set mysql client creds for automatic login
 tee > ~vagrant/.my.cnf <<EOF
