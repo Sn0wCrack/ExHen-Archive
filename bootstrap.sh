@@ -29,7 +29,7 @@ apt-get -y install \
     unixodbc \
     libpq5 \
     memcached \
-    p7zip
+    p7zip-full
 
 # Update hostname
 echo "127.0.1.1 $NEW_HOSTNAME" >> /etc/hosts
@@ -248,7 +248,7 @@ sudo update-rc.d searchd defaults
 
 wget -q https://files.phpmyadmin.net/phpMyAdmin/4.6.3/phpMyAdmin-4.6.3-all-languages.7z
 mkdir /vagrant/phpMyAdmin/
-p7zip -d phpMyAdmin-4.6.3-all-languages.7z
+7z x phpMyAdmin-4.6.3-all-languages.7z > /dev/null
 cp -a phpMyAdmin-4.6.3-all-languages/. /vagrant/phpMyAdmin
 
 # Set mysql client creds for automatic login
