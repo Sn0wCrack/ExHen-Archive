@@ -68,7 +68,7 @@ If you've changed any other passwords in the config.json.linux file please chang
 
 Open a new command prompt winodw in the directory where your extracted ExHentai-Archive to and type in ```vagrant up``` this will begin a lengthy process of installing and downloading updates so please give it some time.
 
-After ```vagrant up``` finishes running, you'll need to run ```vagrant halt``` and then ```vagrant up``` once more, this fixes an issues with certain services not runnning correctly, etc.
+After ```vagrant up``` finishes running, you'll need to run ```vagrant halt``` and then ```vagrant up``` once more, this fixes an issues with certain services that may not be running correctly, etc.
 
 Afterwards everything should be running smoothly and your vagrant box should be up and running, you can check this by going to ```https://localhost``` in your web browser of choice. **The https is highly important.**
 
