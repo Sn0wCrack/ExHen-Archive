@@ -24,9 +24,9 @@ First we're going to edit some configuration files, the ones we want to focus on
             "hath_perks": "m1.m2.m3.tf.t1.t2.t3.p1.p2.s-210aa44613",
             "uconfig": "tl_m-uh_y-tr_2-ts_m-prn_y-dm_l-ar_1-cats_350-xns_0-xl_1024x2048x1x2049x10x1034x2058x20x1044x2068x30x1054x2078x40x1064x2088x50x1074x2098x60x1084x2108x70x1094x2118x80x1104x2128x90x1114x2138x100x1124x2148x110x1134x2158x120x1144x2168x130x1154x2178x255x1279x2303-rc_2-rx_0-ry_0-ms_n-mt_n-sa_y-oi_n-qb_n-tf_n-hp_-hk_"
         },
-		"tempDir": "../temp",
-        "archiveDir": "../archive",
-        "imagesDir": "../images"
+		"tempDir": "./temp",
+        "archiveDir": "./archive",
+        "imagesDir": "./images"
 	},
 	"default": {
 		"db": {
@@ -66,7 +66,9 @@ If you've changed any other passwords in the config.json.linux file please chang
  * sphinx.conf.linux under ```source connect``` option called ```sql_pass```
  * bootstrap.sh option called ```MYSQL_PASSWORD```
 
-Open a new command prompt winodw in the directory where your extracted ExHentai-Archive too and type in ```vagrant up``` this will begin a lengthy process of installing and downloading updates so please give it some time.
+Open a new command prompt winodw in the directory where your extracted ExHentai-Archive to and type in ```vagrant up``` this will begin a lengthy process of installing and downloading updates so please give it some time.
+
+After ```vagrant up``` finishes running, you'll need to run ```vagrant halt``` and then ```vagrant up``` once more, this fixes an issues with certain services not runnning correctly, etc.
 
 Afterwards everything should be running smoothly and your vagrant box should be up and running, you can check this by going to ```https://localhost``` in your web browser of choice. **The https is highly important.**
 

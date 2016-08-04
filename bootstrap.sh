@@ -194,6 +194,7 @@ www-data ALL=(ALL) NOPASSWD:ALL
 EOF
 
 
+
 # Disable the default apache vhost and enable our new one
 a2dissite 000-default
 a2ensite vagrant
@@ -207,14 +208,46 @@ apache2ctl -k restart
 service apache2 restart
 service apache2 reload
 
+# Setup for Sphinx
 wget -q http://sphinxsearch.com/files/sphinxsearch_2.2.11-release-1~jessie_amd64.deb
 sudo dpkg -i sphinxsearch_2.2.11-release-1~jessie_amd64.deb
 rm sphinxsearch_2.2.11-release-1~jessie_amd64.deb
 cp /vagrant/sphinx.conf.linux /etc/sphinxsearch/sphinx.conf
-sudo mkdir /var/lib/sphinxsearch/data/exhen/
+sudo mkdir -p /var/lib/sphinxsearch/data/exhen/
+sudo mkdir -p /var/run/sphinxsearch/
+
+# Setup searchd init daemon
+sudo cat << 'EOF' > /etc/init.d/searchd
+#!/bin/bash
+
+case "${1:-''}" in
+  'start')
+        sudo mkdir -p /var/run/sphinxsearch/
+        sudo searchd
+        ;;
+  'stop')
+        sudo searchd --stop
+        ;;
+  'restart')
+        sudo searchd --stop
+        sudo mkdir -p /var/run/sphinxsearch/
+        sudo searchd
+        ;;
+  'status')
+        sudo search --status | echo
+        ;;
+  *)
+        echo "Usage: $SELF start|stop|restart"
+        exit 1
+        ;;
+esac
+EOF
+
+sudo chmod +x /etc/init.d/searchd
+sudo update-rc.d searchd defaults
 
 wget -q https://files.phpmyadmin.net/phpMyAdmin/4.6.3/phpMyAdmin-4.6.3-all-languages.7z
-mkdir /vagrant/phpMyAdmin
+mkdir /vagrant/phpMyAdmin/
 p7zip -d phpMyAdmin-4.6.3-all-languages.7z
 cp -a phpMyAdmin-4.6.3-all-languages/. /vagrant/phpMyAdmin
 
@@ -237,6 +270,7 @@ sudo -u vagrant mysql -e "source /vagrant/db.sql" -D ""
 
 # Sync DB to sphinxsearch
 sudo indexer --rotate --all
+sudo /etc/init.d/searchd restart
 
 # Copy over out config files
 sudo cp /vagrant/config.json.linux /vagrant/www/config.json
