@@ -118,12 +118,14 @@ fi
 a2enmod rewrite
 a2enmod cgi
 a2enmod ssl
+a2enmod headers
 sudo mkdir -p /etc/apache2/ssl
 sudo cp /vagrant/ssl/{server.crt,server.csr,server.key} /etc/apache2/ssl
 
 # Add apache vhost config for application
 cat << 'EOF' > /etc/apache2/sites-available/vagrant.conf
 <VirtualHost _default_:80>
+    Header set Access-Control-Allow-Origin "*"
     DocumentRoot /vagrant/www
     <Directory /vagrant/www>
         Options FollowSymLinks ExecCGI
@@ -151,6 +153,8 @@ cat << 'EOF' > /etc/apache2/sites-available/vagrant.conf
     CustomLog ${APACHE_LOG_DIR}/exhen-access.log combined
 </VirtualHost>
 <VirtualHost _default_:443>
+    Header set Access-Control-Allow-Origin "*"
+     
     SSLEngine On
     SSLCipherSuite ALL:!aNULL:!ADH:!eNULL:!LOW:!EXP:RC4+RSA:+HIGH:+MEDIUM:+SSLv3
     
