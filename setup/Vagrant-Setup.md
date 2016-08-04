@@ -4,8 +4,6 @@ Windows Setup
 ### Requirements
 
  * Vagrant ( [https://www.vagrantup.com/downloads.html]([https://www.vagrantup.com/downloads.html) )
- * VirtualBox ( [https://www.virtualbox.org/wiki/Downloads](https://www.virtualbox.org/wiki/Downloads) )
- * VirtualBox Extension Pack ( [https://www.virtualbox.org/wiki/Downloads]( [https://www.virtualbox.org/wiki/Downloads](https://www.virtualbox.org/wiki/Downloads) ) )
  * ExHentai-Archive ( [https://github.com/Sn0wCrack/ExHentai-Archive/archive/master.zip](https://github.com/Sn0wCrack/ExHentai-Archive/archive/master.zip) )
  
 
@@ -59,9 +57,6 @@ So you can really change this to anything you want, or keep it as changeme, all 
 To get ipb_member_id and ipb_pass_hash you have to find your e-hentai.org cookie, to find this you have to browse through your browsers cookies.
 
 * On firefox you can access this under the options menu under the Privacy tab then clicking "remove individual cookies" and searching for e-hentai and copy pasting the "Content" section into the sections of the configuration file needed 
-
-Now we need to install VirtualBox, download the binary specific to you under the **VirtualBox plaform packages** header.
-After VirtualBox finishes installing, download the VirtualBox Extension Pack and open it, agreeing to any prompts VirtualBox gives to you.
 
 After that, install Vagrant to your system, and make sure to have restarted your computer after installing it (this may or may not be an issue, just do it just in case.)
 
