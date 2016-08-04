@@ -207,9 +207,9 @@ apache2ctl -k restart
 service apache2 restart
 service apache2 reload
 
-wget -q http://sphinxsearch.com/files/sphinxsearch_2.2.10-release-1~jessie_amd64.deb
-sudo dpkg -i sphinxsearch_2.2.10-release-1~jessie_amd64.deb
-rm sphinxsearch_2.2.10-release-1~jessie_amd64.deb
+wget -q http://sphinxsearch.com/files/sphinxsearch_2.2.11-release-1~jessie_amd64.deb
+sudo dpkg -i sphinxsearch_2.2.11-release-1~jessie_amd64.deb
+rm sphinxsearch_2.2.11-release-1~jessie_amd64.deb
 cp /vagrant/sphinx.conf.linux /etc/sphinxsearch/sphinx.conf
 sudo mkdir /var/lib/sphinxsearch/data/exhen/
 
