@@ -170,22 +170,33 @@ class ExArchiver {
 				Log::error(self::LOG_TAG, 'Failed to find archiver link for gallery: %s (#%d)', $gallery->name, $gallery->exhenid);
 				return;
 			}
-			
+            
+            $archiverUrl = str_replace("--", "-", $archiverUrl);
+            
+            /*
+            $invalidateForm = $this->client->invalidateForm($archiverUrl);
+            
+            if (strcmp($invalidateForm, "invalidate_form") === 0) {
+                Log::error(self::LOG_TAG, 'Failed to invalidate session.');
+				exit;
+            }
+            */
+            
 			$buttonPress = $this->client->buttonPress($archiverUrl);
 
-			if(strcmp($buttonPress, '#continue') === 0) {
+			if(strpos($buttonPress, "continue") === false) {
 				Log::error(self::LOG_TAG, 'Download check not submitted.');
 				exit;
 			}
 			
-			$archiverHtml = $this->client->exec($archiverUrl);
+			$archiverHtml = $buttonPress;
 			$archiverPage = new ExPage_Archiver($archiverHtml);
 
-	        if(strcmp($archiverHtml, 'Insufficient Credits.') === 0) {
+	        if(strpos($archiverHtml, 'Insufficient Credits.') !== false) {
 	            Log::error(self::LOG_TAG, 'Insufficient Credits');
 	            exit;
 	        }
-	        
+            
 			$continueUrl = $archiverPage->getContinueUrl();
 			if($continueUrl) {
 				$archiveDownloadUrl = $continueUrl.'?start=1';

@@ -71,10 +71,12 @@ class ExClient {
 	
 	public function buttonPress($url) {
 		
-        if (strpos($this->exec($url), "dlcheck")) {
+        if (strpos($this->exec($url), "dlcheck") !== false) {
             $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, "dlcheck=true");
+            $post = array("dlcheck" => "true",
+                          "dltype" => "org");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post));
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
             curl_setopt($ch, CURLOPT_FAILONERROR, true);
@@ -93,6 +95,23 @@ class ExClient {
         }
         return "";
 	}
+    
+    public function invalidateForm($url) {
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, "invalidate_sessions=1");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        
+       $cookie = Config::buildCookie();
+       curl_setopt($ch, CURLOPT_COOKIE, $cookie);
+       curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36');
+            
+       $ret = curl_exec($ch);
+       curl_close($ch);
+    }
 }
 
 ?>
