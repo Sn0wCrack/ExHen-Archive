@@ -80,7 +80,7 @@ class SphinxQL {
      *
      * @return string The escaped string
      */
-    public function halfEscapeMatch($string)
+    public static function halfEscapeMatch($string)
     {
         $from_to = array(
             '\\' => '\\\\',
