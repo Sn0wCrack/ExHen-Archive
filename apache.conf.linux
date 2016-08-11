@@ -8,14 +8,14 @@
         Options FollowSymLinks ExecCGI
         AllowOverride None
         Order allow,deny
-        allow from all
+        Require all granted
     </Directory>
 
     Alias /images /var/www/vhosts/exhen/images
     <Directory /var/www/vhosts/exhen/images>
         AllowOverride None
         Order allow,deny
-        allow from all
+        Require all granted
     </Directory>
 
     ErrorLog ${APACHE_LOG_DIR}/exhen-error.log

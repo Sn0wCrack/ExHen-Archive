@@ -1,17 +1,23 @@
-DocumentRoot C:\path\to\apache\www
-<Directory C:\path\to\apache\www>
-    Options FollowSymLinks ExecCGI
-    AllowOverride None
-    Order allow,deny
-    Require all granted
- </Directory>
+<VirtualHost *:80>
+    ServerName exhen.localhost
+    ServerAlias exhen.localhost
+    ServerAlias exhen.windows
+    
+    DocumentRoot C:\path\to\apache\www
+    <Directory C:\path\to\apache\www>
+        Options FollowSymLinks ExecCGI
+        AllowOverride None
+        Order allow,deny
+        Require all granted
+     </Directory>
 
-Alias /images C:\path\to\apache\www\images
-<Directory C:\path\to\apache\www\images>
-    AllowOverride None
-    Order allow,deny
-    Require all granted
-</Directory>
+    Alias /images C:\path\to\apache\www\images
+    <Directory C:\path\to\apache\www\images>
+        AllowOverride None
+        Order allow,deny
+        Require all granted
+    </Directory>
 
-ErrorLog ${APACHE_LOG_DIR}/exhen-error.log
-CustomLog ${APACHE_LOG_DIR}/exhen-access.log combined
+    ErrorLog ${APACHE_LOG_DIR}/exhen-error.log
+    CustomLog ${APACHE_LOG_DIR}/exhen-access.log combined
+</VirtualHost>
