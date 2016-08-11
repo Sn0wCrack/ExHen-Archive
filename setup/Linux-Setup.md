@@ -8,7 +8,7 @@ Linux Setup
 * PHP 5.4+
 * MySQL 5.5+ or MariaDB 5.5+
 * memcached
-* Sphinx any version from 2.0 to 2.1.8 (anything above is untested and may not work due to now deprecated function)
+* Sphinx
 * e-hentai account with ExHentai access
 * GP to download galleries
 
@@ -40,13 +40,15 @@ Enter the directory and clone the example configuration.
     cd exhen
     cp config.json.example config.json
 
-Open the `config.json` in a text editor an edit the following values.
+Open the `config.json.linux` in a text editor an edit the following values.
 
 * The `accessKey` option is a password used for deleting and adding galleries.
 * The `ipb_member_id` and `ipb_pass_hash` in the `cookie` block should be changed to match your ExHentai cookie.
 * The `tempDir`, `archiveDir` and `imagesDir` all need to point to server-writable folders on your system.
 * The `db` block should stay as it is in most cases, with the exception of `pass`, which you should input whatever password you used for the MySQL setup step.
 * SphinxQL and memcache should stay as-is.
+
+Afterwards rename `config.json.linux` to `config.json` and copy it into the `www` folder, making sure to keep both copies.
 
 #### MySQL
 

@@ -8,7 +8,7 @@ Windows Setup
 * PHP 5.4+
 * MySQL 5.5+ or MariaDB 5.5+
 * memcached
-* Sphinx any version from 2.0 to 2.1.8 (anything above is untested and may not work due to now deprecated function)
+* Sphinx
 * phpMyAdmin
 * Either Firefox or Chrome with Greasemonkey or Tampermonkey installed.
 * e-hentai account with ExHentai access
@@ -24,7 +24,7 @@ First, install dependencies:
 * PHP: [http://windows.php.net/download/](http://windows.php.net/download/) - Get the **Thread Safe x86 version**
 * MariaDB / MySQL: [https://downloads.mariadb.org/mariadb/5.5.45/#file_type=zip&os_group=windows](https://downloads.mariadb.org/mariadb/5.5.45/#file_type=zip&os_group=windows)
 * memcached: [http://code.jellycan.com/files/memcached-1.2.6-win32-bin.zip](http://code.jellycan.com/files/memcached-1.2.6-win32-bin.zip)
-* Sphinx: [http://sphinxsearch.com/downloads/release/](http://sphinxsearch.com/downloads/release/l)
+* Sphinx: [http://sphinxsearch.com/downloads/release/](http://sphinxsearch.com/downloads/release/)
 * phpMyAdmin: [https://www.phpmyadmin.net/downloads/](https://www.phpmyadmin.net/downloads/)
 
 Create a folder somewhere and call it whatever you want, for example `server` or `exhen`.
@@ -41,7 +41,7 @@ Open the `config.json.win32` in a text editor an edit the following values.
 * SphinxQL change the `full` option to point to where ever you installed Sphinx too.
 * memcached should stay the same.
 
-Afterwards, rename `config.json.win32` to `config.json`.
+Afterwards, rename `config.json.win32` to `config.json` and then copy it into the `www` directory as well, making sure to keep both copies.
 
 #### Apache
 
