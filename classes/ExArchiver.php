@@ -172,7 +172,7 @@ class ExArchiver {
 			}
             
             $archiverUrl = str_replace("--", "-", $archiverUrl);
-            
+
             /*
             $invalidateForm = $this->client->invalidateForm($archiverUrl);
             
@@ -199,6 +199,10 @@ class ExArchiver {
             
 			$continueUrl = $archiverPage->getContinueUrl();
 			if($continueUrl) {
+                if (preg_match("/\?.*/", $continueUrl))
+                {
+                    $continueUrl = preg_replace('/\?.*/', '', $continueUrl);                    
+                }
 				$archiveDownloadUrl = $continueUrl.'?start=1';
 
 				$ret = @copy($archiveDownloadUrl, $targetFile);
