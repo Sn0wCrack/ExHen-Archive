@@ -21,7 +21,7 @@ if($argc < 2 && !$web) {
 	printf("Usage: TaskRunner.php <name of task>\n");
     printf("List of avaliable Tasks: \n");
     $tasks = array_diff(scandir("./classes/Task"), array("..", "."));
-    for ($i = 2; $i < count($tasks); $i++) {
+    for ($i = 2; $i < count($tasks) + 2; $i++) {
         printf(" * " . $tasks[$i] . "\n");
     }
     exit;
