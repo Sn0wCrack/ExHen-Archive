@@ -24,7 +24,7 @@ class ExClient {
 			));
 		}
 
-		$url = self::BASE_URL.'?'.http_build_query($params);
+		$url = self::BASE_URL . "/?" . http_build_query($params);
 		return $this->exec($url);
 	}
 

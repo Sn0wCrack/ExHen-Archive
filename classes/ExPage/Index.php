@@ -16,7 +16,7 @@ class ExPage_Index extends ExPage_Abstract {
 			$link = pq($linkElem);
 			$gallery->name = $link->text();
 
-			preg_match("~http://exhentai.org/g/(\d*)/(\w*)/~", $link->attr('href'), $matches);
+			preg_match("~https://exhentai.org/g/(\d*)/(\w*)/~", $link->attr('href'), $matches);
 
 			$gallery->exhenid = $matches[1];
 			$gallery->hash = $matches[2];
