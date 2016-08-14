@@ -1,7 +1,11 @@
 $(document).ready(function() {
 	
 	var storage = false;
-	
+    
+    // mpv: true
+    // spv: false
+    var mode = false;
+    
 	if (typeof(Storage) != "undefined") {
 		storage = true;
         if (localStorage.getItem("viewType") === null) {
@@ -10,18 +14,27 @@ $(document).ready(function() {
         
         if (localStorage.getItem("viewType") == "spv") {
             $(".viewtype").prop("checked", false);
+            mode = false;
         } else if (localStorage.getItem("viewType") == "mpv") {
             $(".viewtype").prop("chceked", true);
+            mode = true;
         }
         
+        console.log("mode: " + mode);
+        switchGalleryView(mode);
 	}
     
     $(".viewtype").change(function() {
        if($(this).prop("checked")) {
            localStorage.setItem("viewType", "mpv");
+           mode = true;
+           console.log("switching mode (mode:" + mode + ")");
        } else {
            localStorage.setItem("viewType", "spv");
+           mode = false;
+           console.log("switching mode (mode:" + mode + ")");
        }
+       switchGalleryView(mode);
     });
 	
 	function api(action, params, callback) {
@@ -91,11 +104,21 @@ $(document).ready(function() {
 			async: false
 		}).responseJSON;
 	}
+    
+    function colorNameToRGBA(color) {
+        if (color == "red")    { return "rgba(244,  67,  54,  0.7)"; }
+        if (color == "pink")   { return "rgba(233,  30,  99,  0.7)"; }
+        if (color == "purple") { return "rgba(156,  39, 176,  0.7)"; }
+        if (color == "blue")   { return "rgba(33,  150, 243,  0.7)"; }
+        if (color == "green")  { return "rgba(76,  175,  80,  0.7)"; }
+        if (color == "black")  { return "rgba(0,     0,   0,  0.7)"; }      
+        if (color == "white")  { return "rgba(255, 255, 255,  0.7)"; }
+        return "rgba(0, 0, 0, 0.7)";
+    }
 	
-	// Change HTML to conform with desired gallery view.
-	if (storage) {
-		if (localStorage.getItem("viewType") == "spv"  && $(".pages-container").length) {
-			console.log("Storage: Switching to Single Page Viewer");
+    function switchGalleryView(mode) {
+        if (!mode  && $(".pages-container").length) {
+			console.log("Switching to Single Page Viewer");
 			$(".pages-container").remove();
 			
 			$(".reader-container").append("<img src alt class='image-holder'>");
@@ -106,38 +129,16 @@ $(document).ready(function() {
 			$(".reader-container").append("<div class='control-hotspot control-hotspot-next'></div>");
 			$(".reader-container").append("<div class='control control-next'></div>");
 		} 
-		else if (localStorage.getItem("viewType") == "mpv" && $(".image-holder").length) {
-			console.log("Storage: Switching to Multi Page Viewer");
+		else if (mode && $(".image-holder").length) {
+			console.log("Switching to Multi Page Viewer");
 			$(".image-holder").remove();
 			$(".control-hotspot").remove();
 			$(".control").remove();
 			
 			$(".reader-container").append("<div class='pages-container'><div class='inner'></div</div>");
 		}
-	}
-	else {
-		if (getConfig().base.viewType == "spv" && $(".pages-container").length) {
-			console.log("Config: Switching to Single Page Viewer");
-			$(".pages-container").remove();
-			
-			$(".reader-container").append("<img src alt class='image-holder'>");
-			
-			$(".reader-container").append("<div class='control-hotspot control-hotspot-prev'></div>");
-			$(".reader-container").append("<div class='control control-prev'></div>");
-			
-			$(".reader-container").append("<div class='control-hotspot control-hotspot-next'></div>");
-			$(".reader-container").append("<div class='control control-next'></div>");
-		}
-		else if (getConfig().base.viewType == "mpv" && $(".image-holder").length) {
-			console.log("Config: Switching to Multi Page Viewer");
-			$(".image-holder").remove();
-			$(".control-hotspot").remove();
-			$(".control").remove();
-			
-			$(".reader-container").append("<div class='pages-container'><div class='inner'></div</div>");
-		}
-	}
-	
+    }
+    
 	$('.gallery-list').each(function() {
 		var galleryList = $(this);
 		var page = 0;
@@ -230,7 +231,11 @@ $(document).ready(function() {
                     $(item).click(function(e) {
                         window.location.url = url;
                     });
-
+                    
+                    var colorRGBA = colorNameToRGBA("black");
+                    
+                    $(".top", item).css("background", colorRGBA);
+                    
 					if (i == 0) {
 						item.addClass('page-break');
 						item.data('page', loadPage);
@@ -813,7 +818,7 @@ $(document).ready(function() {
 			}
 		}
 
-		preload.load(function() {
+		preload.on('load', function() {
 			var index = preload.data('index');
 			if(!index) {
 				index = 0;
@@ -821,11 +826,12 @@ $(document).ready(function() {
 			
 			/* I'm really uncertain what this does specially, but it fixes every issue with the SPV
 			 * Needs more MPV testing to see what it really does.
-             * if((index - currentIndex) <= 3) {
-             *     loadImage(index, false, false, false, false);
-             * }
-			 */
-			 
+             */
+            if (mode) {
+                 if((index - currentIndex) <= 3) {
+                     loadImage(index, false, false, false, false);
+                 }
+            }
 			preloadImage(index + 1);
 		});
 
@@ -881,14 +887,14 @@ $(document).ready(function() {
 		function getImageUrl(index) {
 			var params = { action: 'archiveimage', id: gallery.id, index: index };
 			
-            if (localStorage.getItem("viewType") == "spv") {
+            if (!mode) {
                 var trueWidth = Math.round(window.devicePixelRatio * window.screen.availWidth);
                 if (trueWidth <= 1000) {
                     params.resize = trueWidth;
                 }
             }
                 
-            if (localStorage.getItem("viewType") == "mpv") {
+            if (mode) {
                 params.resize = Math.ceil(window.screen.availWidth / 128) * 128;
             }
 			
@@ -915,12 +921,12 @@ $(document).ready(function() {
 
 		function loadImage(index, setHistory, replaceHistory, scroll, updateCurIndex) {
 			if(gallery && index < gallery.numfiles && index >= 0) {
-                if (localStorage.getItem("viewType") == "spv") {
+                if (!mode) {
                     var url = getImageUrl(index);
                     imageHolder.prop('src', url);
                 }
                     
-                if (localStorage.getItem("viewType") == "mpv") {
+                if (mode) {
                     var page = pages.eq(index);
                     var img = page.find('img');
                     if(!page.hasClass('loading') && !page.hasClass('loaded')) {
@@ -1000,9 +1006,11 @@ $(document).ready(function() {
 		reader.on('loadstate', function(e, data) {
 			if(!gallery || data.gallery.id != gallery.id) {
 				loadGallery(data.gallery, data.index);
+                
 			}
 			else {
 				loadImage(data.index, false, false, false, true);
+                
 			}
 		});
 
@@ -1047,7 +1055,7 @@ $(document).ready(function() {
             
             $('.page-count').text((parseInt(index) + 1) + "/" + gallery.numfiles);
             
-            if (localStorage.getItem("viewType") == "mpv") {
+            if (mode) {
                 var pagesTarget = $('.inner', pagesContainer);
                 pagesTarget.empty();
                 for(var i = 0; i < gallery.numfiles; i++) {
@@ -1055,7 +1063,7 @@ $(document).ready(function() {
                     var pageImg = $('img', page);
                     var url = getImageUrl(i);
                     pageImg.data('src', url);
-                    pageImg.load(onImageLoad);
+                    pageImg.on('load', onImageLoad);
                     $('.index', page).text(i + 1);
                     pagesTarget.append(page);
                 }
@@ -1079,7 +1087,7 @@ $(document).ready(function() {
 			}
 		}
 		
-        if (localStorage.getItem("viewType") == "spv") {
+        if (!mode) {
             var win = $(window);
             win.on('resize.reader', function() {
                 var width = win.width();
@@ -1094,6 +1102,7 @@ $(document).ready(function() {
                     });
                 }
                 
+                
                 win.data('oldWidth', width)
                 win.data('oldHeight', height);
             });
@@ -1101,6 +1110,7 @@ $(document).ready(function() {
 
 		container.on('loadgallery', function(e, newGallery, index) {
 			loadGallery(newGallery, index);
+            
 		});
 		
 		$('.control-next').click(function() {
@@ -1115,38 +1125,38 @@ $(document).ready(function() {
 
 		thumbsList.on('click', '.gallery-thumb', function() {
 			var index = $(this).data('index');
-			if (localStorage.getItem("viewType") == 'mpv') {
+			if (!mode) {
 				loadImage(index, true, false, true, true);
-                $('.page-count').text((index + 1) + "/" + gallery.numfiles)
+                $('.page-count').text((index + 1) + "/" + gallery.numfiles);
 			}
-			else if (localStorage.getItem("viewType") == 'spv') {
+			else if (mode) {
 				loadImage(index, true, false, false, true);
-                $('.page-count').text((index + 1) + "/" + gallery.numfiles)
+                $('.page-count').text((index + 1) + "/" + gallery.numfiles);
 			}
 		});
 		
 		$(document).on('keyup.reader', 'html.reader-active', function(e) {
 			if(e.keyCode === 39) { // right arrow or WAS(D)
-				if (localStorage.getItem("viewType") == 'mpv') {
+				if (!mode) {
 					loadImage(currentIndex + 1, true, true, true, true);
-                    $('.page-count').text((currentIndex + 1) + "/" + gallery.numfiles)
+                    $('.page-count').text((currentIndex + 1) + "/" + gallery.numfiles);
 				}
-				else if (localStorage.getItem("viewType") == 'spv') {
+				else if (mode) {
 					loadImage(currentIndex + 1, true, true, false, true);
-                    $('.page-count').text((currentIndex + 1) + "/" + gallery.numfiles)
+                    $('.page-count').text((currentIndex + 1) + "/" + gallery.numfiles);
 				}
 			}
 		});
 		
 		$(document).on('keyup.reader', 'html.reader-active', function(e) {
 			if(e.keyCode === 37) { // left arrow or W(A)SD
-				if (localStorage.getItem("viewType") == 'mpv') {
+				if (!mode) {
 					loadImage(currentIndex - 1, true, true, true, true);
-                    $('.page-count').text((currentIndex + 1) + "/" + gallery.numfiles)
+                    $('.page-count').text((currentIndex + 1) + "/" + gallery.numfiles);
 				}
-				else if (localStorage.getItem("viewType") == 'spv') {
+				else if (mode) {
 					loadImage(currentIndex - 1, true, true, false, true);
-                    $('.page-count').text((currentIndex + 1) + "/" + gallery.numfiles)
+                    $('.page-count').text((currentIndex + 1) + "/" + gallery.numfiles);
 				}
 			}
 		});
@@ -1272,4 +1282,5 @@ $(document).ready(function() {
 
 		return ret;
 	}
+
 });
