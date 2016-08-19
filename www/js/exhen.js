@@ -220,13 +220,32 @@ $(document).ready(function() {
                         });
                     });
                     
+                    $(".color-select", item).val(gallery.color);
+                    
+                    $(".color-select", item).click(function(e) {
+                        e.stopPropagation();
+                    });
+                    
+                    $(".color-select", item).change(function() {
+                        var newColor = $(this).val();
+                        console.log(newColor);
+                        api("updateColor", {id: gallery.id, color: newColor }, function(data) {
+                            if (data.ret == false)
+                            {
+                                alert("There was an error changing the color of this gallery.");
+                            }
+                            else
+                            {
+                                $(".top", item).css("background", colorNameToRGBA(newColor));
+                            }
+                        });
+                    });
+                    
                     $(item).click(function(e) {
                         window.location.url = url;
                     });
                     
-                    var colorRGBA = colorNameToRGBA(gallery.color);
-                    
-                    $(".top", item).css("background", colorRGBA);
+                    $(".top", item).css("background", colorNameToRGBA(gallery.color));
                     
 					if (i == 0) {
 						item.addClass('page-break');

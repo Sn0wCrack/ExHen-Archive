@@ -141,6 +141,12 @@ class ApiHandler {
 							case 'png':
 								header('Content-Type: image/png');
 								break;
+                            case 'gif':
+                                header('Content-Type: image/gif');
+                                break;
+                            default:
+                                header('Content-Type: image/jpeg');
+                                break;
 						}
 						
 						readfile($imagePath);
@@ -383,6 +389,31 @@ class ApiHandler {
             }
 
             $this->sendSuccess($gallery->read);
+            
+        } else {
+            $this->sendFail();
+        }
+    }
+    
+    public function updateColorAction() {
+        $id = $this->getParam('id');
+        $color = $this->getParam('color');
+        
+        $gallery = R::load('gallery', $id);
+        
+        if($gallery) {
+            $gallery->color = $color;
+            R::store($gallery);
+            
+            $cache = Cache::getInstance();
+            $cache->deleteObject('gallery', $gallery->id);
+
+            if(isset(Config::get()->indexer->full)) {
+                $command = Config::get()->indexer->full;
+                system($command);
+            }
+
+            $this->sendSuccess($gallery->color);
             
         } else {
             $this->sendFail();
