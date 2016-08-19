@@ -1,3 +1,26 @@
+function api(action, params, callback) {
+    params = $.extend(params, { action: action });
+
+    var ret = $.ajax({
+        url: 'api.php',
+        dataType: 'json',
+        aysnc: false,
+        data: params, 
+        success: function(resp) {
+            if(!resp.ret) {
+                alert('API error: ' + resp.message);
+            }
+            else {
+                if($.isFunction(callback)) {
+                    callback(resp.data);
+                }
+            }
+        }
+    });
+
+    return ret;
+}
+    
 $(document).ready(function() {
 	
 	var storage = false;
@@ -36,29 +59,6 @@ $(document).ready(function() {
        }
        switchGalleryView(mode);
     });
-	
-	function api(action, params, callback) {
-		params = $.extend(params, { action: action });
-
-		var ret = $.ajax({
-			url: 'api.php',
-			dataType: 'json',
-			aysnc: false,
-			data: params, 
-			success: function(resp) {
-				if(!resp.ret) {
-					alert('API error: ' + resp.message);
-				}
-				else {
-					if($.isFunction(callback)) {
-						callback(resp.data);
-					}
-				}
-			}
-		});
-
-		return ret;
-	}
 
 	function renderTags(container, tagGroups) {
 		$('.tag', container).remove();
@@ -206,7 +206,7 @@ $(document).ready(function() {
                     if (gallery.archived == 1) {
                         var url = '?' + $.param({ action: 'gallery', id: gallery.id, index: 0 });
                     } else {
-                        var url = 'http://exhentai.org/g/' + gallery.exhenid + '/' + gallery.hash;
+                        var url = 'https://exhentai.org/g/' + gallery.exhenid + '/' + gallery.hash;
                     }
                     
                     if (gallery.read == 1) {
@@ -232,7 +232,7 @@ $(document).ready(function() {
                         window.location.url = url;
                     });
                     
-                    var colorRGBA = colorNameToRGBA("black");
+                    var colorRGBA = colorNameToRGBA(gallery.color);
                     
                     $(".top", item).css("background", colorRGBA);
                     
@@ -1021,25 +1021,27 @@ $(document).ready(function() {
 			imageHolder.addClass('init');
 
 			$('html').addClass('reader-active');
+            
+            if (mode) {
+                thumbsList.empty();
+                for(var i = 0; i < gallery.numfiles; i++) {
+                    var url = 'api.php?' + $.param({ action: 'gallerythumb', id: gallery.id, index: i, type: 2 });
 
-			thumbsList.empty();
-			for(var i = 0; i < gallery.numfiles; i++) {
-				var url = 'api.php?' + $.param({ action: 'gallerythumb', id: gallery.id, index: i, type: 2 });
+                    var thumb = $('<div class="gallery-thumb"/>');
+                    thumb.data('index', i);
+                    thumb.css({
+                        backgroundImage: 'url(' + url + ')'
+                    });
 
-				var thumb = $('<div class="gallery-thumb"/>');
-				thumb.data('index', i);
-				thumb.css({
-					backgroundImage: 'url(' + url + ')'
-				});
-
-				thumb.appendTo(thumbsList);
-			}
+                    thumb.appendTo(thumbsList);
+                }
+            }
 			
 			var source = "";
 			if(gallery.source == 0) { source = "ExHentai"; } else if (gallery.source == 1) { source = "Self"; } else { source = "Error"; }
 			$('.title', infoContainer).text(gallery.name + " - " + source);
             $('.page-count').text((parseInt(index) + 1) + "/" + gallery.numfiles);
-			if(gallery.origtitle && gallery.origtitle != gallery.name) {
+			if(gallery.origtitle != gallery.name) {
 				$('.origtitle', infoContainer).show().text(gallery.origtitle);
 			}
 			else {

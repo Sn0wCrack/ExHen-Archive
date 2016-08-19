@@ -1,4 +1,4 @@
-CREATE DATABASE  IF NOT EXISTS `exhen` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */;
+CREATE DATABASE IF NOT EXISTS `exhen` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */;
 USE `exhen`;
 -- MySQL dump 10.13  Distrib 5.5.16, for Win32 (x86)
 --
@@ -60,6 +60,7 @@ CREATE TABLE `gallery` (
   `download` tinyint(4) DEFAULT '1',
   `source` tinyint(4) DEFAULT '0',
   `read` tinyint(4) DEFAULT '0',
+  `color` varchar(255) DEFAULT 'black',
   PRIMARY KEY (`id`),
   UNIQUE KEY `exhenid_UNIQUE` (`exhenid`),
   KEY `index_foreignkey_gallery_feed` (`feed_id`)
