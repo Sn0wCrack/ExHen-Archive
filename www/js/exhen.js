@@ -4,7 +4,7 @@ function api(action, params, callback) {
     var ret = $.ajax({
         url: 'api.php',
         dataType: 'json',
-        aysnc: false,
+        aysnc: true,
         data: params, 
         success: function(resp) {
             if(!resp.ret) {
@@ -42,8 +42,6 @@ $(document).ready(function() {
             $(".viewtype").prop("chceked", true);
             mode = true;
         }
-        
-        console.log("mode: " + mode);
         switchGalleryView(mode);
 	}
     
@@ -51,13 +49,11 @@ $(document).ready(function() {
        if($(this).prop("checked")) {
            localStorage.setItem("viewType", "mpv");
            mode = true;
-           console.log("switching mode (mode:" + mode + ")");
        } else {
            localStorage.setItem("viewType", "spv");
            mode = false;
-           console.log("switching mode (mode:" + mode + ")");
        }
-       switchGalleryView(mode);
+       location.reload();
     });
 
 	function renderTags(container, tagGroups) {
@@ -208,12 +204,8 @@ $(document).ready(function() {
                     } else {
                         var url = 'https://exhentai.org/g/' + gallery.exhenid + '/' + gallery.hash;
                     }
-                    
-                    if (gallery.read == 1) {
-                        $("#read", item).prop("checked", true);
-                    } else {
-                        $("#read", item).prop("checked", false);
-                    }
+
+                    $("#read", item).prop("checked", !!+gallery.read);
                     
                     $("#read", item).click(function(e) {
                        e.stopPropagation(); 
@@ -245,8 +237,8 @@ $(document).ready(function() {
                         item.addClass('unarchived');
                     }
 					
-					var source = ""
-					if(gallery.source == 0) { source = "ExHentai"; } else if (gallery.source == 1) { source = "Self"; } else { source = "Error"; }
+					var source = "";
+                    (gallery.source == 0) ? source = "ExHentai" : source = "Self";
 					$('.title', item).text(gallery.name + " - " + source);
 					$('.date', item).text(gallery.posted_formatted);
 
