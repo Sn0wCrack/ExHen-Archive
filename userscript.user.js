@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name       ExHentai archive
+// @name       ExHentai Archive
 // @match      *://exhentai.org/*
 // @match      *://g.e-hentai.org/*
-// @require    http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js
+// @require    https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js
 // ==/UserScript==
 
 var baseUrl = '//your.archive.url.com/';
@@ -13,7 +13,7 @@ function createArchiveLink(gid, token) {
     link.data('gid', gid);
     link.data('token', token);
     
-    link.click(function() {
+    link.on('click', function() {
         $.getJSON(baseUrl + 'api.php', { action: 'addgallery', gid: link.data('gid'), token: link.data('token'), key: key }, function(data, result) {
             if(data.ret === true && result === 'success') {
                 $(link).css({
@@ -44,7 +44,7 @@ $('div#gd5').each(function() { //archive button on gallery detail
                 link.prop('href', baseUrl + '?' + $.param({ action: 'gallery', id: data.data.id }));
             }
             else {
-                link.click(function() {
+                link.on('click', function() {
                     alert('Not yet downloaded');
                     return false;
                 });
@@ -83,7 +83,7 @@ $('div.itg').each(function() { //gallery search
         
         var link = createArchiveLink(gid, token);
         link.css({ fontSize: '9px' });
-        link.click(function() {
+        link.on('click', function() {
             $(this).parents('.id1').css({ background: 'green' });
         });
         
