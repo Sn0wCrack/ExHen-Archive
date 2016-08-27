@@ -112,9 +112,10 @@ class ApiHandler {
 			if($gallery) {
 				$imagePath = $gallery->getImageFilepath($index);
 				if(file_exists($imagePath)) {
-					header('Last-Modified: '.gmdate('D, d M Y H:i:s', filemtime($imagePath)).' GMT');
-					header('Expires: '.gmdate('D, d M Y H:i:s', strtotime('+1 year')).' GMT');
-					header('Cache-Control: public');
+                    header('Pragma: public');
+					header('Last-Modified: ' . gmdate('D, d M Y H:i:s', filemtime($imagePath)) . ' GMT');
+					header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 31536000) . ' GMT');
+					header('Cache-Control: max-age=31536000');
 
 					if($resize && is_numeric($resize) && (int)$resize > 0) {
 						header('Content-Type: image/jpeg');
@@ -209,7 +210,8 @@ class ApiHandler {
                 $pageFile = sprintf('%s/pages/%d.html', $config->archiveDir, $gallery->exhenid);
 
                 if(file_exists($pageFile)) {
-                    header('Last-Modified: '.gmdate('D, d M Y H:i:s', strtotime($gallery->posted).' GMT'));
+                    header('Content-Type: image/jpeg');
+                    header('Last-Modified: '.gmdate('D, d M Y H:i:s', strtotime($gallery->posted)).' GMT');
                     header('Expires: '.gmdate('D, d M Y H:i:s', strtotime('+1 year')).' GMT');
                     header('Cache-Control: public');
 
@@ -217,7 +219,27 @@ class ApiHandler {
                     $page = new ExPage_Gallery($html);
 
                     $url = $page->getThumbnailUrl();
-                    readfile($url);
+                    
+                    $ch = curl_init($url);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+                    curl_setopt($ch, CURLOPT_FAILONERROR, true);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                    curl_setopt($ch, CURLOPT_MAXREDIRS, 300);
+
+                    $cookie = Config::buildCookie();
+                    curl_setopt($ch, CURLOPT_COOKIE, $cookie);
+                    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36');
+                    
+                    $ret = curl_exec($ch);
+                    curl_close($ch);
+                    
+                    $im = imagecreatefromstring($ret);
+                    if ($im) {
+                        imagejpeg($im);
+                        imagedestroy($im);
+                    }
+                    
                 }
                 else {
                     http_response_code(404);
@@ -334,6 +356,9 @@ class ApiHandler {
 
         if($cache->cacheConnected()) {
             $ret = $cache->flush();
+            
+            sleep(1);
+            
             if($ret) {
                 $this->sendSuccess('Cache flushed');
             }

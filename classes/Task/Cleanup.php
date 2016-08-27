@@ -63,7 +63,7 @@ class Task_Cleanup extends Task_Abstract {
 				unlink($config->archiveDir . '/galleries/' . $archiveName);
 				
 				R::trash($gallery);
-                $this->cache->deleteObject('gallery', $gallery->id);
+                $cache->deleteObject('gallery', $gallery->id);
                 if(isset($config->indexer->full)) {
                     $command = Config::get()->indexer->full;
                     system($command);
