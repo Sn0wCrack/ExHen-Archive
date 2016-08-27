@@ -25,8 +25,8 @@ $(document).ready(function() {
 	
 	var storage = false;
     
-    // mpv: true
-    // spv: false
+    // mpv: true/1
+    // spv: false/0
     var mode = false;
     
 	if (typeof(Storage) != "undefined") {
@@ -204,11 +204,18 @@ $(document).ready(function() {
                     } else {
                         var url = 'https://exhentai.org/g/' + gallery.exhenid + '/' + gallery.hash;
                     }
-
+                    
+                    if (!!+gallery.read) {
+                        $("#read-container", item).addClass("fi-book-bookmark");
+                    } else {
+                        $("#read-container", item).addClass("fi-book");
+                    }
+                    
                     $("#read", item).prop("checked", !!+gallery.read);
                     
-                    $("#read", item).click(function(e) {
+                    $("#read-container", item).click(function(e) {
                        e.stopPropagation(); 
+                       $("#read", item).trigger("click");
                     });
                     
                     $("#read", item).change(function() {
@@ -216,6 +223,14 @@ $(document).ready(function() {
                         api("update", {id: gallery.id, readStatus: result}, function(data) {
                             if (data.ret == false) {
                                 alert("Error updating read status of gallery.");
+                            } else {
+                                if (result) {
+                                    $("#read-container", item).removeClass("fi-book");
+                                    $("#read-container", item).addClass("fi-book-bookmark");
+                                } else {
+                                    $("#read-container", item).removeClass("fi-book-bookmark");
+                                    $("#read-container", item).addClass("fi-book");
+                                }
                             }
                         });
                     });
@@ -375,7 +390,7 @@ $(document).ready(function() {
             var gallery = galleryItem.data('gallery');
 
             if(gallery.archived == 0) {
-                var url = 'http://exhentai.org/g/' + gallery.exhenid + '/' + gallery.hash;
+                var url = 'https://exhentai.org/g/' + gallery.exhenid + '/' + gallery.hash;
                 window.open(url);
             }
             else {
@@ -1224,7 +1239,7 @@ $(document).ready(function() {
 				if ($('.actions-menu ul li[data-action=\'source\']').text() == 'File') {
 					alert('1-' + gallery.id + '.zip');
 				} else {
-					var url = 'http://exhentai.org/g/' + gallery.exhenid + '/' + gallery.hash;
+					var url = 'https://exhentai.org/g/' + gallery.exhenid + '/' + gallery.hash;
 					window.open(url);
 				}
 			}

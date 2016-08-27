@@ -124,6 +124,22 @@ body {
     background: rgba(139, 110, 201, 0.75);
 }
 
+.tags .fi-book,
+.tags .fi-book-bookmark {
+    font-size: 20px;
+    color: white;
+    text-shadow:
+    -1px -1px 0 #000,  
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
+    cursor: pointer;
+}
+
+.tags #read {
+    display: none;
+}
+
 .gallery-item .date,
 .gallery-item .weight {
     float: right;
