@@ -831,6 +831,9 @@ input[type="checkbox"].viewtype:checked + div > div {
         width: 33.333333333%;
         padding-top: 48.4%;
     }
+    .search-count {
+		float: left;
+	}
 }
 
 @media (max-width: 720px) {

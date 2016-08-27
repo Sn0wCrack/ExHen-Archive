@@ -9,8 +9,7 @@ function api(action, params, callback) {
         success: function(resp) {
             if(!resp.ret) {
                 alert('API error: ' + resp.message);
-            }
-            else {
+            } else {
                 if($.isFunction(callback)) {
                     callback(resp.data);
                 }
@@ -19,6 +18,17 @@ function api(action, params, callback) {
     });
 
     return ret;
+}
+    
+function getConfig() {
+    return $.ajax({
+        type: 'GET',
+        url: 'config.json',
+        dataType: 'json',
+        success: function(data) { return data.responseJSON; },
+        data: {},
+        async: false
+    }).responseJSON;
 }
     
 $(document).ready(function() {
@@ -84,22 +94,10 @@ $(document).ready(function() {
     function escapeTag(tag) {
         if(tag.indexOf(' ') >= 0) {
             return '"' + tag + '"'
-        }
-        else {
+        } else {
             return tag;
         }
     }
-	
-	function getConfig() {
-		return $.ajax({
-			type: 'GET',
-			url: 'config.json',
-			dataType: 'json',
-			success: function(data) { return data.responseJSON; },
-			data: {},
-			async: false
-		}).responseJSON;
-	}
     
     function colorNameToRGBA(color) {
         if (color == "red")    { return "rgba(244,  67,  54,  0.7)"; }
@@ -112,6 +110,19 @@ $(document).ready(function() {
         return "rgba(0, 0, 0, 0.7)";
     }
 	
+    function gallerySourceToName(gallerySource) {
+        switch(gallerySource)
+        {
+            case "0":
+                return "ExHentai";
+            case "1":
+                return "File";
+            default:
+                return "Error";
+        }
+        return "Super Error";
+    }
+    
     function switchGalleryView(mode) {
         if (!mode  && $(".pages-container").length) {
 			console.log("Switching to Single Page Viewer");
@@ -164,8 +175,7 @@ $(document).ready(function() {
 			if(fwd) {
 				loadersBottom.addClass('active');
 				$('.load-next').removeClass('active');
-			}
-			else {
+			} else {
 				loadersTop.addClass('active');
 				$('.load-previous').removeClass('active');
 			}
@@ -246,12 +256,9 @@ $(document).ready(function() {
                         var newColor = $(this).val();
                         console.log(newColor);
                         api("updateColor", {id: gallery.id, color: newColor }, function(data) {
-                            if (data.ret == false)
-                            {
+                            if (data.ret == false) {
                                 alert("There was an error changing the color of this gallery.");
-                            }
-                            else
-                            {
+                            } else {
                                 $(".top", item).css("background", colorNameToRGBA(newColor));
                             }
                         });
@@ -272,8 +279,7 @@ $(document).ready(function() {
                         item.addClass('unarchived');
                     }
 					
-					var source = "";
-                    (gallery.source == 0) ? source = "ExHentai" : source = "Self";
+					var source = gallerySourceToName(gallery.source);
 					$('.title', item).text(gallery.name + " - " + source);
 					$('.date', item).text(gallery.posted_formatted);
 
@@ -284,8 +290,7 @@ $(document).ready(function() {
 
 						var pc = Math.round((gallery.ranked_weight / topWeight) * 100);
 						$('.weight', item).show().text(pc + '%');
-					}
-					else {
+                    } else {
 						$('.weight', item).hide();
 					}
 
@@ -297,12 +302,10 @@ $(document).ready(function() {
 						item.css({
 							backgroundImage: 'url(' + gallery.thumb.url + ')'
 						})
-					}
-					else {
+					} else {
                         if(gallery.archived == 1) {
                             var url = 'api.php?' + $.param({ action: 'gallerythumb', id: gallery.id, index: 0, type: 1 });
-                        }
-                        else {
+                        } else {
                             var url = 'api.php?' + $.param({ action: 'exgallerythumb', id: gallery.id });
                         }
 
@@ -319,8 +322,7 @@ $(document).ready(function() {
 
 				if(fwd) {
 					galleryList.append(collection);
-				}
-				else {
+				} else {
 					galleryList.prepend(collection);
 				}
 
@@ -338,14 +340,12 @@ $(document).ready(function() {
 
 				if(!result.end) {
 					$('.load-next').addClass('active');
-				}
-				else {
+				} else {
 					end = true;
 				}
 
 				var displayCount = $('.gallery-item', galleryList).length;
                 var totalCount = result.meta.total;
-
 
                 if(Intl && Intl.NumberFormat) {
                     displayCount = Intl.NumberFormat().format(displayCount);
@@ -356,8 +356,7 @@ $(document).ready(function() {
 
 				if(topPage != 0) {
 					$('.load-previous').addClass('active');
-				}
-				else {
+				} else {
 					$('.load-previous').removeClass('active');
 				}
 
@@ -378,8 +377,7 @@ $(document).ready(function() {
 
             if(preloadedPages[params.page]) {
             	renderResult(preloadedPages[params.page]);
-            }
-            else {
+            } else {
             	xhr = api('galleries', params, function(result) {
 					renderResult(result);
 				});
@@ -393,8 +391,7 @@ $(document).ready(function() {
             if(gallery.archived == 0) {
                 var url = 'https://exhentai.org/g/' + gallery.exhenid + '/' + gallery.hash;
                 window.open(url);
-            }
-            else {
+            } else {
                 reader.trigger('loadgallery', [ gallery ]);    
             }
 
@@ -406,15 +403,13 @@ $(document).ready(function() {
 			if(state.data.search) urlParams.search = state.data.search;
 			if(state.data.page && state.data.page > 0) urlParams.page = state.data.page;
 			if(state.data.order != 'posted') urlParams.order = state.data.order;
-			//if(state.data.seed) urlParams.seed = state.data.seed;
             if(state.data.unarchived) urlParams.unarchived = state.data.unarchived;
 
 			var url = Object.keys(urlParams).length > 0 ? '?' + $.param(urlParams) : '/';
 
 			if(replace) {
                 history.replaceState(state, document.title, url);
-			}
-			else {
+			} else {
                 history.pushState(state, document.title, url);
 			}
 		}
@@ -481,7 +476,7 @@ $(document).ready(function() {
 
 			var menuOuter = $('.menu-outer', menu);
 			menuOuter.hide();
-			setTimeout(function() { //hack
+			setTimeout(function() {
 				menuOuter.removeAttr('style');
 			}, 1);
 
@@ -619,20 +614,18 @@ $(document).ready(function() {
 		}
 
 		input.keydown(function(e) {
-			if(e.keyCode === 38) { //arrow up or (W)ASD
+			if(e.keyCode === 38) { //arrow up
 				var selected = $('li.active', list);
 				if(selected.length > 0) {
 					if(selected.is(':not(:first-child)')) {
 						selected.removeClass('active').prev().addClass('active');
 					}
-				}
-				else {
+				} else {
 					$('li', list).first().addClass('active');
 				}
 
 				return false;
-			}
-			else if(e.keyCode === 40) { //arrow down or WA(S)D
+			} else if(e.keyCode === 40) { //arrow down
 				var selected = $('li.active', list);
 				if(selected.length > 0) {
 					if(selected.is(':not(:last-child)')) {
@@ -644,8 +637,7 @@ $(document).ready(function() {
 				}
 
 				return false;
-			}
-			else if(e.keyCode === 13) { //enter
+			} else if(e.keyCode === 13) { //enter
 				var selected = $('li.active', list);
 				if(selected.length > 0) {
 					selected.click();
@@ -654,8 +646,7 @@ $(document).ready(function() {
 
                 list.empty();
                 list.removeClass('active');
-			}
-			else if(e.keyCode === 27) { //esc
+			} else if(e.keyCode === 27) { //esc
 				list.empty();
 				list.removeClass('active');
 			}
@@ -671,8 +662,7 @@ $(document).ready(function() {
 
 			if(e.keyCode === 13 || e.keyCode === 27) { //enter, esc
 
-			}
-			else if(newTerm && newTerm.length > 1 && newTerm != term) {
+			} else if(newTerm && newTerm.length > 1 && newTerm != term) {
 				term = newTerm;
 
 				keywordXhr = api('suggested', { term: term }, function(keywords) {
@@ -693,8 +683,7 @@ $(document).ready(function() {
 									if(keyword !== tempTerm) {
 										var regex = new RegExp(tempTerm);
 										itemHtml = itemHtml.split(regex).join('<span class="highlight">' + tempTerm + '</span>');
-									}
-									else {
+									} else {
 										ignoreWord = true;
 									}
 
@@ -817,8 +806,7 @@ $(document).ready(function() {
 					imageHolder.removeClass('init');
 					
 					firstImage = false;
-				}
-				else if (this.height > win.height() || pos.top < 0) {
+				} else if (this.height > win.height() || pos.top < 0) {
 					imageHolder.stop().animate({
 						top: 0
 					}, Math.abs(pos.top) * 0.7);
@@ -940,8 +928,7 @@ $(document).ready(function() {
 		function setHistoryState(index, replaceHistory) {
 			if(replaceHistory) {
 				history.replaceState({ action: 'gallery', data: { gallery: gallery, index: index } }, document.title, '?' + $.param({ action: 'gallery', id: gallery.id, index: index }));
-			}
-			else {
+			} else {
 				history.pushState({ action: 'gallery', data: { gallery: gallery, index: index } }, document.title, '?' + $.param({ action: 'gallery', id: gallery.id, index: index }));
 			}
 		}
@@ -985,8 +972,7 @@ $(document).ready(function() {
                 if(updateCurIndex) {
 				    currentIndex = index;
                 }
-			}
-			else if(index >= gallery.numfiles) {
+			} else if(index >= gallery.numfiles) {
 				endFlash.removeClass('transition').addClass('active');
 
 				setTimeout(function() {
@@ -1038,8 +1024,7 @@ $(document).ready(function() {
 			if(!gallery || data.gallery.id != gallery.id) {
 				loadGallery(data.gallery, data.index);
                 
-			}
-			else {
+			} else {
 				loadImage(data.index, false, false, false, true);
                 
 			}
@@ -1068,14 +1053,12 @@ $(document).ready(function() {
                 }
             }
 			
-			var source = "";
-			if(gallery.source == 0) { source = "ExHentai"; } else if (gallery.source == 1) { source = "Self"; } else { source = "Error"; }
+			var source = gallerySourceToName(gallery.source);
 			$('.title', infoContainer).text(gallery.name + " - " + source);
             $('.page-count').text((parseInt(index) + 1) + "/" + gallery.numfiles);
 			if(gallery.origtitle != gallery.name) {
 				$('.origtitle', infoContainer).show().text(gallery.origtitle);
-			}
-			else {
+			} else {
 				$('.origtitle', infoContainer).hide();
 			}
 
@@ -1105,17 +1088,12 @@ $(document).ready(function() {
                 
 
 			
-			if(gallery.source == 1) {
-				$('.actions-menu ul li[data-action=\'source\']').text('File');
-			} else if (gallery.source == 0) {
-				$('.actions-menu ul li[data-action=\'source\']').text('ExHentai');
-			}
-
+			$('.actions-menu ul li[data-action=\'source\']').text(gallerySourceToName(gallery.source));
+            
 			firstImage = true;
 			if(history.state && history.state.action != 'gallery') {
 				loadImage(index, true, false, false, true);
-			}
-			else {
+			} else {
 				loadImage(index, true, true, false, true);
 			}
 		}
@@ -1161,8 +1139,7 @@ $(document).ready(function() {
 			if (!mode) {
 				loadImage(index, true, false, true, true);
                 $('.page-count').text((index + 1) + "/" + gallery.numfiles);
-			}
-			else if (mode) {
+			} else if (mode) {
 				loadImage(index, true, false, false, true);
                 $('.page-count').text((index + 1) + "/" + gallery.numfiles);
 			}
@@ -1173,8 +1150,7 @@ $(document).ready(function() {
 				if (!mode) {
 					loadImage(currentIndex + 1, true, true, true, true);
                     $('.page-count').text((currentIndex + 1) + "/" + gallery.numfiles);
-				}
-				else if (mode) {
+				} else if (mode) {
 					loadImage(currentIndex + 1, true, true, false, true);
                     $('.page-count').text((currentIndex + 1) + "/" + gallery.numfiles);
 				}
@@ -1186,8 +1162,7 @@ $(document).ready(function() {
 				if (!mode) {
 					loadImage(currentIndex - 1, true, true, true, true);
                     $('.page-count').text((currentIndex + 1) + "/" + gallery.numfiles);
-				}
-				else if (mode) {
+				} else if (mode) {
 					loadImage(currentIndex - 1, true, true, false, true);
                     $('.page-count').text((currentIndex + 1) + "/" + gallery.numfiles);
 				}
@@ -1211,17 +1186,14 @@ $(document).ready(function() {
 						close();
 					});
 				}
-			}
-			else if(action == 'resize') {
+			} else if(action == 'resize') {
 				firstImage = true;
 				imageHolder.width('auto').height('auto');
 				imageHolder.trigger('load');
-			}
-			else if(action == 'download') {
+			} else if(action == 'download') {
 				var url = '/api.php?' + $.param({ action: 'download', id: gallery.id });
 				window.open(url);
-			}
-			else if(action == 'similar') {
+			} else if(action == 'similar') {
 				var tagList = [ ];
 				for(var ns in gallery.tags) {
 					for(var i in gallery.tags[ns]) {
@@ -1239,8 +1211,7 @@ $(document).ready(function() {
 				var search = tagList.join(' | ');
 
 				$('.gallery-list').trigger('loadstate', [ { search: search, order: 'weight' } ]);
-			}
-			else if(action == 'original') {
+			} else if(action == 'original') {
 				if ($('.actions-menu ul li[data-action=\'source\']').text() == 'File') {
 					alert('1-' + gallery.id + '.zip');
 				} else {
@@ -1291,13 +1262,11 @@ $(document).ready(function() {
 
 	if(window.location.search == '') {
 		$('.gallery-list').trigger('init');
-	}
-	else {
+	} else {
 		var query = decodeQuery();
 		if(!query.action || query.action == 'galleries') {
 			$('.gallery-list').trigger('loadstate', [ { page: query.page, search: query.search, order: query.order, seed: query.seed, unarchived: query.unarchived } ]);
-		}
-		else if(query.action == 'gallery') {
+		} else if(query.action == 'gallery') {
 			api('gallery', { id: query.id }, function(gallery) {
 				reader.trigger('loadgallery', [ gallery, query.index ])
 			});
