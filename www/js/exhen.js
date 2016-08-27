@@ -1000,7 +1000,7 @@ $(document).ready(function() {
 
 		function close() {
             var percentRead = ((currentIndex + 1) / gallery.numfiles) * 100;
-            if (percentRead >= 80) {
+            if (percentRead >= configData["autoReadPercentage"]) {
                 api("update", {id: gallery.id, readStatus: 1}, function(data) {
                     if (data.ret == false) {
                         alert("Error updating read status of gallery.");

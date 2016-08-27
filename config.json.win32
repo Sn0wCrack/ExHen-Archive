@@ -1,6 +1,7 @@
 {
 	"base": {
 		"accessKey": "changeme",
+        "autoReadPercentage": 80,
 		"viewType": "mpv",
 		"cookie": {
             "ipb_member_id": "changeme",
