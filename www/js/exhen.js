@@ -280,7 +280,7 @@ $(document).ready(function() {
                     }
 					
 					var source = gallerySourceToName(gallery.source);
-					$('.title', item).text(gallery.name + " - " + source);
+					$('.title', item).text("[" + source + "] " + gallery.name);
 					$('.date', item).text(gallery.posted_formatted);
 
 					if(gallery.ranked_weight) {
@@ -1054,7 +1054,7 @@ $(document).ready(function() {
             }
 			
 			var source = gallerySourceToName(gallery.source);
-			$('.title', infoContainer).text(gallery.name + " - " + source);
+			$('.title', infoContainer).text("[" + source + "] "+ gallery.name);
             $('.page-count').text((parseInt(index) + 1) + "/" + gallery.numfiles);
 			if(gallery.origtitle != gallery.name) {
 				$('.origtitle', infoContainer).show().text(gallery.origtitle);
