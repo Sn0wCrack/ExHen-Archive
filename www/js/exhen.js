@@ -198,6 +198,7 @@ $(document).ready(function() {
 				$.each(galleries, function(i, gallery) {
 					var item = $('.template .gallery-item').clone();
 					item.data('gallery', gallery);
+                    item.attr("id", "gallery-" + gallery.id);
 
                     if (gallery.archived == 1) {
                         var url = '?' + $.param({ action: 'gallery', id: gallery.id, index: 0 });
@@ -999,11 +1000,15 @@ $(document).ready(function() {
 		});
 
 		function close() {
+            var id = gallery.id;
             var percentRead = ((currentIndex + 1) / gallery.numfiles) * 100;
             if (percentRead >= configData["base"]["autoReadPercentage"]) {
                 api("update", {id: gallery.id, readStatus: 1}, function(data) {
                     if (data.ret == false) {
                         alert("Error updating read status of gallery.");
+                    } else {
+                        $("#gallery-" + id + " #read-container").removeClass("fi-book");
+                        $("#gallery-" + id + " #read-container").addClass("fi-book-bookmark");
                     }
                 });
             }
