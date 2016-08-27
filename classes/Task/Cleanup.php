@@ -6,6 +6,8 @@ class Task_Cleanup extends Task_Abstract {
 	
 	public function run($options = array()) {
 		$config = Config::get();
+        $cache = Cache::getInstance();
+        
 		Log::debug(self::LOG_TAG, 'Checking for NULL galleryproperty entries');
 		
 		$entries = R::getAll('SELECT * FROM galleryproperty WHERE gallery_id IS NULL');
@@ -43,7 +45,7 @@ class Task_Cleanup extends Task_Abstract {
 					foreach ($images as $image) {
 						$book = R::load('image', $image["id"]);
 						$imageName = str_pad($book["id"], 6, '0', STR_PAD_LEFT) . '.jpeg';
-						unlink(Config::get()->imagesDir . '/' . $imageName);
+						unlink($config->imagesDir . '/' . $imageName);
 						R::trash($book);
 					}
 					$book = R::load('gallery_thumb', $thumb["id"]);
@@ -58,9 +60,14 @@ class Task_Cleanup extends Task_Abstract {
 				
 				// Delete archive
 				$archiveName = $gallery["exhenid"] . '.zip';
-				unlink(Config::get()->archiveDir . '/galleries/' . $archiveName);
+				unlink($config->archiveDir . '/galleries/' . $archiveName);
 				
 				R::trash($gallery);
+                $this->cache->deleteObject('gallery', $gallery->id);
+                if(isset($config->indexer->full)) {
+                    $command = Config::get()->indexer->full;
+                    system($command);
+                }
 				$count++;
 			}
 			Log::debug(self::LOG_TAG, 'All galleries marked as deleted were deleted. Total deleted was %d', $count);
