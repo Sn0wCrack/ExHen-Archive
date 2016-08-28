@@ -13,7 +13,7 @@ class Cache {
             $config = Config::get();
             if($config->memcache) {
                 $memcache = new Memcache();
-                $this->connected = $memcache->addServer($config->memcache->host, $config->memcache->port);
+                $this->connected = $memcache->connect($config->memcache->host, $config->memcache->port);
 
                 if($this->connected) {
                     $this->memcache = $memcache;
