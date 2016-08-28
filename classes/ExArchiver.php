@@ -173,20 +173,11 @@ class ExArchiver {
             
             $archiverUrl = str_replace("--", "-", $archiverUrl);
 
-            /*
-            $invalidateForm = $this->client->invalidateForm($archiverUrl);
-            
-            if (strcmp($invalidateForm, "invalidate_form") === 0) {
-                Log::error(self::LOG_TAG, 'Failed to invalidate session.');
-				exit;
-            }
-            */
-            
 			$buttonPress = $this->client->buttonPress($archiverUrl);
 
-			if(strpos($buttonPress, "continue") === false) {
+			if(strpos($buttonPress, 'continue') === false) {
 				Log::error(self::LOG_TAG, 'Download check not submitted.');
-				exit;
+				return;
 			}
 			
 			$archiverHtml = $buttonPress;

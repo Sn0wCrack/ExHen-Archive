@@ -55,13 +55,13 @@ class ExClient {
 		curl_close($ch);
 		
 		if(strpos($ret, 'Your IP address has been temporarily banned for using automated mirroring/harvesting software and/or failing to heed the overload warning.') !== false) {
-			printf("Banned.\n");
+			printf("Banned. Waiting a minute before retrying.\n");
 			sleep(60*60);
 			return $this->exec($url);
 		}
 
         if(strpos($ret, 'You are opening pages too fast') !== false) {
-            printf("Warned.\n");
+            printf("Warned. Waiting 10 seconds before retying.\n");
             sleep(60*10);
             return $this->exec($url);
         }
@@ -72,6 +72,12 @@ class ExClient {
 	public function buttonPress($url) {
 		
         if (strpos($this->exec($url), "dlcheck") !== false) {
+            $this->ctr++;
+            if($this->ctr > 4) {
+                sleep(3);
+                $this->ctr = 0;
+            }
+            
             $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_POST, true);
             $post = array("dlcheck" => "true",
