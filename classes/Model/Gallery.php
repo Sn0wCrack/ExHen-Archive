@@ -6,13 +6,14 @@ class Model_Gallery extends Model_Abstract {
 
 	const SOURCE_EXHENTAI = 0;
 	const SOURCE_MANUAL = 1;
+    const SOURCE_NHENTAI = 2;
 
 	const THUMB_LARGE = 1;
 	const THUMB_SMALL = 2;
 
 	const GP_PER_MB = 41.9435018158;
 
-    const SOURCE_NHENTAI = 2;
+	public static function search($page, $pagesize, $search, $order, $randomSeed = null, $unarchived = false, $read = false) {
 		$query = new QueryHelper();
 
 		if($order === 'random') {
@@ -32,6 +33,9 @@ class Model_Gallery extends Model_Abstract {
             $query->sql('and archived = 1');
         }
         
+        if($read !== false) {
+            if ($read == 0) { $query->sql('and read = 0'); }
+            if ($read == 1) { $query->sql('and read = 1'); }
         }
 
 		if($search) {
