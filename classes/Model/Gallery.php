@@ -13,7 +13,7 @@ class Model_Gallery extends Model_Abstract {
 
 	const GP_PER_MB = 41.9435018158;
 
-	public static function search($page, $pagesize, $search, $order, $randomSeed = null, $unarchived = false, $read = false) {
+	public static function search($page, $pagesize, $search, $order, $randomSeed = null, $unarchived = false, $read = false, $color = false) {
 		$query = new QueryHelper();
 
 		if($order === 'random') {
@@ -34,8 +34,13 @@ class Model_Gallery extends Model_Abstract {
         }
         
         if($read !== false) {
-            if ($read == 0) { $query->sql('and read = 0'); }
-            if ($read == 1) { $query->sql('and read = 1'); }
+            $query->sql('and read = :read')
+                ->addParams(array('read' => $read)); 
+        }
+        
+        if ($color !== false) {
+            $query->sql('and color = :color')
+                ->addParams(array('color' => $color));
         }
 
 		if($search) {

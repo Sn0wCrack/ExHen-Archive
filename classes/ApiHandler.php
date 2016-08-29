@@ -16,12 +16,14 @@ class ApiHandler {
 		$order = $this->getParam('order', 'posted');
 		$seed = $this->getParam('seed', 0);
         $unarchived = $this->getParam('unarchived', false);
+        $read = $this->getParam('read', false);
+        $color = $this->getParam('color', false);
 
 		$seed = (int)base_convert($seed, 36, 10);
 
 		$search = trim($search);
 
-		$ret = Model_Gallery::search($page, $pagesize, $search, $order, $seed, $unarchived);
+		$ret = Model_Gallery::search($page, $pagesize, $search, $order, $seed, $unarchived, $read, $color);
 		$result = $ret['result'];
 		$data['meta'] = $ret['meta'];
 		$data['galleries'] = array();
