@@ -1,8 +1,8 @@
 <?php
 
-class Archiver_ExHentai {
+class ExArchiver {
 
-	const LOG_TAG = 'Archiver_ExHentai';
+	const LOG_TAG = 'ExArchiver';
 
 	protected $client;
 	protected $archiveDir;
@@ -10,7 +10,7 @@ class Archiver_ExHentai {
     protected $cache;
 
 	public function __construct() {
-		$this->client = new Client_ExHentai();
+		$this->client = new ExClient();
 
 		$this->config = Config::get();
         $this->cache = Cache::getInstance();
