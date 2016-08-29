@@ -12,7 +12,7 @@ class Model_Gallery extends Model_Abstract {
 
 	const GP_PER_MB = 41.9435018158;
 
-	public static function search($page, $pagesize, $search, $order, $randomSeed = null, $unarchived = false) {
+    const SOURCE_NHENTAI = 2;
 		$query = new QueryHelper();
 
 		if($order === 'random') {
@@ -30,6 +30,8 @@ class Model_Gallery extends Model_Abstract {
 
         if(!$unarchived) {
             $query->sql('and archived = 1');
+        }
+        
         }
 
 		if($search) {
