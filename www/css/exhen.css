@@ -201,7 +201,7 @@ html.reader-active body {
 
 header {
     text-align: center;
-    padding: 20px;
+    padding: 20px 20px 50px 20px;
 }
 
 .search {
@@ -235,6 +235,28 @@ header {
     -webkit-user-select: none;
     -moz-user-select: none;
     user-select: none;
+}
+
+.toggle-button {
+    display: inline-block;
+    width: 55px;
+    vertical-align: top;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.search-under-options {
+    display: none;
+    padding-top: 50px;
+    height: 200px;
+}
+
+.search-under-options > .switches-outer {
+    right: auto !important; 
+    left: 0 !important;
+    top: auto !important;
+    position: absolute;
 }
 
 .search-form {

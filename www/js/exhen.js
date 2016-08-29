@@ -30,6 +30,36 @@ function getConfig() {
         async: false
     }).responseJSON;
 }
+
+function getRotationDegrees(obj) {
+    var matrix = obj.css("-webkit-transform") ||
+    obj.css("-moz-transform")    ||
+    obj.css("-ms-transform")     ||
+    obj.css("-o-transform")      ||
+    obj.css("transform");
+    if(matrix !== 'none') {
+        var values = matrix.split('(')[1].split(')')[0].split(',');
+        var a = values[0];
+        var b = values[1];
+        var angle = Math.round(Math.atan2(b, a) * (180/Math.PI));
+    } else { var angle = 0; }
+    return (angle < 0) ? angle + 360 : angle;
+}
+
+$.fn.animateRotate = function(angle, duration, easing, complete) {
+  var args = $.speed(duration, easing, complete);
+  var step = args.step;
+  return this.each(function(i, e) {
+    args.complete = $.proxy(args.complete, e);
+    args.step = function(now) {
+      $.style(e, 'transform', 'rotate(' + now + 'deg)');
+      if (step) return step.apply(e, arguments);
+    };
+    
+    var curdeg = getRotationDegrees($(this));
+    $({deg: curdeg}).animate({deg: angle}, args);
+  });
+};
     
 $(document).ready(function() {
 	
@@ -457,7 +487,7 @@ $(document).ready(function() {
             searchForm.submit();
         });
 
-		$('.input-clear').click(function() {
+		$('.input-clear').on('click', function() {
 			if(order === 'weight') {
 				order = 'posted';
 				setOrderLabel();
@@ -467,7 +497,7 @@ $(document).ready(function() {
 			searchForm.submit();
 		});
 
-		$('.search-order ul li', searchForm).click(function() {
+		$('.search-order ul li', searchForm).on('click', function() {
 			var trigger = $(this);
 			order = trigger.data('order');
 
@@ -484,6 +514,18 @@ $(document).ready(function() {
 
 			return false;
 		});
+        
+        $('.toggle-button').on('click', function() {
+           if ($('.search-under-options').is(':hidden')) {
+               $('.search-under-options').stop(true, true).fadeIn({ duration: 400, queue: false }).css('display', 'none').slideDown(400); 
+               $('.toggle-button').stop(true, true).animateRotate(-180);
+           } else {
+               $('.toggle-button').stop(true, true).animateRotate(0);
+               $('.search-under-options').stop(true, true).fadeOut({ duration: 400, queue: false }).slideUp(400); 
+           }
+           
+           return false;
+        });
 
 		galleryList.on('click', '.tag', function() {
 			var tag = $(this);

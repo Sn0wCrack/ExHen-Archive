@@ -40,9 +40,25 @@
 			</div>
 		</form>
         <div class="search-under">
-		  <div class="search-count"></div>
+            <button class="toggle-button button">▼</button>
+            <div class="search-count"></div>
 
-          <div class="switches-outer">
+            <div class="switches-outer">
+                <label>
+                    <span>SPV</span>
+                    <input type="checkbox" name="viewertype" value="0" class="fancy-switch viewtype" />
+                    <div>
+                        <div></div>
+                    </div>
+                    <span>MPV</span>
+                </label>
+            </div>
+        </div>
+        <div class="unarchived-outer">
+
+        </div>
+        <div class="search-under-options">
+            <div class="switches-outer">
                 <label>
                     <span>Show unarchived</span>
                     <input type="checkbox" name="unarchived" value="0" class="fancy-switch unarchived" />
@@ -50,18 +66,7 @@
                         <div></div>
                     </div>
                 </label>
-                <label>
-                    <span>SPV</span>
-                    <input type="checkbox" name="viewertype" value="0" class="fancy-switch viewtype" />
-                    <div>
-                        <div></div>
-                    </div>
-                    </span>MPV</span>
-                </label>
             </div>
-        </div>
-        <div class="unarchived-outer">
-
         </div>
 	</header>
 
