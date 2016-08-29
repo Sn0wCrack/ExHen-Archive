@@ -281,6 +281,10 @@ class Model_Gallery extends Model_Abstract {
 	public function exportSource() {
 		return $this->source;
 	}
+    
+    public function exportFeed() {
+        return $this->feed_id;
+    }
 }
 
 ?>
