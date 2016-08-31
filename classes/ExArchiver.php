@@ -199,10 +199,11 @@ class ExArchiver {
                 $remote = fopen($archiveDownloadUrl, 'r');
                 $remoteFileSize = $this->client->getArchiveFileSize($archiveDownloadUrl);
                 $local = fopen($targetFile, 'w');
-                
+
                 if (!strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
                      printf("%s: [%s][%s] %s", strtoupper("debug"), date('Y-m-d H:i:s'), self::LOG_TAG, "Download Progress:      ");
                 }
+                
                 $readBytes = 0;
                 while (!feof($remote)) {
                     $buffer = fread($remote, 4096);
@@ -217,14 +218,15 @@ class ExArchiver {
                         printf("%s", str_pad($progress, 3, ' ', STR_PAD_LEFT). '%');
                     }
                 }
-                flush();
+                if (!strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
+                    flush();
+                }
                 print("\n");
                 
                 $rRet = fclose($remote);
                 $lRet = fclose($local);
                 
-                
-				if($rRet && lRet) {
+				if($rRet && $lRet) {
 					$archive = new ZipArchive();
 					$ret = $archive->open($targetFile);
 					if($ret === true && $archive->status == ZipArchive::ER_OK) {
