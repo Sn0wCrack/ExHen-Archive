@@ -200,7 +200,7 @@ class ExArchiver {
                 $remoteFileSize = $this->client->getArchiveFileSize($archiveDownloadUrl);
                 $local = fopen($targetFile, 'w');
                 
-                if (!strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')) {
+                if (!strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
                      printf("%s: [%s][%s] %s", strtoupper("debug"), date('Y-m-d H:i:s'), self::LOG_TAG, "Download Progress:      ");
                 }
                 $readBytes = 0;
