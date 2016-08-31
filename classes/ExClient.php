@@ -117,6 +117,42 @@ class ExClient {
        $ret = curl_exec($ch);
        curl_close($ch);
     }
+    
+    public function getArchiveFileSize($url)
+    {
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_NOBODY, true);
+        curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        
+        $cookie = Config::buildCookie();
+        curl_setopt($ch, CURLOPT_COOKIE, $cookie);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36');
+        
+        $ret = curl_exec($ch);
+        curl_close($ch);
+        
+        if ($ret) {
+            $content_length = "unknown";
+            $status = "unknown";
+
+            if( preg_match( "/^HTTP\/1\.[01] (\d\d\d)/", $ret, $matches ) ) {
+              $status = (int)$matches[1];
+            }
+
+            if( preg_match( "/Content-Length: (\d+)/", $ret, $matches ) ) {
+              $content_length = (int)$matches[1];
+            }
+
+            if( $status == 200 || ($status > 300 && $status <= 308) ) {
+              $result = $content_length;
+            }
+        }
+        
+        return $result;
+    }
 }
 
 ?>
