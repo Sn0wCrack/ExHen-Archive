@@ -42,7 +42,7 @@ $('div#gd5').each(function() { //archive button on gallery detail
             if (data.data.deleted == 0) {
                link = $('<a href="#" target="_blank">Archived</a>');
             } else if (data.data.deleted >= 1) {
-                link = $('<p>Deleted</p>');
+                link = $('<a href="#">Deleted</a>');
             }
             
             if(data.data.archived && data.data.deleted == 0) {
@@ -111,3 +111,4 @@ $('div.itg').each(function() { //gallery search
         });
     });
 });
+
