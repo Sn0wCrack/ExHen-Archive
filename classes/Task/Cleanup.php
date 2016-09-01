@@ -25,6 +25,21 @@ class Task_Cleanup extends Task_Abstract {
 			Log::debug(self::LOG_TAG, 'No NULL galleryproperty entries found.');
 		}
 		
+        Log::debug(self::LOG_TAG, 'Checking for NULL gallery_tag entries');
+        $entries = R::getAll('SELECT * FROM gallery_tag WHERE gallery_id IS NULL');
+        if (count($entries) > 0) {
+            $count = 0;
+            Log::debug(self::LOG_TAG, 'NULL entries found, deleting them now.');
+            foreach($entries as $entry) {
+                $book = R::load('gallery_tag', $entry["id"]);
+                R::trash($book);
+                $count++;
+            }
+            Log::debug(self::LOG_TAG, 'All NULL entries deleted. Total deleted was %d', $count);
+        } else {
+            Log::debug(self::LOG_TAG, 'No NULL gallery_tag entries found.');
+        }
+        
 		Log::debug(self::LOG_TAG, 'Checking for any galleries marked as deleted.');
 		
 		$entries = R::getAll('SELECT * FROM gallery WHERE deleted = 1');
@@ -53,6 +68,12 @@ class Task_Cleanup extends Task_Abstract {
                     R::trash($book);
                 }
                 
+                // Delete all associated tags (just the references, not the actual tag entries)
+                foreach ($gallery_tag as $tag) {
+                    $book = R::load("gallery_tumb", $tag["id"]);
+                    R::trash($book);
+                }
+                
                 // Delete all associated properties.
                 foreach ($galleryproperty as $prop) {
                     $book = R::load('galleryproperty', $prop["id"]);
@@ -65,6 +86,9 @@ class Task_Cleanup extends Task_Abstract {
                 
                 if ($gallery["feed_id"] == null) {
                     R::trash($gallery);
+                } else {
+                    $gallery["deleted"] = 2;
+                    R::store($gallery);
                 }
                 
                 $cache->deleteObject('gallery', $gallery->id);
@@ -79,7 +103,6 @@ class Task_Cleanup extends Task_Abstract {
 		else {
 			Log::debug(self::LOG_TAG, 'No galleries found that were marked as deleted.');
 		}
-		
 	}
 	
 }

@@ -11,7 +11,7 @@ source galleries : connect {
     sql_attr_uint = posted
     sql_attr_uint = added
     sql_attr_bool = archived
-    sql_attr_bool = deleted
+    sql_attr_uint = deleted
     sql_attr_string = read
     sql_attr_string = color
 

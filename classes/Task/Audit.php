@@ -57,7 +57,7 @@ class Task_Audit extends Task_Abstract {
 
             Model_Gallery::addGallery($childGallery->exhenid, $childGallery->hash);
 
-            $gallery->deleted = true;
+            $gallery->deleted = 1;
             
         }
         else {

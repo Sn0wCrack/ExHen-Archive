@@ -189,7 +189,7 @@ class Model_Gallery extends Model_Abstract {
 				sum(filesize) as filesize,
 				round(sum(filesize) / pow(1024, 3), 2) as filesize_gb,
 				(select count(id) from gallery where archived = 1) as count_archived,
-				(select count(id) from gallery where deleted = 1) as count_deleted,
+				(select count(id) from gallery where deleted >= 1) as count_deleted,
 				round((sum(filesize) / (select count(id) from gallery where archived = 1)) / pow(1024, 2), 2) as filesize_average_mb,
 				sum(round(round(filesize / pow(1024, 2), 2) * 41.9435018158)) as gp_total,
 				round(sum(round(filesize / pow(1024, 2), 2) * 41.9435018158) / (select count(id) from gallery where archived = 1)) as gp_average

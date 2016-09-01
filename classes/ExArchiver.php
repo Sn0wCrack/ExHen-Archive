@@ -82,7 +82,7 @@ class ExArchiver {
 								$hasGallery = true;
 							}
 
-							if($feed->download && !$gallery->deleted) {
+							if($feed->download && $gallery->deleted == 0) {
 								$gallery->download = true;
 								R::store($gallery);
 							}

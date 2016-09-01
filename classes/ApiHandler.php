@@ -306,11 +306,11 @@ class ApiHandler {
 		}
 		else {
 			$gallery = R::load('gallery', $id);
-			if(!$gallery || $gallery->deleted) {
+			if(!$gallery || $gallery->deleted >= 1) {
 				$this->sendFail('Gallery not found or already deleted');
 			}
 			else {
-				$gallery->deleted = true;
+				$gallery->deleted = 1;
 				R::store($gallery);
 
 				$this->sendSuccess(true);
