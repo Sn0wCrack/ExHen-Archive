@@ -212,7 +212,10 @@ class ExArchiver {
                         printf("%s: [%s][%s] %s %.2f%s\r", strtoupper("debug"), date('Y-m-d H:i:s'), self::LOG_TAG, "Download Progress:", $progress, '%');
                     }
                 }
-                print("\n");
+                
+                if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+                    print("\n");
+                }
                 
                 $rRet = fclose($remote);
                 $lRet = fclose($local);
