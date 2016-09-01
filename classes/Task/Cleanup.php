@@ -70,7 +70,7 @@ class Task_Cleanup extends Task_Abstract {
                 
                 // Delete all associated tags (just the references, not the actual tag entries)
                 foreach ($gallery_tag as $tag) {
-                    $book = R::load("gallery_tumb", $tag["id"]);
+                    $book = R::load("gallery_tag", $tag["id"]);
                     R::trash($book);
                 }
                 
