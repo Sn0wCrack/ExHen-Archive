@@ -63,9 +63,7 @@ class Task_Cleanup extends Task_Abstract {
                 $archiveName = $gallery["exhenid"] . '.zip';
                 unlink($config->archiveDir . '/galleries/' . $archiveName);
                 
-                if ($entry["feed_id"] != null) {
-                    Log:debug(self::LOG_TAG, 'Gallery ' . $entry["name"] . '(' . $entry["id"] .')' . ' is a part of a feed, will keep gallery entry.');
-                } else {
+                if ($gallery["feed_id"] == null) {
                     R::trash($gallery);
                 }
                 
