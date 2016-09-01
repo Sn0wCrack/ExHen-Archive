@@ -38,12 +38,17 @@ $('div#gd5').each(function() { //archive button on gallery detail
     $.getJSON(baseUrl + 'api.php', { action: 'hasgallery', gid: gid, key: key }, function(data, result) {
         if(data.data.exists) {
             var p = $('<p class="g2"><img src="//exhentai.org/img/mr.gif"> </p>');
-            var link = $('<a href="#" target="_blank">Archived</a>');
+            var link = "";
+            if (data.data.deleted == 0) {
+               link = $('<a href="#" target="_blank">Archived</a>');
+            } else if (data.data.deleted >= 1) {
+                link = $('<p>Deleted</p>');
+            }
             
-            if(data.data.archived) {
+            if(data.data.archived && data.data.deleted == 0) {
                 link.prop('href', baseUrl + '?' + $.param({ action: 'gallery', id: data.data.id }));
             }
-            else {
+            else if (!data.data.archived) {
                 link.on('click', function() {
                     alert('Not yet downloaded');
                     return false;
@@ -81,24 +86,28 @@ $('div.itg').each(function() { //gallery search
         
         galleryContainer.data('gid', gid);
         
-        var link = createArchiveLink(gid, token);
-        link.css({ fontSize: '9px' });
-        link.on('click', function() {
-            $(this).parents('.id1').css({ background: 'green' });
-        });
+        $.getJSON(baseUrl + 'api.php', { action: 'hasgallery', gid: gid, key: key }, function(data, result) {
+           if (!data.data.exists) {
+              var link = createArchiveLink(gid, token);
+              link.css({ fontSize: '9px' });
+              link.on('click', function() {
+                  $(this).parents('.id1').css({ background: 'green' });
+              });
         
-        link.prependTo($('.id44', galleryContainer));
-    });
-    
-    $.getJSON(baseUrl + 'api.php', { action: 'hasgalleries', gids: gids, key: key }, function(ret) {
-        if(ret.ret) {
-            for(var i in ret.data) {
-                var row = ret.data[i];
-                
-                galleries.filter(function() {
-                    return $(this).data('gid') == row.exhenid;
-                }).css({ background: 'green' });
-            }
-        }
+              link.prependTo($('.id44', galleryContainer));
+           } else {
+             var res = "";
+             if (data.data.archived && data.data.deleted == 0) {
+                res = $('<p>Archived</p>');
+                galleryContainer.css({background: 'green'});
+             }
+               
+             if (data.data.deleted >= 1) {
+               res = $('<p>Deleted</p>');  
+               galleryContainer.css({background: 'red'});
+             }
+             res.prependTo($('.id44', galleryContainer));
+           }
+        });
     });
 });

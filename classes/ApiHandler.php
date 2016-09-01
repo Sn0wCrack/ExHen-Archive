@@ -275,7 +275,7 @@ class ApiHandler {
 		if($gid) {
 			$gallery = R::findOne('gallery', 'download = 1 and exhenid = ?', array($gid));
 			if($gallery) {
-				$this->sendSuccess(array('exists' => true, 'id' => $gallery->id, 'archived' => !!$gallery->archived));
+				$this->sendSuccess(array('exists' => true, 'id' => $gallery->id, 'archived' => !!$gallery->archived, 'deleted' => $gallery->deleted));
 			}
 			else {
 				$this->sendSuccess(array('exists' => false));
@@ -289,7 +289,7 @@ class ApiHandler {
 	public function hasgalleriesAction() {
 		$gids = $this->getParam('gids');
 		if($gids && is_array($gids)) {
-			$result = R::getAll('select exhenid, archived from gallery where download = 1 and exhenid in ('.R::genSlots($gids).')', $gids);
+			$result = R::getAll('select exhenid, archived, deleted from gallery where download = 1 and exhenid in ('.R::genSlots($gids).')', $gids);
 
 			$this->sendSuccess($result);
 		}
