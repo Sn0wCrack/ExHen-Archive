@@ -92,13 +92,13 @@ class Task_Cleanup extends Task_Abstract {
                 }
                 
                 $cache->deleteObject('gallery', $gallery->id);
-                if(isset($config->indexer->full)) {
-                    $command = Config::get()->indexer->full;
-                    system($command);
-                }
                 $count++;
 			}
 			Log::debug(self::LOG_TAG, 'All galleries marked as deleted were deleted. Total deleted was %d', $count);
+            if(isset($config->indexer->full)) {
+                $command = Config::get()->indexer->full;
+                system($command);
+            }
 		}
 		else {
 			Log::debug(self::LOG_TAG, 'No galleries found that were marked as deleted.');
