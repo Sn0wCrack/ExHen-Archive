@@ -85,6 +85,7 @@ $('div.itg').each(function() { //gallery search
         gids.push(gid);
         
         galleryContainer.data('gid', gid);
+        $('.id44 img', galleryContainer).remove();
         
         $.getJSON(baseUrl + 'api.php', { action: 'hasgallery', gid: gid, key: key }, function(data, result) {
            if (!data.data.exists) {
@@ -94,7 +95,7 @@ $('div.itg').each(function() { //gallery search
                   $(this).parents('.id1').css({ background: 'green' });
               });
         
-              link.prependTo($('.id44', galleryContainer));
+              link.prependTo($('.id44 div', galleryContainer));
            } else {
              var res = "";
              if (data.data.archived && data.data.deleted == 0) {
@@ -104,11 +105,10 @@ $('div.itg').each(function() { //gallery search
                
              if (data.data.deleted >= 1) {
                res = $('<p>Deleted</p>');  
-               galleryContainer.css({background: 'red'});
+               galleryContainer.css({background: '#AA0000'});
              }
-             res.prependTo($('.id44', galleryContainer));
+             res.prependTo($('.id44 div', galleryContainer));
            }
         });
     });
 });
-
