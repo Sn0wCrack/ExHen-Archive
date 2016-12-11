@@ -9,13 +9,22 @@ class Cache {
     protected function __construct() {
         $this->connected = false;
 
-        if(class_exists('Memcache')) {
+        if (class_exists('Memcache') || class_exists('MemcachePool')) {
             $config = Config::get();
-            if($config->memcache) {
-                $memcache = new Memcache();
-                $this->connected = $memcache->connect($config->memcache->host, $config->memcache->port);
+            if ($config->memcache) {
 
-                if($this->connected) {
+                if (class_exists('MemcachePool'))
+                {
+                    $memcache = new MemcachePool();
+                }
+                else
+                {
+                    $memcache = new Memcache();
+                }
+               
+                $this->connected = $memcache->addServer($config->memcache->host, $config->memcache->port);
+
+                if ($this->connected) {
                     $this->memcache = $memcache;
                 }
             }
