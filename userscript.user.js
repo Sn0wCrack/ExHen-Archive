@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name       ExHentai Archive
 // @match      *://exhentai.org/*
-// @match      *://g.e-hentai.org/*
+// @match      *://e-hentai.org/*
 // @require    https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js
 // ==/UserScript==
 
