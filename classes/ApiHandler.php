@@ -120,23 +120,10 @@ class ApiHandler {
 					header('Cache-Control: max-age=31536000');
 
 					if($resize && is_numeric($resize) && (int)$resize > 0) {
-						header('Content-Type: image/jpeg');
-
-						$layer = ImageWorkshop::initFromPath($imagePath);
-						
-						if($layer->getWidth() < $resize) {
-							$resize = $layer->getWidth();
-						}
-
-						$layer->resizeInPixel($resize, null, true);
-						$image = $layer->getResult();
-
-						imagejpeg($image, null, 80);
-					}
-					else {
 						$ext = pathinfo($imagePath, PATHINFO_EXTENSION);
 
 						switch($ext) {
+							default:
 							case 'jpg':
 							case 'jpeg':
 								header('Content-Type: image/jpeg');
@@ -147,8 +134,47 @@ class ApiHandler {
                             case 'gif':
                                 header('Content-Type: image/gif');
                                 break;
-                            default:
-                                header('Content-Type: image/jpeg');
+						}
+
+						$layer = ImageWorkshop::initFromPath($imagePath);
+						
+						if($layer->getWidth() < $resize) {
+							$resize = $layer->getWidth();
+						}
+
+						$layer->resizeInPixel($resize, null, true);
+						$image = $layer->getResult();
+
+						switch($ext)
+						{
+							default:
+							case 'jpg':
+							case 'jpeg':
+								imagejpeg($image, null, 80);
+								break;
+							case 'png':
+								imagepng($image, null, 80);
+								break;
+							case 'gif':
+								imagegif($image, null);
+								break;
+						}
+						
+					}
+					else {
+						$ext = pathinfo($imagePath, PATHINFO_EXTENSION);
+
+						switch($ext) {
+							default:
+							case 'jpg':
+							case 'jpeg':
+								header('Content-Type: image/jpeg');
+								break;
+							case 'png':
+								header('Content-Type: image/png');
+								break;
+                            case 'gif':
+                                header('Content-Type: image/gif');
                                 break;
 						}
 						
