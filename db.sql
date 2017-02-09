@@ -54,6 +54,7 @@ CREATE TABLE `gallery` (
   `numfiles` int(11) DEFAULT NULL,
   `filesize` int(10) unsigned DEFAULT NULL,
   `deleted` tinyint(4) DEFAULT '0',
+  `lastaudit` datetime DEFAULT NULL,
   `updated` datetime DEFAULT NULL,
   `feed_id` int(11) unsigned DEFAULT NULL,
   `hasmeta` tinyint(4) DEFAULT '0',
