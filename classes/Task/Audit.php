@@ -37,8 +37,13 @@ class Task_Audit extends Task_Abstract {
         Log::debug(self::LOG_TAG, 'Auditing gallery: #%d - %s', $gallery->exhenid, $gallery->name);
 
         $galleryHtml = $this->client->gallery($gallery->exhenid, $gallery->hash);
+
+        // Galleries that are removed now return a 404, so we have to leave them as audited completely for now.
         if(!$galleryHtml) {
-            Log::error(self::LOG_TAG, 'Failed to retrieve page from server');
+            $gallery->lastaudit = date('Y-m-d H:i:s'); //gallery was probably deleted, so mark it as audited for now
+            R::store($gallery);
+
+            Log::error(self::LOG_TAG, 'Gallery was either removed or was invalid.');
             return;
         }
 
@@ -47,7 +52,7 @@ class Task_Audit extends Task_Abstract {
             $gallery->lastaudit = date('Y-m-d H:i:s'); //gallery was probably deleted, so mark it as audited for now
             R::store($gallery);
 
-            Log::error(self::LOG_TAG, 'Invalid page');
+            Log::error(self::LOG_TAG, 'Gallery was either removed or was invalid.');
             return;
         }
 
