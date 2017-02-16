@@ -59,11 +59,17 @@ class Task_Audit extends Task_Abstract {
 
         $childGallery = $galleryPage->getNewestVersion();
         if($childGallery) {
-            Log::debug(self::LOG_TAG, 'New gallery found for gallery: #%d - %s', $gallery->exhenid, $gallery->name);
 
-            Model_Gallery::addGallery($childGallery->exhenid, $childGallery->hash);
+            $childHtml = $this->client->gallery($childGallery->exhenid, $childGallery->hash);
+            $childPage = new ExPage_Gallery($childHtml);
 
-            $gallery->deleted = 1;
+            if ($childPage->isValid()) {
+                Log::debug(self::LOG_TAG, 'New gallery found for gallery (%d): #%d - %s', $childGallery->exhenid, $gallery->exhenid, $gallery->name);
+
+                Model_Gallery::addGallery($childGallery->exhenid, $childGallery->hash);
+
+                $gallery->deleted = 1;
+            }
             
         }
         else {
