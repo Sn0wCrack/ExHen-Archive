@@ -10,12 +10,15 @@ class Task_Audit extends Task_Abstract {
         $this->client = new ExClient();
 
         while(true) {
+
+            $interval = isset($options[0]) ? $options[0] : "1 year";
+
             $galleries = R::find('gallery',
                 'archived = 1 and deleted = 0 and source = 0 and'.
                 '((added <= date_sub(date(now()), interval 3 day) and'. // if added more than 3 days ago...
+                '(posted >= date_sub(date(now()), interval ' . $interval . ') and not (lastaudit is null)) and'. // and if the gallery is more than a year old but NOT if it's unaudited
                 '(lastaudit is null or lastaudit <= date_sub(date(now()), interval 7 day))) or'. // ...and not yet audited, or audited more than 7 days ago
 				'((added >= date_sub(date(now()), interval 7 day) and added <= date_sub(date(now()), interval 1 day)) and'. // OR, added less than 7 days ago (but more than 24 hours ago)...
-                '(posted <= date_sub(date(now()), interval 1 year) and not (lastaudit is null)) and'. // and if the gallery is more than a year old but NOT if it's unaudited
                 '(lastaudit is null or lastaudit <= date_sub(date(now()), interval 1 day))))'. // ...and not yet audited, or audited more than 1 day ago
                 'order by posted desc limit 100');
 
@@ -100,6 +103,11 @@ class Task_Audit extends Task_Abstract {
         }
 
         $gallery->lastaudit = date('Y-m-d H:i:s');
+
+        if ($gallery->deleted == 1) {
+            $gallery->lastaudit = null;
+        }
+
         R::store($gallery);
     }
 
