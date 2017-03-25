@@ -273,4 +273,5 @@ sudo indexer --rotate --all
 sudo /etc/init.d/searchd restart
 
 # Copy over out config files
+sudo cp /vagrant/config.json.linux /vagrant/config.json
 sudo cp /vagrant/config.json.linux /vagrant/www/config.json
