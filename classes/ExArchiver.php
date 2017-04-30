@@ -26,7 +26,7 @@ class ExArchiver {
 		}
 	}
 
-	public function start() {
+	public function start($forced_feed = false) {
 		$archivedCount = 0;
 
 		//archive unarchived galleries
@@ -41,7 +41,12 @@ class ExArchiver {
 		}
 
 		//run through feeds and add new galleries
-		$feeds = R::find('feed', 'disabled = 0');
+		if ($forced_feed == false) {
+			$feeds = R::find('feed', 'disabled = 0');
+		} else {
+			$feeds = R::find('feed', 'disabled = 0 and id = :id', [':id' => $forced_feed]);
+		}
+		
 		foreach($feeds as $feed) {
 			$page = 0;
 

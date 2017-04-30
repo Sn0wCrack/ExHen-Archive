@@ -4,7 +4,12 @@ class Task_Archive extends Task_Abstract {
 
 	public function run($options = array()) {
 		$archiver = new ExArchiver();
-		$archiver->start();
+		if ($options[0] == "Feed") {
+			$archiver->start((int)$options[1]);
+		} else {
+			$archiver->start();
+		}
+		
 	}
 	
 }
