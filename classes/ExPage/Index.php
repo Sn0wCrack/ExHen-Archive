@@ -18,10 +18,12 @@ class ExPage_Index extends ExPage_Abstract {
 
 			preg_match("~https://exhentai.org/g/(\d*)/(\w*)/~", $link->attr('href'), $matches);
 
-			$gallery->exhenid = $matches[1];
-			$gallery->hash = $matches[2];
+			if (isset($matches[1]) && isset($matches[2])) {
+				$gallery->exhenid = $matches[1];
+				$gallery->hash = $matches[2];
 
-			$ret[] = $gallery;
+				$ret[] = $gallery;
+			}
 		}
 
 		return $ret;
