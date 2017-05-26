@@ -150,10 +150,10 @@ class ApiHandler {
 							default:
 							case 'jpg':
 							case 'jpeg':
-								imagejpeg($image, null, 80);
+								imagejpeg($image, null, 80); //imagejpeg quality scale 0-100. default 75
 								break;
 							case 'png':
-								imagepng($image, null, 80);
+								imagepng($image, null, 8); //imagepng quality scale is 0-9. default 6
 								break;
 							case 'gif':
 								imagegif($image, null);
