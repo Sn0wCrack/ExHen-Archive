@@ -134,6 +134,8 @@ class ExClient {
         $ret = curl_exec($ch);
         curl_close($ch);
         
+        $result = "unknown";
+        
         if ($ret) {
             $content_length = "unknown";
             $status = "unknown";

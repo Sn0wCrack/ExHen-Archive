@@ -15,11 +15,22 @@ class Task_ForceAudit extends Task_Abstract {
             exit;
         }
 
-        $gallery = R::findOne('gallery',
-            'archived = 1 and deleted = 0 and source = 0'.
-            ' and id = ' . $id);
+        if ($id == "all") {
+            $galleries = R::findAll('gallery',
+                'archived = 1 and deleted = 0 and source = 0');
+        } else {
+            $galleries = R::findAll('gallery',
+                'archived = 1 and deleted = 0 and source = 0'.
+                ' and id = ?', [(int)$id]);
+        }
 
-        $this->audit($gallery);
+        if (count($galleries) == 0) {
+            exit;
+        }
+
+        foreach($galleries as $gallery) {
+            $this->audit($gallery);
+        }
 
         if(isset(Config::get()->indexer->full)) {
             $command = Config::get()->indexer->full;

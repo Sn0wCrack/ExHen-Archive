@@ -74,7 +74,7 @@ class ExPage_Gallery extends ExPage_Abstract {
 	}
 
     public function getNewestVersion() {
-        $elem = $this->find('div#gnd a:last-of-type');
+        $elem = $this->find('div#gnd a:last');
         if(count($elem) === 1) {
             preg_match("~https://exhentai.org/g/(\d*)/(\w*)/~", $elem->attr('href'), $matches);
 
