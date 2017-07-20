@@ -387,7 +387,7 @@ $(document).ready(function() {
 				var displayCount = $('.gallery-item', galleryList).length;
                 var totalCount = result.meta.total;
 
-                if(Intl && Intl.NumberFormat) {
+                if(window['Intl'] && window['Intl']['NumberFormat']) {
                     displayCount = Intl.NumberFormat().format(displayCount);
                     totalCount = Intl.NumberFormat().format(totalCount);
                 }
@@ -933,10 +933,8 @@ $(document).ready(function() {
 				index = 0;
 			}
 			
-			/* I'm really uncertain what this does specially, but it fixes every issue with the SPV
-			 * Needs more MPV testing to see what it really does.
-             */
             if (mode) {
+                // Loads the first three images in MPV instead of preloading them.
                  if((index - currentIndex) <= 3) {
                      loadImage(index, false, false, false, false);
                  }
