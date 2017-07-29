@@ -83,6 +83,10 @@ class Task_Cleanup extends Task_Abstract {
                 // Delete archive
                 $archiveName = $gallery["exhenid"] . '.zip';
                 unlink($config->archiveDir . '/galleries/' . $archiveName);
+
+                // Delete html file
+                $htmlName = $gallery["exhenid"] . '.html';
+                unlink($config->archiveDir . '/pages/' . $htmlName);
                 
                 if ($gallery["feed_id"] == null) {
                     R::trash($gallery);
