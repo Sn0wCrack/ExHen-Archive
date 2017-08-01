@@ -28,6 +28,11 @@ class ExClient {
 		return $this->exec($url);
 	}
 
+    public function tagSearch($search = '', $page = 0) {
+        $url = sprinf("%s/tag/%s/%d", self::BASE_URL, $search, $page);
+        return $this->exec($url);
+    }
+
 	public function gallery($id, $hash, $thumbPage = 0) {
 		$url = sprintf('%s/g/%d/%s/?p=%d', self::BASE_URL, $id, $hash, $thumbPage);
 		return $this->exec($url);

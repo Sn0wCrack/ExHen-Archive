@@ -22,7 +22,7 @@ class Task_ForceAudit extends Task_Abstract {
 
         if ($mode == "id") {
             if (isset($options[1])) {
-                $id = int($options[1]);
+                $id = (int)$options[1];
                 $galleries = R::findAll('gallery',
                     'archived = 1 and deleted = 0 and source = 0 and id = ?',
                     [$id]);

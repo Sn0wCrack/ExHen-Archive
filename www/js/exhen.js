@@ -79,7 +79,7 @@ $(document).ready(function() {
             $(".viewtype").prop("checked", false);
             mode = false;
         } else if (localStorage.getItem("viewType") == "mpv") {
-            $(".viewtype").prop("chceked", true);
+            $(".viewtype").prop("checked", true);
             mode = true;
         }
         switchGalleryView(mode);
