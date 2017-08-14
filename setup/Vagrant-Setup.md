@@ -3,7 +3,8 @@ Windows Setup
 
 ### Requirements
 
- * Vagrant ( [https://www.vagrantup.com/downloads.html]([https://www.vagrantup.com/downloads.html) )
+ * VirtualBox ( [https://www.virtualbox.org/wiki/Downloads](https://www.virtualbox.org/wiki/Downloads) )
+ * Vagrant ( [https://www.vagrantup.com/downloads.html](https://www.vagrantup.com/downloads.html) )
  * ExHentai-Archive ( [https://github.com/Sn0wCrack/ExHentai-Archive/archive/master.zip](https://github.com/Sn0wCrack/ExHentai-Archive/archive/master.zip) )
  
 
