@@ -8,7 +8,8 @@ Opening up the `userscript.user.js` file from the root of the repository you'll 
 	var baseUrl = 'http://your.archive.url.com/';
 	var key = 'changeme';
 
-For `baseUrl` you'll want to change it to whatever URL your local server is addressed to, the case of all guides it's `http://exhen.localhost/`
+For `baseUrl` you'll want to change it to whatever URL your local server is addressed to, the case of the Windows and Linux guides it's `https://exhen.localhost/`.
+The Vagrant guide it is meerly just `https://localhost/`
 
 For `key` this is the value you configured in your `config.json` file.
 
