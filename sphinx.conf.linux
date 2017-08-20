@@ -77,7 +77,7 @@ indexer {
 searchd {
     listen = localhost:9312
     listen = 9306:mysql41
-    log = /var/log/sphinxsearch/searchd_exhen.log
-    query_log = /var/log/sphinxsearch/query_exhen.log
-    pid_file = /var/run/sphinxsearch/searchd.pid
+    log =  /etc/sphinxsearch/log/searchd_exhen.log
+    query_log =  /etc/sphinxsearch/log/query_exhen.log
+    pid_file =  /etc/sphinxsearch/searchd.pid
 }
