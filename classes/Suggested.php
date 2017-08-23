@@ -1,37 +1,34 @@
 <?php
 
-class Suggested {
+class Suggested
+{
+    public static function search($term)
+    {
+        if ($term) {
+            $words = explode(' ', $term);
+            $terms = array();
+            $match = '';
 
-	public static function search($term) {
-		if($term) {
-			$words = explode(' ', $term);
-			$terms = array();
-			$match = '';
+            foreach ($words as $word) {
+                $phrase = SphinxQL::halfEscapeMatch(implode(' ', $words));
 
-			foreach($words as $word) {
-				$phrase = SphinxQL::halfEscapeMatch(implode(' ', $words));
+                $match .= sprintf('"%s*"|', $phrase);
 
-				$match .= sprintf('"%s*"|', $phrase);
+                array_shift($words);
+            }
 
-				array_shift($words);
-			}
-
-			$match = rtrim($match, '|');
+            $match = rtrim($match, '|');
             
-			$result = SphinxQL::query('select keyword from suggested where match(:match) order by freq desc limit 0, 10', array('match' => $match));
+            $result = SphinxQL::query('select keyword from suggested where match(:match) order by freq desc limit 0, 10', array('match' => $match));
 
-			$data = array();
-			foreach ($result as $row) {
-				$data[] = $row['keyword'];
-			}
+            $data = array();
+            foreach ($result as $row) {
+                $data[] = $row['keyword'];
+            }
 
-			return $data;
-		}
-		else {
-			return array();
-		}
-	}
-
+            return $data;
+        } else {
+            return array();
+        }
+    }
 }
-
-?>
