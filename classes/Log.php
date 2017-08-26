@@ -13,7 +13,12 @@ class Log
             $message = call_user_func_array('sprintf', $params);
         }
         
-        printf("%s: [%s][%s] %s\n", strtoupper($level), date('Y-m-d H:i:s'), $tag, $message);
+        $fmt = "%s: [%s][%s] %s\n";
+
+        if (substr(PHP_SAPI, 0, 3) != 'cli')
+            $fmt = nl2br($fmt);
+
+        printf($fmt, strtoupper($level), date('Y-m-d H:i:s'), $tag, $message);
     }
     
     public static function debug($tag, $message)
