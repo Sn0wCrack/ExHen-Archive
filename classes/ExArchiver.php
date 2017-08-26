@@ -178,20 +178,15 @@ class ExArchiver
             
             $buttonPress = $this->client->buttonPress($archiverUrl);
 
-            if (strpos($buttonPress, 'continue') === false) {
-                Log::error(self::LOG_TAG, 'Download check not submitted.');
-                return;
-            }
-            
-            $archiverHtml = $buttonPress;
-            $archiverPage = new ExPage_Archiver($archiverHtml);
-
-            if (strpos($archiverHtml, 'Insufficient Credits.') !== false) {
+            if (strpos($buttonPress, 'Insufficient Credits.') !== false) {
                 Log::error(self::LOG_TAG, 'Insufficient Credits');
                 exit;
             }
             
+            $archiverPage = new ExPage_Archiver($buttonPress);
+
             $continueUrl = $archiverPage->getContinueUrl();
+            
             if ($continueUrl) {
                 if (preg_match("/\?.*/", $continueUrl)) {
                     $continueUrl = preg_replace('/\?.*/', '', $continueUrl);
