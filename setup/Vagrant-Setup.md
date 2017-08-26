@@ -55,7 +55,7 @@ Inside the configuration file you'll see this, the three major things you need t
 accessKey will be password used to confirm you wish to delete archives as well as a passphrase between the browser and server to make sure you're sending a gallery to be archived.
 So you can really change this to anything you want, or keep it as changeme, all other changeme instances, can remain the same if you wish. (This is extra setup, chaning all configuration files to make this password.)
 
-To get ipb_member_id and ipb_pass_hash you have to find your e-hentai.org cookie, to find this you have to browse through your browsers cookies.
+To get ipb_member_id and ipb_pass_hash you have to find your e-hentai.org cookie (**NOTE**: There has been issues using the values from the exhentai.org cookie, please use the e-hentai.org cookie's values), to find this you have to browse through your browsers cookies.
 
 * On firefox you can access this under the options menu under the Privacy tab then clicking "remove individual cookies" and searching for e-hentai and copy pasting the "Content" section into the sections of the configuration file needed 
 
