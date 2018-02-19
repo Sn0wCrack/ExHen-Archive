@@ -22,8 +22,7 @@ First we're going to edit some configuration files, the ones we want to focus on
 		"cookie": {
             "ipb_member_id": "changeme",
             "ipb_pass_hash": "changeme",
-            "hath_perks": "m1.m2.m3.tf.t1.t2.t3.p1.p2.s-210aa44613",
-            "uconfig": "tl_m-uh_y-tr_2-ts_m-prn_y-dm_l-ar_1-cats_350-xns_0-xl_1024x2048x1x2049x10x1034x2058x20x1044x2068x30x1054x2078x40x1064x2088x50x1074x2098x60x1084x2108x70x1094x2118x80x1104x2128x90x1114x2138x100x1124x2148x110x1134x2158x120x1144x2168x130x1154x2178x255x1279x2303-rc_2-rx_0-ry_0-ms_n-mt_n-sa_y-oi_n-qb_n-tf_n-hp_-hk_"
+            "hath_perks": "m1.m2.m3.tf.t1.t2.t3.p1.p2.s-210aa44613"
         },
 		"tempDir": "./temp",
         "archiveDir": "./archive",
