@@ -22,7 +22,7 @@ First, install dependencies:
 
 * Apache: [http://www.apachelounge.com/download/](http://www.apachelounge.com/download/) - Get the **win32 or win64 version**
 * PHP: [http://windows.php.net/download/](http://windows.php.net/download/) - Get the **Thread Safe x86 or x64 version**
-* If using PHP7 then PHP7-memcache.dll [https://github.com/nono303/PHP7-memcache-dll](https://github.com/nono303/PHP7-memcache-dll) - Get the version which matches yours (At the moment that would be VC14/x64/ts)
+* If using PHP7 then PHP7-memcache.dll [https://github.com/nono303/PHP7-memcache-dll](https://github.com/nono303/PHP7-memcache-dll) - Get the version which matches yours (At the moment that would be VC15/x64/ts)
 * MariaDB / MySQL: [https://downloads.mariadb.org/mariadb/](https://downloads.mariadb.org/mariadb/) - Get the **win32 or win64 zip verson**
 * memcached: [https://commaster.net/content/installing-memcached-windows](https://commaster.net/content/installing-memcached-windows) - Get the **version 1.4.5 win32 or win64 zip version**
 * Sphinx: [http://sphinxsearch.com/downloads/release/](http://sphinxsearch.com/downloads/release/)
@@ -36,7 +36,9 @@ Then extract the contents of this repo into the folder in the Apache folder `htd
 Open the `config.json.win32` in a text editor an edit the following values.
 
 * The `accessKey` option is a password used for deleting and adding galleries.
-* The `ipb_member_id` and `ipb_pass_hash` in the `cookie` block should be changed to match your ExHentai cookie.
+* The `ipb_member_id`, `ipb_pass_hash` and `sk` in the `cookie` block should be changed to match your ExHentai cookie.
+* Create a new Profile in the ExHentai settings page, make sure this profile set to use "List View" under the "Front Page Setttings" section.
+* Change the `sp` in the `cookie` block to "2"
 * The `tempDir`, `archiveDir` and `imagesDir` all need to point to server-writable folders on your system.
 * The `db` block should stay as it is in most cases, with the exception of `pass`, which you should input whatever password you used for the phpMyAdmin setup step.
 * SphinxQL change the `full` option to point to where ever you installed Sphinx too.

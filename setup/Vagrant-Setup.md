@@ -18,11 +18,14 @@ First we're going to edit some configuration files, the ones we want to focus on
 {
 	"base": {
 		"accessKey": "changeme",
+        "autoReadPercentage": 80,
 		"viewType": "mpv",
 		"cookie": {
             "ipb_member_id": "changeme",
             "ipb_pass_hash": "changeme",
-            "hath_perks": "m1.m2.m3.tf.t1.t2.t3.p1.p2.s-210aa44613"
+            "hath_perks": "m1.m2.m3.tf.t1.t2.t3.p1.p2.s-210aa44613",
+			"sp": "changeme",
+			"sk": "changeme"
         },
 		"tempDir": "./temp",
         "archiveDir": "./archive",
@@ -50,11 +53,13 @@ First we're going to edit some configuration files, the ones we want to focus on
 }
 ```
 
-Inside the configuration file you'll see this, the three major things you need to edit are ```"accessKey"```, ```"ipb_member_id"``` and ```"ipb_pass_hash"```
+Inside the configuration file you'll see this, the three major things you need to edit are ```"accessKey"```, ```"ipb_member_id"```, ```"ipb_pass_hash"``` and ```sk```.
 accessKey will be password used to confirm you wish to delete archives as well as a passphrase between the browser and server to make sure you're sending a gallery to be archived.
 So you can really change this to anything you want, or keep it as changeme, all other changeme instances, can remain the same if you wish. (This is extra setup, chaning all configuration files to make this password.)
 
-To get ipb_member_id and ipb_pass_hash you have to find your e-hentai.org cookie (**NOTE**: There has been issues using the values from the exhentai.org cookie, please use the e-hentai.org cookie's values), to find this you have to browse through your browsers cookies.
+To get ipb_member_id and ipb_pass_hash you have to find your exhentai.org cookie, to find this you have to browse through your browsers cookies.
+
+Under the ExHetai settings page you need to create a second profile that must use the "List View" settings for the "Front Page Settings" section, this is needed if you wish to view feeds correctly. Now set the "sp" in the "cookie" section to "2". If you  don't wish to use feeds in any capacity, please change the cookie to be either blank, or remove it entirely.
 
 * On firefox you can access this under the options menu under the Privacy tab then clicking "remove individual cookies" and searching for e-hentai and copy pasting the "Content" section into the sections of the configuration file needed 
 

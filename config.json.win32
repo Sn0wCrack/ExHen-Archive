@@ -7,6 +7,8 @@
             "ipb_member_id": "changeme",
             "ipb_pass_hash": "changeme",
             "hath_perks": "m1.m2.m3.tf.t1.t2.t3.p1.p2.s-210aa44613",
+			"sp": "changeme",
+			"sk": "changeme"
         },
 		"tempDir": "./temp",
         "archiveDir": "./archive",
