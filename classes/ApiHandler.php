@@ -487,7 +487,7 @@ class ApiHandler
     {
         $body = json_encode($resp);
 
-        ob_end_clean();
+        @ob_end_clean();
 
         if (function_exists('ob_gzhandler')) {
             ob_start('ob_gzhandler');
