@@ -4,46 +4,47 @@ class ExPage_Gallery extends ExPage_Abstract
 {
     public function isValid()
     {
-        $result = $this->find('h1#gn, div#taglist, div#gdd');
+        $result = $this->findElement('h1#gn, div#taglist, div#gdd');
         return count($result) >= 3;
     }
 
     public function getName()
     {
-        return $this->find('h1#gn')->text();
+        return $this->findElement('h1#gn')->text();
     }
 
     public function getOriginalName()
     {
-        return $this->find('h1#gj')->text();
+        return $this->findElement('h1#gj')->text();
     }
 
     public function getType()
     {
-        return $this->find('div#gdc img')->attr('alt');
+        return $this->findElement('div#gdc img')->attr('alt');
     }
 
     public function getThumbnailUrl()
     {
-        return $this->find('div#gd1 img')->attr('src');
+        return $this->findElement('div#gd1 img')->attr('src');
     }
 
     public function getTags()
     {
         $ret = array();
 
-        $tagRows = $this->find('#taglist tr');
+        $tagRows = $this->findElement('#taglist tr');
         foreach ($tagRows as $i => $tagRowElem) {
             $tagRow = $tagRows->eq($i);
 
-            $tagNamespace = $tagRow->find('td:first-child')->text();
+            $tagNamespace = $tagRow->filter('td:first-child')->text();
             $tagNamespace = trim($tagNamespace, ':');
 
             $tags = array();
-            $tagLinks = $tagRow->find('a');
+            $tagLinks = $tagRow->filter('a');
             foreach ($tagLinks as $x => $tagLinkElem) {
                 $tagLink = $tagLinks->eq($x);
                 $tags[] = $tagLink->text();
+                Log::debug(__CLASS__, "Adding tag: {$tagLink->text()}");
             }
 
             $ret[$tagNamespace] = $tags;
@@ -70,9 +71,9 @@ class ExPage_Gallery extends ExPage_Abstract
 
     public function getArchiverUrl()
     {
-        $elem = $this->find('a[onclick*="archiver.php"]');
+        $elem = $this->findElement('a[onclick*="archiver.php"]');
         if (count($elem) > 0) {
-            preg_match("~(https://exhentai.org/archiver.php.*)'~", $elem->attr('onclick'), $matches);
+            preg_match("~(https://exhentai.org/archiver.php.[^\']+)'~", $elem->attr('onclick'), $matches);
             if (count($matches) >= 2) {
                 return $matches[1];
             }

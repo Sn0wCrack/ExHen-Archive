@@ -3,7 +3,10 @@
     "type": "project",
     "require": {
         "ext-curl": "^7.2",
-        "guzzle/guzzle": "^3.9"
+        "symfony/dom-crawler": "^4.1",
+        "guzzlehttp/guzzle": "^6.3",
+        "symfony/css-selector": "^4.1",
+        "psr/log": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.3"
