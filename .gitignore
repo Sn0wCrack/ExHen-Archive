@@ -13,3 +13,5 @@ sphinx.conf
 phpMyAdmin/
 .idea/
 docker-compose.override.yml
+
+/vendor/

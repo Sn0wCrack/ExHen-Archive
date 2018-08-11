@@ -19,6 +19,7 @@ if(php_sapi_name() !== 'cli') {
 }
 
 require 'lib/rb.php';
+require 'vendor/autoload.php';
 
 $config = Config::get();
 

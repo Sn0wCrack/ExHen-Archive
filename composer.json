@@ -1,0 +1,11 @@
+{
+    "name": "pbx_g33k/ex-hentai-archive",
+    "type": "project",
+    "require": {
+        "ext-curl": "^7.2",
+        "guzzle/guzzle": "^3.9"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.3"
+    }
+}
