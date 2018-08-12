@@ -42,6 +42,8 @@ services:
       - "MYSQL_USER=appuser"
       - "MYSQL_PASSWORD=userPass"
       - "MYSQL_DATABASE=exhen"
+    volumes:
+      - "./db.sql:/docker-entrypoint-initdb.d/db.sql"
 
   sphinx:
     image: stefobark/sphinxdocker

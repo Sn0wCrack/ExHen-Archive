@@ -16,5 +16,3 @@ if [ ! -f "/etc/periodic/hourly/thumbnails.sh" ]; then
   chmod +x /etc/periodic/hourly/thumbnails.sh
   (crontab -l ; echo "0 5 * * * /etc/periodic/hourly/thumbnails.sh") | sort - | uniq - | crontab -
 fi
-
-
