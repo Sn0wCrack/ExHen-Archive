@@ -57,4 +57,6 @@ COPY init.d.sh /usr/local/bin/
 COPY . /var/www
 WORKDIR /var/www
 
+RUN chmod +x /var/www/init.d.sh
+
 CMD ["init.d.sh"]
