@@ -36,6 +36,10 @@ RUN apk add --no-cache --update curl-dev jpeg-dev freetype-dev mysql-client \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd
 
+# install jq for manilupating config from bash easily
+RUN apk add --update jq openssh-client\
+    && rm -rf /var/cache/apk/*
+
 COPY init.d.sh /usr/local/bin/
 COPY . /var/www
 WORKDIR /var/www
