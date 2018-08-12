@@ -36,24 +36,6 @@ RUN apk add --no-cache --update curl-dev jpeg-dev freetype-dev mysql-client \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd
 
-# install jq for manilupating config from bash easily
-RUN apk add --update jq git openssh-client\
-    && rm -rf /var/cache/apk/*
-
-# Authorize SSH Host
-RUN mkdir -p /root/.ssh \
-    && chmod 0700 /root/.ssh \
-    && ssh-keyscan github.com > /root/.ssh/known_hosts
-
-# Add the keys and set permissions
-RUN ssh-keygen -q -t rsa -N '' -f /root/.ssh/id_rsa \
-    && chmod 600 /root/.ssh/id_rsa \
-    && chmod 600 /root/.ssh/id_rsa.pub
-
-WORKDIR /var
-RUN rm -rf /var/www \
-    && git clone --branch "$GIT_BRANCH" --depth 1 https://github.com/PBXg33k/ExHentai-Archive.git /var/www
-
 COPY init.d.sh /usr/local/bin/
 COPY . /var/www
 WORKDIR /var/www
