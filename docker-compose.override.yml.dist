@@ -8,6 +8,4 @@ services:
       CONF_MEMBERID: null
       CONF_PASSHASH: null
       CONF_ACCESSKEY: ChangeMeIAmNotSecure
-  mariadb:
-    ports:
-      - "3306:3306"
+      CONF_ACCESSKEY: ChangeMeIAmNotSecure
