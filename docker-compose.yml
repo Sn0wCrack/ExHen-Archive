@@ -60,6 +60,8 @@ services:
       && $HOME/wait-for-it.sh --timeout=30 mariadb:3306
       && mkdir -p /var/lib/sphinxsearch/data/exhen/
       && mkdir -p /etc/sphinxsearch/log/
+      && (crontab -l ; echo \"*/10 * * * * indexer -c /etc/sphinxsearch/sphinx.conf --all --rotate > /proc/1/fd/1 2>/proc/1/fd/2\") | sort - | uniq - | crontab -
+      && apt-get install -y cron && cron
       && indexer -c /etc/sphinxsearch/sphinx.conf --all --rotate
       && searchd -c /etc/sphinxsearch/sphinx.conf --console --pidfile"
     expose:
