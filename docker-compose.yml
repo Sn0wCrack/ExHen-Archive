@@ -23,6 +23,7 @@ services:
       - "./archives:/archive"
       - "./images:/images"
     environment:
+      TZ: UTC
       CONF_MEMBERID: null
       CONF_PASSHASH: null
       CONF_ACCESSKEY: ChangeMeIAmNotSecure
