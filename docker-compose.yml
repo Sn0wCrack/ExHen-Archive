@@ -1,0 +1,72 @@
+version: '3.5'
+services:
+  web:
+    image: nginx
+    links:
+      - app
+    volumes:
+      - ".:/var/www"
+      - "./.docker/config/nginx/vhost.conf:/etc/nginx/conf.d/default.conf:ro"
+      - "./images:/var/www/www/images"
+
+  app:
+    build: .
+    links:
+      - mariadb
+      - sphinx
+      - memcache
+    depends_on:
+      - mariadb
+    volumes:
+      - "./.docker/config/php/php.ini:/usr/local/etc/php/conf.d/030-custom.ini:ro"
+      - ".:/var/www"
+      - "./archives:/archive"
+      - "./images:/images"
+    environment:
+      TZ: UTC
+      CONF_MEMBERID: null
+      CONF_PASSHASH: null
+      CONF_ACCESSKEY: ChangeMeIAmNotSecure
+      CONF_TEMPDIR: "/tmp"
+      CONF_ARCHDIR: "/archive"
+      CONF_IMGDIR: "/images"
+      CONF_SPHINXDSN: "mysql:host=sphinx;port=9306;dbname=exhen"
+      DB_HOST: mariadb
+      DB_USER: appuser
+      DB_PASS: userPass
+      DB_NAME: exhen
+
+  mariadb:
+    image: mariadb
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      - "MYSQL_ROOT_PASSWORD=rootPass"
+      - "MYSQL_USER=appuser"
+      - "MYSQL_PASSWORD=userPass"
+      - "MYSQL_DATABASE=exhen"
+    volumes:
+      - "./db.sql:/docker-entrypoint-initdb.d/db.sql"
+
+  sphinx:
+    image: stefobark/sphinxdocker
+    links:
+      - mariadb
+    depends_on:
+      - mariadb
+    volumes:
+      - "./.docker/config/sphinx/sphinx.conf:/etc/sphinxsearch/sphinx.conf"
+    command: >
+      bash -c "curl https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh > $HOME/wait-for-it.sh
+      && chmod +x $HOME/wait-for-it.sh
+      && $HOME/wait-for-it.sh --timeout=30 mariadb:3306
+      && mkdir -p /var/lib/sphinxsearch/data/exhen/
+      && mkdir -p /etc/sphinxsearch/log/
+      && (crontab -l ; echo \"*/10 * * * * indexer -c /etc/sphinxsearch/sphinx.conf --all --rotate > /proc/1/fd/1 2>/proc/1/fd/2\") | sort - | uniq - | crontab -
+      && apt-get install -y cron && cron
+      && indexer -c /etc/sphinxsearch/sphinx.conf --all --rotate
+      && searchd -c /etc/sphinxsearch/sphinx.conf --nodetach --pidfile"
+    expose:
+      - 9306
+
+  memcache:
+    image: memcached:alpine

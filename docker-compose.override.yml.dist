@@ -1,0 +1,10 @@
+version: '3.5'
+services:
+  web:
+    ports:
+      - "80:80"
+  app:
+    environment:
+      CONF_MEMBERID: null
+      CONF_PASSHASH: null
+      CONF_ACCESSKEY: ChangeMeIAmNotSecure
