@@ -8,4 +8,3 @@ services:
       CONF_MEMBERID: null
       CONF_PASSHASH: null
       CONF_ACCESSKEY: ChangeMeIAmNotSecure
-      CONF_ACCESSKEY: ChangeMeIAmNotSecure
