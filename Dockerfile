@@ -13,7 +13,7 @@ ENV CONF_TEMPDIR="./tmp"
 ENV CONF_ARCHDIR="./archive"
 ENV CONF_IMGDIR="./images"
 ENV CONF_SQLDSN="mysql:host=$DB_HOST;dbname=$DB_NAME"
-ENV CONF_SPHINXDSN="msql:host=$DB_HOST;port=9306;dbname=$DB_NAME"
+ENV CONF_SPHINXDSN="msql:host=sphinx;port=9306;dbname=exhen"
 ENV MEMCACHED_DEPS zlib-dev libmemcached-dev cyrus-sasl-dev
 ENV GIT_BRANCH=dev
 

@@ -64,7 +64,7 @@ services:
       && (crontab -l ; echo \"*/10 * * * * indexer -c /etc/sphinxsearch/sphinx.conf --all --rotate > /proc/1/fd/1 2>/proc/1/fd/2\") | sort - | uniq - | crontab -
       && apt-get install -y cron && cron
       && indexer -c /etc/sphinxsearch/sphinx.conf --all --rotate
-      && searchd -c /etc/sphinxsearch/sphinx.conf --console --pidfile"
+      && searchd -c /etc/sphinxsearch/sphinx.conf --nodetach --pidfile"
     expose:
       - 9306
 
