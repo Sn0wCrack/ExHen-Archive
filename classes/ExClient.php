@@ -118,8 +118,6 @@ class ExClient
 
             $form = $crawler->selectButton("Download Original Archive")->form();
 
-            var_dump($form); die();
-
             $crawler = $this->client->submit($form);
 
             return $crawler->html();
