@@ -71,9 +71,7 @@ WORKDIR /var/www/html
 
 RUN composer install --no-dev --optimize-autoloader
 
-RUN chmod +x init.d.sh
-
 #cleanup
 RUN rm -rf .git/
 
-CMD ["init.d.sh"]
+CMD ["chmod +x init.d.sh && init.d.sh"]
