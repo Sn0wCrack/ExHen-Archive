@@ -7,6 +7,7 @@ use GuzzleHttp\Cookie\CookieJar;
 
 class ExClient
 {
+    const LOG_TAG = 'ExClient';
     const BASE_URL = 'https://exhentai.org';
     const USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36';
 
@@ -162,6 +163,7 @@ class ExClient
      */
     public function post($uri, array $formdata)
     {
+        Log::debug(self::LOG_TAG, 'POST REQUEST %s', $uri);
         $this->lastResponse = $this->client->request('POST', $uri, $formdata);
 
         self::validateResponse($this->client->getInternalResponse());
@@ -178,6 +180,7 @@ class ExClient
      */
     public function get($uri, array $parameters = [])
     {
+        Log::debug(self::LOG_TAG, 'GET REQUEST %s', $uri);
         $this->lastResponse = $this->client->request('GET', $uri, $parameters);
 
         self::validateResponse($this->client->getInternalResponse());
