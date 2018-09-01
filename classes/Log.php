@@ -15,10 +15,10 @@ class Log
         
         $fmt = "%s: [%s][%s] %s\n";
 
-        if (substr(PHP_SAPI, 0, 3) != 'cli')
-            $fmt = nl2br($fmt);
+        if (substr(PHP_SAPI, 0, 3) == 'cli') {
+            printf($fmt, strtoupper($level), date('Y-m-d H:i:s'), $tag, $message);
+        }
 
-        printf($fmt, strtoupper($level), date('Y-m-d H:i:s'), $tag, $message);
     }
     
     public static function debug($tag, $message)
