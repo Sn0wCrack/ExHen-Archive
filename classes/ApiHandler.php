@@ -130,7 +130,9 @@ class ApiHandler
                             $resize = $image->getWidth();
                         }
 
-                        $image->resize($resize);
+                        $image->resize($resize, null, function($constraint) {
+                            $constraint->aspectRatio();
+                        });
 
                         $quality = null;
                         switch ($ext) {

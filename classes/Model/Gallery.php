@@ -15,6 +15,9 @@ class Model_Gallery extends Model_Abstract
 
     const GP_PER_MB = 41.9435018158;
 
+    /**
+     * @var ZipArchive
+     */
     private $zipResource;
 
     public static function search($page, $pagesize, $search, $order, $randomSeed = null, $unarchived = false, $read = false, $color = false)
@@ -134,12 +137,24 @@ class Model_Gallery extends Model_Abstract
 
                 $resizedFilename = sprintf('resized_gallery_%d_%d.jpg', $this->id, $index);
 
-                if ($type == self::THUMB_LARGE) {
-                    $image = Image::make($fileContent)->resize(350);
-                } elseif ($type == self::THUMB_SMALL) {
-                    $image = Image::make($fileContent)->resize(140);
-                } else {
-                    return false;
+                try {
+                    if ($type == self::THUMB_LARGE) {
+                        $width = 350;
+                    } elseif ($type == self::THUMB_SMALL) {
+                        $width = 140;
+                    } else {
+                        return false;
+                    }
+                    $image = Image::make($fileContent)->resize($width, null, function ($constraint) {
+                        $constraint->aspectRatio();
+                    });
+                } catch (Exception $exception) {
+                    throw new Exceptions_ExHentaiException(sprintf(
+                        'Error decoding image. Message: %s. File: %s (%s)',
+                        $exception->getMessage(),
+                        $this->getArchiveFilepath(),
+                        $this->zipResource->getNameIndex($index)
+                        ));
                 }
 
                 $tempDir = Config::get()->tempDir;
