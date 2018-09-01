@@ -27,23 +27,30 @@ class ExClient
     private $cookieJar;
 
     /**
+     * @var array|array
+     */
+    private $guzzleDefaults;
+
+    /**
      * ExClient constructor.
      * @param array $options
      */
     public function __construct()
     {
+        $this->guzzleDefaults = [
+            'allow_redirects' => [
+                'max'             => 300,
+                'refer'           => true,
+                'track_redirects' => true,
+            ],
+            'headers'         => [
+                'User-Agent' => self::USER_AGENT,
+            ]
+        ];
+
         $this->client = new Client([
             'base_uri' => self::BASE_URL,
-            'defaults' => [
-                'allow_redirects' => [
-                    'max'             => 300,
-                    'refer'           => true,
-                    'track_redirects' => true,
-                ],
-                'headers'         => [
-                    'User-Agent' => self::USER_AGENT,
-                ]
-            ]
+            'defaults' => $this->guzzleDefaults
         ]);
 
         $this->cookieJar = Config::buildCookieJar();
@@ -133,9 +140,11 @@ class ExClient
      */
     public function post($uri, array $formdata)
     {
-        $this->lastResponse = $this->client->post($uri, [
-            'form_params' => $formdata
-        ]);
+        $params = array_merge([
+            'form_params'   => $formdata,
+        ], $this->guzzleDefaults);
+
+        $this->lastResponse = $this->client->post($uri, $params);
 
         self::validateResponse($this->lastResponse);
         return $this->lastResponse->getBody()->getContents();
@@ -153,10 +162,12 @@ class ExClient
      */
     public function get($uri, array $parameters = null)
     {
-        $this->lastResponse = $this->client->get($uri, [
+        $params = array_merge([
             'query'   => $parameters,
             'cookies' => $this->cookieJar,
-        ]);
+        ], $this->guzzleDefaults);
+
+        $this->lastResponse = $this->client->get($uri, $params);
 
         self::validateResponse($this->lastResponse);
         return $this->lastResponse->getBody()->getContents();
