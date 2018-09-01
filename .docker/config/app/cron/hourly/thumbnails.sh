@@ -1,2 +1,2 @@
 #!/usr/bin/env sh
-cd /var/www/ && php TaskRunner.php Thumbnails
+cd /var/www/html/ && php TaskRunner.php Thumbnails
