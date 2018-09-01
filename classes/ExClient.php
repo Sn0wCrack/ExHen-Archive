@@ -2,7 +2,7 @@
 
 use Goutte\Client;
 use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Psr7\Response;
+use Symfony\Component\BrowserKit\Response;
 use GuzzleHttp\Cookie\CookieJar;
 
 class ExClient
@@ -114,7 +114,7 @@ class ExClient
                 $this->ctr = 0;
             }
 
-            $crawler = $this->client->request($url);
+            $crawler = $this->client->request('GET', $url);
 
             $form = $crawler->selectButton("Download Original Archive")->form();
 
@@ -123,10 +123,6 @@ class ExClient
             $crawler = $this->client->submit($form);
 
             return $crawler->html();
-            return $this->post($url, array_merge([
-                'dlcheck' => 'Download Original Archive',
-                'dltype'  => 'org'
-            ],$this->guzzleDefaults));
         } else {
             Log::debug("ExClient", "dlcheck bypassed already");
         }
@@ -136,18 +132,20 @@ class ExClient
     public function invalidateForm($url)
     {
         $this->post($url, ['invalidate_session' => 1]);
-        self::validateResponse($this->lastResponse);
+        self::validateResponse($this->client->getInternalResponse());
     }
     
     public function getArchiveFileSize($url)
     {
-        $this->lastResponse = $this->client->head($url);
+        $this->client->request('HEAD',$url);
+        $this->lastResponse = $this->client->getInternalResponse();
+
         self::validateResponse($this->lastResponse);
 
         $result = "unknown";
 
         $content_length = $this->lastResponse->getHeader('Content-Length');
-        $status = $this->lastResponse->getStatusCode();
+        $status = $this->lastResponse->getStatus();
 
         if ($status == 200 || ($status > 300 && $status <= 308)) {
             $result = $content_length;
@@ -168,7 +166,7 @@ class ExClient
     {
         $this->lastResponse = $this->client->request('POST', $uri, $formdata);
 
-        self::validateResponse($this->lastResponse);
+        self::validateResponse($this->client->getInternalResponse());
         return $this->lastResponse->getBody()->getContents();
     }
 
@@ -184,14 +182,14 @@ class ExClient
     {
         $this->lastResponse = $this->client->request('GET', $uri, $parameters);
 
-        self::validateResponse($this->lastResponse);
+        self::validateResponse($this->client->getInternalResponse());
         return $this->lastResponse->getBody()->getContents();
     }
 
     private static function validateResponse(Response $response)
     {
-        $statusCode = $response->getStatusCode();
-        $reponseContent = $response->getBody()->getContents();
+        $statusCode = $response->getStatus();
+        $reponseContent = $response->getContent();
 
         if (strpos($reponseContent, 'Your IP address has been temporarily banned for using automated mirroring/harvesting software and/or failing to heed the overload warning.') !== false) {
             throw new BannedException();
@@ -202,11 +200,8 @@ class ExClient
         }
 
         if (substr($statusCode,0,1) != 2) {
-            throw new ExHentaiException("Got {$statusCode} response code with reason: {$response->getReasonPhrase()}");
+            throw new ExHentaiException("Got {$statusCode}");
         }
-
-        // Rewind stream so it can be read again
-        $response->getBody()->rewind();
     }
 
     /**
