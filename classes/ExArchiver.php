@@ -177,7 +177,12 @@ class ExArchiver
                     return;
                 }
 
-                $buttonPress = $this->client->buttonPress($archiverUrl);
+                try {
+                    $buttonPress = $this->client->buttonPress($archiverUrl);
+                } catch (InsufficientFundsException $exception) {
+                    Log::error(self::LOG_TAG, 'Insufficient Funds');
+                    exit;
+                }
 
                 if (strpos($buttonPress, 'Insufficient Credits.') !== false) {
                     Log::error(self::LOG_TAG, 'Insufficient Credits');
