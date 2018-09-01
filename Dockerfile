@@ -50,10 +50,17 @@ RUN apk add --no-cache --update curl-dev jpeg-dev freetype-dev mysql-client \
 RUN apk add --update jq openssh-client\
     && rm -rf /var/cache/apk/*
 
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+    && php composer-setup.php --install-dir=/usr/bin --filename=composer \
+    && rm composer-setup.php \
+    && chmod +x /usr/bin/composer
+
 COPY init.d.sh /usr/local/bin/
 COPY ./.manifest/ /
 COPY . /var/www/html
 WORKDIR /var/www/html
+
+RUN composer install --no-dev --optimize-autoloader
 
 RUN chmod +x /var/www/html/init.d.sh
 

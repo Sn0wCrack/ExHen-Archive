@@ -22,4 +22,4 @@ else
 fi
 
 cd /var/www/html
-php /usr/bin/composer install
+php /usr/bin/composer install --no-dev --optimize-autoloader
