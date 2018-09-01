@@ -57,11 +57,11 @@ class ExPage_Gallery extends ExPage_Abstract
     {
         $ret = array();
 
-        $attrs = $this->find('td.gdt1');
+        $attrs = $this->findElement('td.gdt1');
         foreach ($attrs as $i => $attrElem) {
             $attr = $attrs->eq($i);
             $propName = trim($attr->text(), ':');
-            $propValue = $attr->next()->text();
+            $propValue = $attr->nextAll()->text();
 
             $ret[$propName] = $propValue;
         }
@@ -84,8 +84,8 @@ class ExPage_Gallery extends ExPage_Abstract
 
     public function getNewestVersion()
     {
-        $elem = $this->find('div#gnd a:last');
-        if (count($elem) === 1) {
+        $elem = $this->findElement('div#gnd a:last');
+        if ($elem->count() === 1) {
             preg_match("~https://exhentai.org/g/(\d*)/(\w*)/~", $elem->attr('href'), $matches);
 
             $ret =new stdClass();
