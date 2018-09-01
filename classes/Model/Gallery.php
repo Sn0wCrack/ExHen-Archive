@@ -1,6 +1,6 @@
 <?php
 
-use PHPImageWorkshop\ImageWorkshop;
+use Intervention\Image\ImageManagerStatic as Image;
 
 class Model_Gallery extends Model_Abstract
 {
@@ -137,25 +137,22 @@ class Model_Gallery extends Model_Abstract
                 if (file_exists($inFile)) {
                     $resizedFilename = sprintf('resized_gallery_%d_%d.jpg', $this->id, $index);
 
-                    $layer = ImageWorkshop::initFromPath($inFile);
-
                     if ($type == self::THUMB_LARGE) {
-                        $layer->resizeInPixel(350, null, true);
+                        $image = Image::make($inFile)->resize(350);
                     } elseif ($type == self::THUMB_SMALL) {
-                        $layer->resizeInPixel(140, null, true);
+                        $image = Image::make($inFile)->resize(140);
                     } else {
                         return false;
                     }
 
                     $tempDir = Config::get()->tempDir;
-                    $layer->save($tempDir, $resizedFilename, true, null, 95);
 
                     $outFile = $tempDir.DS.$resizedFilename;
+                    $image->save($outFile, 95);
                     $image = Model_Image::importFromFile($outFile);
-
                     unlink($outFile);
 
-                    $link = $image->unbox()->link('gallery_thumb', array('index' => $index, 'type' => $type))->gallery = $this->unbox();
+                    $image->unbox()->link('gallery_thumb', array('index' => $index, 'type' => $type))->gallery = $this->unbox();
                     R::store($image);
 
                     return $image;

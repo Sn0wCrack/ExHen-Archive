@@ -10,9 +10,11 @@ class Task_Thumbnails extends Task_Abstract {
 		$galleryCount = count($galleries);
 		Log::debug(self::LOG_TAG, 'Found %d galleries for thumbnails', $galleryCount);
 
+		$successCount = 0;
 		$count = 0;
 
-		foreach($galleries as $gallery) {
+		/** @var Model_Gallery $gallery */
+        foreach($galleries as $gallery) {
 			Log::debug(self::LOG_TAG, '[%d/%d][%d img] %s', ($count+1), $galleryCount, $gallery->numfiles, $gallery->name);
 			$success = true;
 
@@ -21,13 +23,16 @@ class Task_Thumbnails extends Task_Abstract {
                 	$gallery->getThumbnail($i, 2, true);
 				}
                 catch(Exception $e) {
+                    Log::error(self::LOG_TAG, 'Error occured. %s', $e->getMessage());
 					$success = false;
                 }
         	}
 
 			if($success) {
-				$count++;
+				$successCount++;
 			}
+
+			$count++;
 		}
 
 		Log::debug(self::LOG_TAG, 'Processed thumbnails for %d galleries', $count);
