@@ -180,7 +180,7 @@ class ExClient
      * @throws BrowsingTooFastException
      * @throws ExHentaiException
      */
-    public function get($uri, array $parameters = null)
+    public function get($uri, array $parameters = [])
     {
         $this->lastResponse = $this->client->request('GET', $uri, $parameters);
 
