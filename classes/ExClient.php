@@ -32,11 +32,24 @@ class ExClient
     private $guzzleDefaults;
 
     /**
+     * @var \GuzzleHttp\Middleware
+     */
+    private $history;
+
+    /**
+     * @var array
+     */
+    private $historyContainer;
+
+    /**
      * ExClient constructor.
      * @param array $options
      */
     public function __construct()
     {
+        $this->history = \GuzzleHttp\Middleware::history($this->historyContainer);
+        $stack = \GuzzleHttp\HandlerStack::create($this->history);
+
         $this->guzzleDefaults = [
             'allow_redirects' => [
                 'max'             => 300,
@@ -50,7 +63,8 @@ class ExClient
 
         $this->client = new Client([
             'base_uri' => self::BASE_URL,
-            'defaults' => $this->guzzleDefaults
+            'defaults' => $this->guzzleDefaults,
+            'handler' => $stack
         ]);
 
         $this->cookieJar = Config::buildCookieJar();
@@ -136,7 +150,7 @@ class ExClient
      * @return bool|string
      * @throws BannedException
      * @throws BrowsingTooFastException
-     * @throws HttpResponseException
+     * @throws ExHentaiException
      */
     public function post($uri, array $formdata)
     {
@@ -151,14 +165,12 @@ class ExClient
     }
 
     /**
-     * Perform a GET request
-     *
      * @param $uri
      * @param array|null $parameters
      * @return bool|string
      * @throws BannedException
      * @throws BrowsingTooFastException
-     * @throws HttpResponseException
+     * @throws ExHentaiException
      */
     public function get($uri, array $parameters = null)
     {
@@ -200,5 +212,10 @@ class ExClient
     public function getLastResponse()
     {
         return $this->lastResponse;
+    }
+
+    public function getRequestHistory()
+    {
+        return $this->historyContainer;
     }
 }
