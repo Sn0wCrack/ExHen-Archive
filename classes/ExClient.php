@@ -175,8 +175,8 @@ class ExClient
             throw new BrowsingTooFastException("Browsing to fast");
         }
 
-        if (substr($statusCode,0,1) !== 2) {
-            throw new HttpResponseException("Invalid status code returned");
+        if (substr($statusCode,0,1) != 2) {
+            throw new ExHentaiException("Got {$statusCode} response code with reason: {$response->getReasonPhrase()}");
         }
 
         // Rewind stream so it can be read again

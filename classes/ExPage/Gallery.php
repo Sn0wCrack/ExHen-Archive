@@ -44,7 +44,6 @@ class ExPage_Gallery extends ExPage_Abstract
             foreach ($tagLinks as $x => $tagLinkElem) {
                 $tagLink = $tagLinks->eq($x);
                 $tags[] = $tagLink->text();
-                Log::debug(__CLASS__, "Adding tag: {$tagLink->text()}");
             }
 
             $ret[$tagNamespace] = $tags;

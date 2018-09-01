@@ -55,6 +55,6 @@ class Config
 
     public static function buildCookieJar()
     {
-        return \GuzzleHttp\Cookie\CookieJar::fromArray(self::$config->cookie, '.exhentai.org');
+        return \GuzzleHttp\Cookie\CookieJar::fromArray((array)self::$config->cookie, '.exhentai.org');
     }
 }

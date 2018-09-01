@@ -198,6 +198,7 @@ class ApiHandler
         list($id, $index, $type) = $this->getParams('id', 'index', 'type');
 
         if ($id && $index !== null && in_array($type, array(Model_Gallery::THUMB_LARGE, Model_Gallery::THUMB_SMALL))) {
+            /** @var Model_Gallery $gallery */
             $gallery = R::load('gallery', $id);
             if ($gallery) {
                 $thumb = $gallery->getThumbnail($index, $type, true);
