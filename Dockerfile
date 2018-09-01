@@ -55,6 +55,6 @@ COPY ./.manifest/ /
 COPY . /var/www/html
 WORKDIR /var/www/html
 
-RUN chmod +x /var/www/init.d.sh
+RUN chmod +x /var/www/html/init.d.sh
 
 CMD ["init.d.sh"]
