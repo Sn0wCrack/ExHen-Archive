@@ -117,9 +117,15 @@ class ExClient
 
             $crawler = $this->client->request('GET', $url);
 
-            $form = $crawler->selectButton("Download Original Archive")->form();
+            try {
+                $form = $crawler->selectButton("Download Original Archive")->form();
 
-            $crawler = $this->client->submit($form);
+                $crawler = $this->client->submit($form);
+            } catch (InvalidArgumentException $exception) {
+                if(strpos($crawler->html(), 'Insufficient Funds') !== false) {
+                    throw new InsufficientFundsException($crawler->html());
+                }
+            }
 
             return $crawler->html();
         } else {
