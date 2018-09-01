@@ -55,6 +55,18 @@ class Config
 
     public static function buildCookieJar()
     {
-        return \GuzzleHttp\Cookie\CookieJar::fromArray((array)self::$config->cookie, '.exhentai.org');
+        $cookieJar = new \Symfony\Component\BrowserKit\CookieJar();
+
+        foreach((array)self::$config->cookie as $name => $value) {
+            $cookieJar->set(new \Symfony\Component\BrowserKit\Cookie(
+                $name,
+                $value,
+                null,
+                null,
+                '.exhentai.org'
+            ));
+        }
+
+        return $cookieJar;
     }
 }

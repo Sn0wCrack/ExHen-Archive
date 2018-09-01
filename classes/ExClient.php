@@ -1,6 +1,7 @@
 <?php
 
-use GuzzleHttp\Client;
+use Goutte\Client;
+use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Cookie\CookieJar;
 
@@ -62,13 +63,14 @@ class ExClient
             ]
         ];
 
-        $this->client = new Client([
+        $guzzleClient = new GuzzleClient([
             'base_uri' => self::BASE_URL,
             'defaults' => $this->guzzleDefaults,
             'handler' => $stack
         ]);
 
-        $this->cookieJar = Config::buildCookieJar();
+        $this->client = new Client([], null, Config::buildCookieJar());
+        $this->client->setClient($guzzleClient);
     }
 
     public function index($search = '', $page = 0, $extraParams = array())
@@ -112,6 +114,15 @@ class ExClient
                 $this->ctr = 0;
             }
 
+            $crawler = $this->client->request($url);
+
+            $form = $crawler->selectButton("Download Original Archive")->form();
+
+            var_dump($form); die();
+
+            $crawler = $this->client->submit($form);
+
+            return $crawler->html();
             return $this->post($url, array_merge([
                 'dlcheck' => 'Download Original Archive',
                 'dltype'  => 'org'
@@ -155,11 +166,7 @@ class ExClient
      */
     public function post($uri, array $formdata)
     {
-        $params = array_merge([
-            'form_params'   => $formdata,
-        ], $this->guzzleDefaults);
-
-        $this->lastResponse = $this->client->post($uri, $params);
+        $this->lastResponse = $this->client->request('POST', $uri, $formdata);
 
         self::validateResponse($this->lastResponse);
         return $this->lastResponse->getBody()->getContents();
@@ -175,12 +182,7 @@ class ExClient
      */
     public function get($uri, array $parameters = null)
     {
-        $params = array_merge([
-            'query'   => $parameters,
-            'cookies' => $this->cookieJar,
-        ], $this->guzzleDefaults);
-
-        $this->lastResponse = $this->client->get($uri, $params);
+        $this->lastResponse = $this->client->request('GET', $uri, $parameters);
 
         self::validateResponse($this->lastResponse);
         return $this->lastResponse->getBody()->getContents();
