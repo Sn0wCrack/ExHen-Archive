@@ -53,7 +53,7 @@ class ExClient
 
         $this->guzzleDefaults = [
             'allow_redirects' => [
-                'max'             => 300,
+                'max'             => 5,
                 'refer'           => true,
                 'track_redirects' => true,
             ],

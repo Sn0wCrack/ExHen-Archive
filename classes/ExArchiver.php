@@ -236,7 +236,7 @@ class ExArchiver
                         $total,
                         $request->getMethod(),
                         $response->getStatusCode(),
-                        $request->getUri()->getPath()
+                        (string)$request->getUri()
                     );
 
                     $i++;
