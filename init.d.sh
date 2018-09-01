@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-echo
+echo "Starting up"
 for f in docker-entrypoint-init.d/*; do
     case "$f" in
         *.sh)
@@ -15,11 +15,16 @@ for f in docker-entrypoint-init.d/*; do
             ;;
         *)        echo "$0: ignoring $f" ;;
     esac
-    echo
 done
 
 echo
 echo 'init process complete; ready for start up.'
 echo
 
-exec php-fpm
+if [[ -z "$@" ]]; then
+  # Start supervisord and services
+  exec /usr/bin/supervisord --nodaemon -c /etc/supervisord.conf
+else
+  exec "$@"
+fi
+

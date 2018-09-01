@@ -4,14 +4,14 @@ class ExPage_Index extends ExPage_Abstract
 {
     public function isLastPage()
     {
-        return (count($this->find('td.ptds + td.ptdd')) > 0);
+        return (count($this->findElement('td.ptds + td.ptdd')) > 0);
     }
 
     public function getGalleries()
     {
         $ret = array();
 
-        $links = $this->find('td.itd .it5 a');
+        $links = $this->findElement('td.itd .it5 a');
         foreach ($links as $linkElem) {
             $gallery = new stdClass();
 

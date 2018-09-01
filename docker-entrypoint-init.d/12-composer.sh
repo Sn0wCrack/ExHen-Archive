@@ -21,5 +21,5 @@ else
     echo "Composer already installed"
 fi
 
-cd /var/www
-php /usr/bin/composer install
+cd /var/www/html
+php /usr/bin/composer install --no-dev --optimize-autoloader
