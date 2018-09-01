@@ -167,7 +167,7 @@ class ExClient
         $this->lastResponse = $this->client->request('POST', $uri, $formdata);
 
         self::validateResponse($this->client->getInternalResponse());
-        return $this->lastResponse->getBody()->getContents();
+        return $this->lastResponse->getContent();
     }
 
     /**
@@ -183,7 +183,7 @@ class ExClient
         $this->lastResponse = $this->client->request('GET', $uri, $parameters);
 
         self::validateResponse($this->client->getInternalResponse());
-        return $this->lastResponse->getBody()->getContents();
+        return $this->lastResponse->getContent();
     }
 
     private static function validateResponse(Response $response)
