@@ -15,9 +15,19 @@ ENV CONF_IMGDIR="./images"
 ENV CONF_SQLDSN="mysql:host=$DB_HOST;dbname=$DB_NAME"
 ENV CONF_SPHINXDSN="msql:host=sphinx;port=9306;dbname=exhen"
 ENV MEMCACHED_DEPS zlib-dev libmemcached-dev cyrus-sasl-dev
-ENV GIT_BRANCH=dev
 
-RUN apk add --no-cache --update libmemcached-libs zlib
+RUN apk add --no-cache --update libmemcached-libs zlib nginx libressl pcre zlib supervisor sed re2c m4 ca-certificates py-pip \
+    && mkdir -p /run/nginx/ \
+    && chmod ugo+w /run/nginx/ \
+    && rm -f /etc/nginx/nginx.conf \
+    && mkdir -p /etc/nginx/conf.d/ \
+    && mkdir -p /etc/nginx/ssl/ \
+    && mkdir -p /var/www/html/ \
+    && chmod -R 755 /var/www/ \
+    && chown -R nginx:nginx /var/www/ \
+    && pip install --upgrade pip \
+    && pip install supervisor-stdout
+
 RUN set -xe \
     && apk add --no-cache --update --virtual .phpize-deps $PHPIZE_DEPS \
     && apk add --no-cache --update --virtual .memcached-deps $MEMCACHED_DEPS \
@@ -41,6 +51,7 @@ RUN apk add --update jq openssh-client\
     && rm -rf /var/cache/apk/*
 
 COPY init.d.sh /usr/local/bin/
+COPY ./.manifest/ /
 COPY . /var/www
 WORKDIR /var/www
 
