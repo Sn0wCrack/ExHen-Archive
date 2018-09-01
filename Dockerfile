@@ -52,8 +52,11 @@ RUN apk add --update jq openssh-client\
 
 COPY init.d.sh /usr/local/bin/
 COPY ./.manifest/ /
-COPY . /var/www
-WORKDIR /var/www
+COPY . /var/www/html
+
+RUN composer install --no-dev --optimize-autoloader
+
+WORKDIR /var/www/html
 
 RUN chmod +x /var/www/init.d.sh
 
