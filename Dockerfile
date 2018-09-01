@@ -75,4 +75,4 @@ RUN composer install --no-dev --optimize-autoloader \
 #cleanup
 RUN rm -rf .git/
 
-CMD ["sh init.d.sh"]
+CMD ["sh", "init.d.sh"]
