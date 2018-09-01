@@ -1,4 +1,4 @@
 <?php
-class BrowsingTooFastException extends ExHentaiException
+class Exceptions_BrowsingTooFastException extends Exceptions_ExHentaiException
 {
 }

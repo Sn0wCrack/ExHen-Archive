@@ -1,5 +1,5 @@
 <?php
-class UnauthorizedException extends ExHentaiException
+class Exceptions_UnauthorizedException extends Exceptions_ExHentaiException
 {
 
 }

@@ -1,5 +1,5 @@
 <?php
-class CrawlException extends ExHentaiException
+class Exceptions_CrawlException extends Exceptions_ExHentaiException
 {
     /**
      * @var string

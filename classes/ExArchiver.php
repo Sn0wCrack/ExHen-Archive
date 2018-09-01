@@ -179,7 +179,7 @@ class ExArchiver
 
                 try {
                     $buttonPress = $this->client->buttonPress($archiverUrl);
-                } catch (InsufficientFundsException $exception) {
+                } catch (Exceptions_InsufficientFundsException $exception) {
                     Log::error(self::LOG_TAG, 'Insufficient Funds');
                     exit;
                 }

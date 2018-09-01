@@ -123,7 +123,7 @@ class ExClient
                 $crawler = $this->client->submit($form);
             } catch (InvalidArgumentException $exception) {
                 if(strpos($crawler->html(), 'Insufficient Funds') !== false) {
-                    throw new InsufficientFundsException($crawler->html());
+                    throw new Exceptions_InsufficientFundsException($crawler->html());
                 }
             }
 
@@ -165,7 +165,7 @@ class ExClient
      * @return bool|string
      * @throws BannedException
      * @throws BrowsingTooFastException
-     * @throws ExHentaiException
+     * @throws Exceptions_ExHentaiException
      */
     public function post($uri, array $formdata)
     {
@@ -182,7 +182,7 @@ class ExClient
      * @return bool|string
      * @throws BannedException
      * @throws BrowsingTooFastException
-     * @throws ExHentaiException
+     * @throws Exceptions_ExHentaiException
      */
     public function get($uri, array $parameters = [])
     {
@@ -207,7 +207,7 @@ class ExClient
         }
 
         if (substr($statusCode,0,1) != 2) {
-            throw new ExHentaiException("Got {$statusCode}");
+            throw new Exceptions_ExHentaiException("Got {$statusCode}");
         }
     }
 

@@ -1,5 +1,5 @@
 <?php
-class InsufficientFundsException extends CrawlException
+class Exceptions_InsufficientFundsException extends Exceptions_CrawlException
 {
 
 }

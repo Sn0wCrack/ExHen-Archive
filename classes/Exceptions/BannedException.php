@@ -1,4 +1,4 @@
 <?php
-class BannedException extends ExHentaiException
+class Exceptions_BannedException extends Exceptions_ExHentaiException
 {
 }
