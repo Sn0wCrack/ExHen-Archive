@@ -1,9 +1,11 @@
 <?php
 
-use PHPImageWorkshop\ImageWorkshop;
+use Intervention\Image\ImageManagerStatic as Image;
 
 class Model_Gallery extends Model_Abstract
 {
+    const LOG_TAG = 'Model_Gallery';
+
     const SOURCE_EXHENTAI = 0;
     const SOURCE_MANUAL = 1;
     const SOURCE_NHENTAI = 2;
@@ -12,6 +14,11 @@ class Model_Gallery extends Model_Abstract
     const THUMB_SMALL = 2;
 
     const GP_PER_MB = 41.9435018158;
+
+    /**
+     * @var ZipArchive
+     */
+    private $zipResource;
 
     public static function search($page, $pagesize, $search, $order, $randomSeed = null, $unarchived = false, $read = false, $color = false)
     {
@@ -91,28 +98,23 @@ class Model_Gallery extends Model_Abstract
         }
     }
 
-    public function getImageFilepath($index)
+    public function getArchivedImage($index)
     {
-        $zipPath = $this->getArchiveFilepath();
-        if (file_exists($zipPath)) {
-            $files = array();
-
-            $zip = new PharData($zipPath);
-            if ($zip) {
-                foreach ($zip as $file) {
-                    $files[] = basename($file);
-                }
-
-                natcasesort($files);
-                $files = array_values($files); //strip keys
-
-                if (array_key_exists($index, $files)) {
-                    return sprintf('phar://%s/%s', $zipPath, $files[$index]);
-                }
+        if(!$this->zipResource) {
+            $this->zipResource = new ZipArchive();
+            $openstate = $this->zipResource->open($this->getArchiveFilepath());
+            if($openstate !== TRUE) {
+                throw new Exceptions_ExHentaiException('Zip could not be opened');
             }
         }
 
-        return false;
+        $content = $this->zipResource->getFromIndex($index);
+
+        if(($index+1) >= $this->zipResource->numFiles) {
+            $this->zipResource->close();
+        }
+
+        return $content;
     }
 
     public function getImageBean($index)
@@ -130,35 +132,47 @@ class Model_Gallery extends Model_Abstract
 
                 return $link->image;
             } elseif ($create) {
-                $inFile = $this->getImageFilepath($index);
 
-                if (file_exists($inFile)) {
-                    $resizedFilename = sprintf('resized_gallery_%d_%d.jpg', $this->id, $index);
+                $fileContent = $this->getArchivedImage($index);
 
-                    $layer = ImageWorkshop::initFromPath($inFile);
+                $resizedFilename = sprintf('resized_gallery_%d_%d.jpg', $this->id, $index);
 
+                try {
                     if ($type == self::THUMB_LARGE) {
-                        $layer->resizeInPixel(350, null, true);
+                        $width = 350;
                     } elseif ($type == self::THUMB_SMALL) {
-                        $layer->resizeInPixel(140, null, true);
+                        $width = 140;
                     } else {
                         return false;
                     }
-
-                    $tempDir = Config::get()->tempDir;
-                    $layer->save($tempDir, $resizedFilename, true, null, 95);
-
-                    $outFile = $tempDir.DS.$resizedFilename;
-                    $image = Model_Image::importFromFile($outFile);
-
-                    unlink($outFile);
-
-                    $link = $image->unbox()->link('gallery_thumb', array('index' => $index, 'type' => $type))->gallery = $this->unbox();
-                    R::store($image);
-
-                    return $image;
+                    $image = Image::make($fileContent)->resize($width, null, function ($constraint) {
+                        $constraint->aspectRatio();
+                    });
+                } catch (Exception $exception) {
+                    throw new Exceptions_ExHentaiException(sprintf(
+                        'Error decoding image. Message: %s. File: %s (%s)',
+                        $exception->getMessage(),
+                        $this->getArchiveFilepath(),
+                        $this->zipResource->getNameIndex($index)
+                        ));
                 }
+
+                $tempDir = Config::get()->tempDir;
+
+                $outFile = $tempDir.DS.$resizedFilename;
+                $image->save($outFile, 95);
+                Log::debug(self::LOG_TAG, 'Saved image to %s', $outFile);
+                $image = Model_Image::importFromFile($outFile);
+                unlink($outFile);
+
+                $image->unbox()->link('gallery_thumb', array('index' => $index, 'type' => $type))->gallery = $this->unbox();
+                R::store($image);
+
+                return $image;
+
             }
+        } else {
+            Log::debug(self::LOG_TAG, 'Gallery not archived, no thumbs');
         }
 
         return false;

@@ -4,6 +4,9 @@ class Task_Audit extends Task_Abstract {
 
     const LOG_TAG = 'Task_Audit';
 
+    /**
+     * @var ExClient
+     */
     protected $client;
 
     public function run($options = array()) {
@@ -26,6 +29,7 @@ class Task_Audit extends Task_Abstract {
                 break;
             }
 
+            Log::debug(self::LOG_TAG, 'Loaded %d galleries for audit', count($galleries));
             foreach($galleries as $gallery) {
                 $this->audit($gallery);
             }
@@ -40,65 +44,68 @@ class Task_Audit extends Task_Abstract {
     protected function audit($gallery) {
         Log::debug(self::LOG_TAG, 'Auditing gallery: #%d - %s', $gallery->exhenid, $gallery->name);
 
-        $galleryHtml = $this->client->gallery($gallery->exhenid, $gallery->hash);
+        try {
+            $galleryHtml = $this->client->gallery($gallery->exhenid, $gallery->hash);
+            Log::debug(self::LOG_TAG, 'Html loaded');
 
-        // Galleries that are removed now return a 404, so we have to leave them as audited completely for now.
-        if(!$galleryHtml) {
-            $gallery->lastaudit = date('Y-m-d H:i:s'); //gallery was probably deleted, so mark it as audited for now
-            R::store($gallery);
+            $galleryPage = new ExPage_Gallery($galleryHtml);
+            Log::debug(self::LOG_TAG, 'Checking gallery validity');
+            if (!$galleryPage->isValid()) {
+                $gallery->lastaudit = date('Y-m-d H:i:s'); //gallery was probably deleted, so mark it as audited for now
+                R::store($gallery);
 
-            Log::error(self::LOG_TAG, 'Gallery was either removed or was invalid.');
-            return;
-        }
-
-        $galleryPage = new ExPage_Gallery($galleryHtml);
-        if(!$galleryPage->isValid()) {
-            $gallery->lastaudit = date('Y-m-d H:i:s'); //gallery was probably deleted, so mark it as audited for now
-            R::store($gallery);
-
-            Log::error(self::LOG_TAG, 'Gallery was either removed or was invalid.');
-            return;
-        }
-
-        $childGallery = $galleryPage->getNewestVersion();
-        if($childGallery) {
-
-            $childHtml = $this->client->gallery($childGallery->exhenid, $childGallery->hash);
-            $childPage = new ExPage_Gallery($childHtml);
-
-            if ($childPage->isValid()) {
-                Log::debug(self::LOG_TAG, 'New gallery found for gallery (%d): #%d - %s', $childGallery->exhenid, $gallery->exhenid, $gallery->name);
-
-                Model_Gallery::addGallery($childGallery->exhenid, $childGallery->hash);
-
-                $gallery->deleted = 1;
+                Log::error(self::LOG_TAG, 'Gallery was either removed or was invalid.');
+                return;
             }
-            
-        }
-        else {
-            $newTags = $galleryPage->getTags();
-            $oldTags = $gallery->exportTags();
 
-            if(count($newTags) > 0) {
-                $diff = self::tagsDiff($oldTags, $newTags);
+            Log::debug(self::LOG_TAG, 'Getting latest version of gallery');
+            $childGallery = $galleryPage->getNewestVersion();
+            if ($childGallery) {
+                Log::debug(self::LOG_TAG, 'Getting last version');
+                $childHtml = $this->client->gallery($childGallery->exhenid, $childGallery->hash);
+                $childPage = new ExPage_Gallery($childHtml);
 
-                if(count($diff) > 0) {
-                    $humanDiff = array();
-                    foreach($diff as $ns => $tags) {
-                        foreach($tags as $tag) {
-                            $humanDiff[] = $ns.':'.$tag;
-                        }
-                    }
+                if ($childPage->isValid()) {
+                    Log::debug(self::LOG_TAG, 'New gallery found for gallery (%d): #%d - %s', $childGallery->exhenid, $gallery->exhenid, $gallery->name);
 
-                    $humanDiff = implode(', ', $humanDiff);
+                    Model_Gallery::addGallery($childGallery->exhenid, $childGallery->hash);
 
-                    Log::debug(self::LOG_TAG, 'Different tags found for gallery: #%d - %s (%s)', $gallery->exhenid, $gallery->name, $humanDiff);
-                    $gallery->ownGalleryTag = array();
-                    $gallery->addTags($newTags);
-
-                    $cache = Cache::getInstance();
-                    $cache->deleteObject('gallery', $gallery->id);
+                    $gallery->deleted = 1;
                 }
+
+            } else {
+                Log::debug(self::LOG_TAG, 'Already on last version');
+                $newTags = $galleryPage->getTags();
+                $oldTags = $gallery->exportTags();
+
+                if (count($newTags) > 0) {
+                    $diff = self::tagsDiff($oldTags, $newTags);
+
+                    if (count($diff) > 0) {
+                        $humanDiff = array();
+                        foreach ($diff as $ns => $tags) {
+                            foreach ($tags as $tag) {
+                                $humanDiff[] = $ns . ':' . $tag;
+                            }
+                        }
+
+                        $humanDiff = implode(', ', $humanDiff);
+
+                        Log::debug(self::LOG_TAG, 'Different tags found for gallery: #%d - %s (%s)', $gallery->exhenid, $gallery->name, $humanDiff);
+                        $gallery->ownGalleryTag = array();
+                        $gallery->addTags($newTags);
+
+                        $cache = Cache::getInstance();
+                        $cache->deleteObject('gallery', $gallery->id);
+                    }
+                }
+            }
+        } catch (\GuzzleHttp\Exception\ClientException $exception) {
+            // Galleries that are removed now return a 404, so we have to leave them as audited completely for now.
+            if(!$exception->getResponse()->getStatusCode() == 404) {
+                Log::error(self::LOG_TAG, 'Gallery was either removed or was invalid.');
+            } else {
+                Log::error(self::LOG_TAG, 'Unknown error occured. Code: %d. Message: %s', $exception->getResponse()->getStatusCode(), $exception->getResponse()->getReasonPhrase());
             }
         }
 

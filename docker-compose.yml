@@ -1,14 +1,5 @@
 version: '3.5'
 services:
-  web:
-    image: nginx
-    links:
-      - app
-    volumes:
-      - ".:/var/www"
-      - "./.docker/config/nginx/vhost.conf:/etc/nginx/conf.d/default.conf:ro"
-      - "./images:/var/www/www/images"
-
   app:
     build: .
     links:
@@ -18,12 +9,10 @@ services:
     depends_on:
       - mariadb
     volumes:
-      - "./.docker/config/php/php.ini:/usr/local/etc/php/conf.d/030-custom.ini:ro"
-      - ".:/var/www"
+      - ".:/var/www/html"
       - "./archives:/archive"
       - "./images:/images"
     environment:
-      TZ: UTC
       CONF_MEMBERID: null
       CONF_PASSHASH: null
       CONF_ACCESSKEY: ChangeMeIAmNotSecure

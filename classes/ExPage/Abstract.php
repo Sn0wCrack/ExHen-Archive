@@ -1,22 +1,24 @@
 <?php
+use Symfony\Component\DomCrawler\Crawler;
 
 abstract class ExPage_Abstract
 {
-
-    protected $doc;
+    /**
+     * @var Crawler
+     */
+    protected $crawler;
 
     public function __construct($html)
     {
-        $this->doc = phpQuery::newDocumentHTML($html);
+        $this->crawler = new Crawler($html);
     }
 
-    public function getDocument()
+    /**
+     * @param $selector
+     * @return Crawler
+     */
+    public function findElement($selector)
     {
-        return $this->doc;
-    }
-
-    public function find($selector)
-    {
-        return $this->doc->find($selector);
+        return $this->crawler->filter($selector);
     }
 }

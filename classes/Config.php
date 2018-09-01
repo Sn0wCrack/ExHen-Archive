@@ -52,4 +52,21 @@ class Config
 
         return implode('; ', $cookie);
     }
+
+    public static function buildCookieJar()
+    {
+        $cookieJar = new \Symfony\Component\BrowserKit\CookieJar();
+
+        foreach((array)self::$config->cookie as $name => $value) {
+            $cookieJar->set(new \Symfony\Component\BrowserKit\Cookie(
+                $name,
+                $value,
+                null,
+                null,
+                '.exhentai.org'
+            ));
+        }
+
+        return $cookieJar;
+    }
 }

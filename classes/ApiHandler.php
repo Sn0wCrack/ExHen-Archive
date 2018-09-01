@@ -1,6 +1,6 @@
 <?php
 
-use PHPImageWorkshop\ImageWorkshop;
+use Intervention\Image\ImageManagerStatic as Image;
 
 class ApiHandler
 {
@@ -124,43 +124,35 @@ class ApiHandler
 
                     if ($resize && is_numeric($resize) && (int)$resize > 0) {
                         $ext = pathinfo($imagePath, PATHINFO_EXTENSION);
+                        $image = Image::make($imagePath);
 
+                        if ($image->getWidth() < $resize) {
+                            $resize = $image->getWidth();
+                        }
+
+                        $image->resize($resize, null, function($constraint) {
+                            $constraint->aspectRatio();
+                        });
+
+                        $quality = null;
                         switch ($ext) {
-                            default:
                             case 'jpg':
                             case 'jpeg':
-                                header('Content-Type: image/jpeg');
+                                $quality = 80;
                                 break;
                             case 'png':
-                                header('Content-Type: image/png');
+                                $quality = 8;
                                 break;
                             case 'gif':
-                                header('Content-Type: image/gif');
+                            case 'webp':
+                                $quality = null;
                                 break;
-                        }
-
-                        $layer = ImageWorkshop::initFromPath($imagePath);
-                        
-                        if ($layer->getWidth() < $resize) {
-                            $resize = $layer->getWidth();
-                        }
-
-                        $layer->resizeInPixel($resize, null, true);
-                        $image = $layer->getResult();
-
-                        switch ($ext) {
                             default:
-                            case 'jpg':
-                            case 'jpeg':
-                                imagejpeg($image, null, 80); //imagejpeg quality scale 0-100. default 75
-                                break;
-                            case 'png':
-                                imagepng($image, null, 8); //imagepng quality scale is 0-9. default 6
-                                break;
-                            case 'gif':
-                                imagegif($image, null);
-                                break;
+                                throw new Exception('Unsupported extension');
                         }
+                        $stream = $image->stream($ext, $quality);
+                        $stream->rewind();
+                        echo $stream->getContents();
                     } else {
                         $ext = pathinfo($imagePath, PATHINFO_EXTENSION);
 
@@ -198,6 +190,7 @@ class ApiHandler
         list($id, $index, $type) = $this->getParams('id', 'index', 'type');
 
         if ($id && $index !== null && in_array($type, array(Model_Gallery::THUMB_LARGE, Model_Gallery::THUMB_SMALL))) {
+            /** @var Model_Gallery $gallery */
             $gallery = R::load('gallery', $id);
             if ($gallery) {
                 $thumb = $gallery->getThumbnail($index, $type, true);
@@ -230,36 +223,36 @@ class ApiHandler
             if ($gallery) {
                 $config = Config::get();
                 $pageFile = sprintf('%s/pages/%d.html', $config->archiveDir, $gallery->exhenid);
+                $cachedImagePath = sprintf('%s/%s.jpeg', $config->imageDir, $gallery->exhenid);
 
-                if (file_exists($pageFile)) {
+                if (file_exists($pageFile) || file_exists($cachedImagePath)) {
                     header('Content-Type: image/jpeg');
                     header('Last-Modified: '.gmdate('D, d M Y H:i:s', strtotime($gallery->posted)).' GMT');
                     header('Expires: '.gmdate('D, d M Y H:i:s', strtotime('+1 year')).' GMT');
                     header('Cache-Control: public');
 
-                    $html = file_get_contents($pageFile);
-                    $page = new ExPage_Gallery($html);
+                    if(!file_exists($cachedImagePath)) {
+                        $html = file_get_contents($pageFile);
+                        $page = new ExPage_Gallery($html);
 
-                    $url = $page->getThumbnailUrl();
-                    
-                    $ch = curl_init($url);
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-                    curl_setopt($ch, CURLOPT_FAILONERROR, true);
-                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                    curl_setopt($ch, CURLOPT_MAXREDIRS, 300);
+                        $url = $page->getThumbnailUrl();
 
-                    $cookie = Config::buildCookie();
-                    curl_setopt($ch, CURLOPT_COOKIE, $cookie);
-                    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36');
-                    
-                    $ret = curl_exec($ch);
-                    curl_close($ch);
-                    
-                    $im = imagecreatefromstring($ret);
-                    if ($im) {
-                        imagejpeg($im);
-                        imagedestroy($im);
+                        // Get gallery thumbnail from exhentai
+                        $exClient = new ExClient();
+                        $imageString = $exClient->get($url);
+
+                        // Save thumbnail to file
+                        if($handle = fopen($cachedImagePath, 'x')) {
+                            fwrite($handle, $imageString);
+                            fclose($handle);
+                        }
+                        $im = imagecreatefromstring($imageString);
+                        if ($im) {
+                            imagejpeg($im);
+                            imagedestroy($im);
+                        }
+                    } else {
+                        readfile($cachedImagePath);
                     }
                 } else {
                     http_response_code(404);

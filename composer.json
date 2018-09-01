@@ -1,0 +1,18 @@
+{
+    "name": "pbx_g33k/ex-hentai-archive",
+    "type": "project",
+    "require": {
+        "ext-curl": "^7.2",
+        "symfony/dom-crawler": "^4.1",
+        "guzzlehttp/guzzle": "^6.3",
+        "symfony/css-selector": "^4.1",
+        "psr/log": "^1.0",
+        "intervention/image": "^2.4",
+        "fabpot/goutte": "^3.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "PHPImageWorkshop\\": "lib/PHPImageWorkshop/"
+        }
+    }
+}
