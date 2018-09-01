@@ -72,7 +72,7 @@ WORKDIR /var/www/html
 RUN composer install --no-dev --optimize-autoloader \
     && chmod +x init.d.sh
 
-#cleanup
-RUN rm -rf .git/
+RUN rm -rf /var/www/html/www/images \
+    && ln -s /images/ /var/www/html/www/
 
 CMD ["sh", "init.d.sh"]
