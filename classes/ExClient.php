@@ -113,7 +113,7 @@ class ExClient
             }
 
             return $this->post($url, array_merge([
-                'dlcheck' => true,
+                'dlcheck' => 'Download Original Archive',
                 'dltype'  => 'org'
             ],$this->guzzleDefaults));
         } else {
