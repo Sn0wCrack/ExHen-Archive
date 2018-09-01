@@ -4,6 +4,9 @@ class Task_Audit extends Task_Abstract {
 
     const LOG_TAG = 'Task_Audit';
 
+    /**
+     * @var ExClient
+     */
     protected $client;
 
     public function run($options = array()) {
@@ -26,6 +29,7 @@ class Task_Audit extends Task_Abstract {
                 break;
             }
 
+            Log::debug(self::LOG_TAG, 'Loaded %d galleries for audit', count($galleries));
             foreach($galleries as $gallery) {
                 $this->audit($gallery);
             }
@@ -41,6 +45,7 @@ class Task_Audit extends Task_Abstract {
         Log::debug(self::LOG_TAG, 'Auditing gallery: #%d - %s', $gallery->exhenid, $gallery->name);
 
         $galleryHtml = $this->client->gallery($gallery->exhenid, $gallery->hash);
+        Log::debug(self::LOG_TAG, 'Html loaded');
 
         // Galleries that are removed now return a 404, so we have to leave them as audited completely for now.
         if(!$galleryHtml) {
@@ -52,6 +57,7 @@ class Task_Audit extends Task_Abstract {
         }
 
         $galleryPage = new ExPage_Gallery($galleryHtml);
+        Log::debug(self::LOG_TAG, 'Checking gallery validity');
         if(!$galleryPage->isValid()) {
             $gallery->lastaudit = date('Y-m-d H:i:s'); //gallery was probably deleted, so mark it as audited for now
             R::store($gallery);
@@ -60,9 +66,10 @@ class Task_Audit extends Task_Abstract {
             return;
         }
 
+        Log::debug(self::LOG_TAG, 'Getting latest version of gallery');
         $childGallery = $galleryPage->getNewestVersion();
         if($childGallery) {
-
+            Log::debug(self::LOG_TAG, 'Getting last version');
             $childHtml = $this->client->gallery($childGallery->exhenid, $childGallery->hash);
             $childPage = new ExPage_Gallery($childHtml);
 
@@ -76,6 +83,7 @@ class Task_Audit extends Task_Abstract {
             
         }
         else {
+            Log::debug(self::LOG_TAG, 'Already on last version');
             $newTags = $galleryPage->getTags();
             $oldTags = $gallery->exportTags();
 

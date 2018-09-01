@@ -4,6 +4,8 @@ use PHPImageWorkshop\ImageWorkshop;
 
 class Model_Gallery extends Model_Abstract
 {
+    const LOG_TAG = 'Model_Gallery';
+
     const SOURCE_EXHENTAI = 0;
     const SOURCE_MANUAL = 1;
     const SOURCE_NHENTAI = 2;
@@ -157,8 +159,12 @@ class Model_Gallery extends Model_Abstract
                     R::store($image);
 
                     return $image;
+                } else {
+                    Log::debug(self::LOG_TAG,'File not found %s', $inFile);
                 }
             }
+        } else {
+            Log::debug(self::LOG_TAG, 'Gallery not archived, no thumbs');
         }
 
         return false;

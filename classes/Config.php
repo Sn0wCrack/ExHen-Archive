@@ -52,4 +52,9 @@ class Config
 
         return implode('; ', $cookie);
     }
+
+    public static function buildCookieJar()
+    {
+        return \GuzzleHttp\Cookie\CookieJar::fromArray((array)self::$config->cookie, '.exhentai.org');
+    }
 }
