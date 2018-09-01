@@ -146,6 +146,7 @@ class Model_Gallery extends Model_Abstract
 
                 $outFile = $tempDir.DS.$resizedFilename;
                 $image->save($outFile, 95);
+                Log::debug(self::LOG_TAG, 'Saved image to %s', $outFile);
                 $image = Model_Image::importFromFile($outFile);
                 unlink($outFile);
 
