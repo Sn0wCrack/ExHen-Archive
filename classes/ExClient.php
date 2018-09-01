@@ -39,7 +39,7 @@ class ExClient
     /**
      * @var array
      */
-    private $historyContainer;
+    private $historyContainer = [];
 
     /**
      * ExClient constructor.
@@ -48,7 +48,8 @@ class ExClient
     public function __construct()
     {
         $this->history = \GuzzleHttp\Middleware::history($this->historyContainer);
-        $stack = \GuzzleHttp\HandlerStack::create($this->history);
+        $stack = \GuzzleHttp\HandlerStack::create();
+        $stack->push($this->history);
 
         $this->guzzleDefaults = [
             'allow_redirects' => [

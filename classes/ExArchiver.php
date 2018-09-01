@@ -217,22 +217,29 @@ class ExArchiver
                     Log::error(self::LOG_TAG, 'Failed to find archive link for gallery: %s (#%d) - low GP?', $gallery->name, $gallery->exhenid);
                 }
             } catch (\GuzzleHttp\Exception\TooManyRedirectsException $exception) {
-                Log::error(self::LOG_TAG, 'Possible redirection loop. Printing redirection stack');
-                $redirectHeaders  = $exception->getResponse()->getHeader('X-Guzzle-Redirect-History');
-                $redirectStatuses = $exception->getResponse()->getHeader('X-Guzzle-Redirect-Status-History');
-                $redirectCount  = count($redirectHeaders);
 
-                for($i=1; $i <= $redirectCount; $i++) {
-                    Log::debug(
-                        self::LOG_TAG,
-                        '[%d/%d][%d] %s',
+                Log::error(self::LOG_TAG, 'Possible redirection loop. Printing redirection stack');
+
+                $total = count($this->client->getRequestHistory());
+                $i = 1;
+
+                Log::debug(self::LOG_TAG, '%d redirects logged', $total);
+                foreach($this->client->getRequestHistory() as $transaction)
+                {
+                    /** @var \GuzzleHttp\Psr7\Response $response */
+                    $response = $transaction['response'];
+                    /** @var \GuzzleHttp\Psr7\Request $request */
+                    $request  = $transaction['request'];
+
+                    Log::debug(self::LOG_TAG,'[%d/%d][%s] %d - %s',
                         $i,
-                        $redirectCount,
-                        current($redirectStatuses),
-                        current($redirectHeaders)
+                        $total,
+                        $request->getMethod(),
+                        $response->getStatusCode(),
+                        $request->getUri()->getPath()
                     );
-                    next($redirectHeaders);
-                    next($redirectStatuses);
+
+                    $i++;
                 }
             }
         }
