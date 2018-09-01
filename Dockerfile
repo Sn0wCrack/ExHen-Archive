@@ -69,7 +69,8 @@ COPY ./.manifest/ /
 COPY . /var/www/html
 WORKDIR /var/www/html
 
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader \
+    && chmod +x init.d.sh
 
 #cleanup
 RUN rm -rf .git/
