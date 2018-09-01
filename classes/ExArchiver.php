@@ -161,57 +161,79 @@ class ExArchiver
         $gallery->hasmeta = true;
 
         if ($gallery->download) {
-            //delete if gallery zip exists (it shouldn't)
-            $targetFile = $gallery->getArchiveFilepath();
-            if (file_exists($targetFile)) {
-                unlink($targetFile);
-            }
-
-            Log::debug(self::LOG_TAG, 'Downloading gallery archive');
-
-            //download archive
-            $archiverUrl = $galleryPage->getArchiverUrl();
-            if (!$archiverUrl) {
-                Log::error(self::LOG_TAG, 'Failed to find archiver link for gallery: %s (#%d)', $gallery->name, $gallery->exhenid);
-                return;
-            }
-            
-            $buttonPress = $this->client->buttonPress($archiverUrl);
-
-            if (strpos($buttonPress, 'Insufficient Credits.') !== false) {
-                Log::error(self::LOG_TAG, 'Insufficient Credits');
-                exit;
-            }
-            
-            $archiverPage = new ExPage_Archiver($buttonPress);
-
-            $continueUrl = $archiverPage->getContinueUrl();
-            
-            if ($continueUrl) {
-                if (preg_match("/\?.*/", $continueUrl)) {
-                    $continueUrl = preg_replace('/\?.*/', '', $continueUrl);
+            try {
+                //delete if gallery zip exists (it shouldn't)
+                $targetFile = $gallery->getArchiveFilepath();
+                if (file_exists($targetFile)) {
+                    unlink($targetFile);
                 }
-                $archiveDownloadUrl = $continueUrl.'?start=1';
-                
-                $ret = @copy($archiveDownloadUrl, $targetFile);
-                
-                if ($ret) {
-                    $archive = new ZipArchive();
-                    $ret = $archive->open($targetFile);
-                    if ($ret === true && $archive->status == ZipArchive::ER_OK) {
-                        $gallery->numfiles = $archive->numFiles;
-                        $archive->close();
 
-                        $gallery->filesize = filesize($targetFile);
-                        $gallery->archived = true;
+                Log::debug(self::LOG_TAG, 'Downloading gallery archive');
+
+                //download archive
+                $archiverUrl = $galleryPage->getArchiverUrl();
+                if (!$archiverUrl) {
+                    Log::error(self::LOG_TAG, 'Failed to find archiver link for gallery: %s (#%d)', $gallery->name, $gallery->exhenid);
+                    return;
+                }
+
+                $buttonPress = $this->client->buttonPress($archiverUrl);
+
+                if (strpos($buttonPress, 'Insufficient Credits.') !== false) {
+                    Log::error(self::LOG_TAG, 'Insufficient Credits');
+                    exit;
+                }
+
+                Log::debug(self::LOG_TAG, 'Loading archive URL');
+                $archiverPage = new ExPage_Archiver($buttonPress);
+
+                $continueUrl = $archiverPage->getContinueUrl();
+                Log::debug(self::LOG_TAG, 'Archive URL: %s', $continueUrl);
+
+                if ($continueUrl) {
+                    if (preg_match("/\?.*/", $continueUrl)) {
+                        $continueUrl = preg_replace('/\?.*/', '', $continueUrl);
+                    }
+                    $archiveDownloadUrl = $continueUrl . '?start=1';
+
+                    $ret = @copy($archiveDownloadUrl, $targetFile);
+
+                    if ($ret) {
+                        $archive = new ZipArchive();
+                        $ret = $archive->open($targetFile);
+                        if ($ret === true && $archive->status == ZipArchive::ER_OK) {
+                            $gallery->numfiles = $archive->numFiles;
+                            $archive->close();
+
+                            $gallery->filesize = filesize($targetFile);
+                            $gallery->archived = true;
+                        } else {
+                            Log::error(self::LOG_TAG, 'Downloaded file is not an archive for gallery: %s (#%d)', $gallery->name, $gallery->exhenid);
+                        }
                     } else {
-                        Log::error(self::LOG_TAG, 'Downloaded file is not an archive for gallery: %s (#%d)', $gallery->name, $gallery->exhenid);
+                        Log::error(self::LOG_TAG, 'Failed to download archive for gallery: %s (#%d)', $gallery->name, $gallery->exhenid);
                     }
                 } else {
-                    Log::error(self::LOG_TAG, 'Failed to download archive for gallery: %s (#%d)', $gallery->name, $gallery->exhenid);
+                    Log::error(self::LOG_TAG, 'Failed to find archive link for gallery: %s (#%d) - low GP?', $gallery->name, $gallery->exhenid);
                 }
-            } else {
-                Log::error(self::LOG_TAG, 'Failed to find archive link for gallery: %s (#%d) - low GP?', $gallery->name, $gallery->exhenid);
+            } catch (\GuzzleHttp\Exception\TooManyRedirectsException $exception) {
+                Log::error(self::LOG_TAG, 'Possible redirection loop. Printing redirection stack');
+                $redirectHeaders  = $exception->getResponse()->getHeader('X-Guzzle-Redirect-History');
+                $redirectStatuses = $exception->getResponse()->getHeader('X-Guzzle-Redirect-Status-History');
+                $redirectCount  = count($redirectHeaders);
+
+                for($i=1; $i <= $redirectCount; $i++) {
+                    Log::debug(
+                        self::LOG_TAG,
+                        '[%d/%d][%d] %s',
+                        $i,
+                        $redirectCount,
+                        current($redirectStatuses),
+                        current($redirectHeaders)
+                    );
+                    next($redirectHeaders);
+                    next($redirectStatuses);
+                }
             }
         }
 

@@ -97,10 +97,10 @@ class ExClient
                 $this->ctr = 0;
             }
 
-            return $this->post($url, [
+            return $this->post($url, array_merge([
                 'dlcheck' => true,
                 'dltype'  => 'org'
-            ]);
+            ],$this->guzzleDefaults));
         } else {
             Log::debug("ExClient", "dlcheck bypassed already");
         }
