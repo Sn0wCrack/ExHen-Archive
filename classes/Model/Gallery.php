@@ -15,6 +15,8 @@ class Model_Gallery extends Model_Abstract
 
     const GP_PER_MB = 41.9435018158;
 
+    private $zipResource;
+
     public static function search($page, $pagesize, $search, $order, $randomSeed = null, $unarchived = false, $read = false, $color = false)
     {
         $query = new QueryHelper();
@@ -93,28 +95,23 @@ class Model_Gallery extends Model_Abstract
         }
     }
 
-    public function getImageFilepath($index)
+    public function getArchivedImage($index)
     {
-        $zipPath = $this->getArchiveFilepath();
-        if (file_exists($zipPath)) {
-            $files = array();
-
-            $zip = new PharData($zipPath);
-            if ($zip) {
-                foreach ($zip as $file) {
-                    $files[] = basename($file);
-                }
-
-                natcasesort($files);
-                $files = array_values($files); //strip keys
-
-                if (array_key_exists($index, $files)) {
-                    return sprintf('phar://%s/%s', $zipPath, $files[$index]);
-                }
+        if(!$this->zipResource) {
+            $this->zipResource = new ZipArchive();
+            $openstate = $this->zipResource->open($this->getArchiveFilepath());
+            if($openstate !== TRUE) {
+                throw new Exceptions_ExHentaiException('Zip could not be opened');
             }
         }
 
-        return false;
+        $content = $this->zipResource->getFromIndex($index);
+
+        if(($index+1) >= $this->zipResource->numFiles) {
+            $this->zipResource->close();
+        }
+
+        return $content;
     }
 
     public function getImageBean($index)
@@ -132,33 +129,31 @@ class Model_Gallery extends Model_Abstract
 
                 return $link->image;
             } elseif ($create) {
-                $inFile = $this->getImageFilepath($index);
 
-                if (file_exists($inFile)) {
-                    $resizedFilename = sprintf('resized_gallery_%d_%d.jpg', $this->id, $index);
+                $fileContent = $this->getArchivedImage($index);
 
-                    if ($type == self::THUMB_LARGE) {
-                        $image = Image::make($inFile)->resize(350);
-                    } elseif ($type == self::THUMB_SMALL) {
-                        $image = Image::make($inFile)->resize(140);
-                    } else {
-                        return false;
-                    }
+                $resizedFilename = sprintf('resized_gallery_%d_%d.jpg', $this->id, $index);
 
-                    $tempDir = Config::get()->tempDir;
-
-                    $outFile = $tempDir.DS.$resizedFilename;
-                    $image->save($outFile, 95);
-                    $image = Model_Image::importFromFile($outFile);
-                    unlink($outFile);
-
-                    $image->unbox()->link('gallery_thumb', array('index' => $index, 'type' => $type))->gallery = $this->unbox();
-                    R::store($image);
-
-                    return $image;
+                if ($type == self::THUMB_LARGE) {
+                    $image = Image::make($fileContent)->resize(350);
+                } elseif ($type == self::THUMB_SMALL) {
+                    $image = Image::make($fileContent)->resize(140);
                 } else {
-                    Log::debug(self::LOG_TAG,'File not found %s', $inFile);
+                    return false;
                 }
+
+                $tempDir = Config::get()->tempDir;
+
+                $outFile = $tempDir.DS.$resizedFilename;
+                $image->save($outFile, 95);
+                $image = Model_Image::importFromFile($outFile);
+                unlink($outFile);
+
+                $image->unbox()->link('gallery_thumb', array('index' => $index, 'type' => $type))->gallery = $this->unbox();
+                R::store($image);
+
+                return $image;
+
             }
         } else {
             Log::debug(self::LOG_TAG, 'Gallery not archived, no thumbs');
