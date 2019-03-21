@@ -11,7 +11,7 @@ class ExPage_Index extends ExPage_Abstract
     {
         $ret = array();
 
-        $links = $this->find('td.itd .it5 a');
+        $links = $this->find('.itg.gld .gl1t .glname a');
         foreach ($links as $linkElem) {
             $gallery = new stdClass();
 
