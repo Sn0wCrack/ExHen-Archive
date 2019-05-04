@@ -22,11 +22,14 @@ class ExPage_Gallery extends ExPage_Abstract
     {
         return $this->find('div#gdc .cs')->text();
     }
-
-    // TODO: Updaet this to grab the div and get the background url instead... should be fun
+    
     public function getThumbnailUrl()
     {
-        return $this->find('div#gd1 img')->attr('src');
+        $style = $this->find('div#gd1 div')->attr('style');
+        
+        preg_match('/url\((.*?)\)/', $style, $matches);
+        
+        return $matches[1];
     }
 
     public function getTags()
