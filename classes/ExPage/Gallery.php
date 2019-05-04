@@ -20,9 +20,10 @@ class ExPage_Gallery extends ExPage_Abstract
 
     public function getType()
     {
-        return $this->find('div#gdc img')->attr('alt');
+        return $this->find('div#gdc .cs')->text();
     }
 
+    // TODO: Updaet this to grab the div and get the background url instead... should be fun
     public function getThumbnailUrl()
     {
         return $this->find('div#gd1 img')->attr('src');
