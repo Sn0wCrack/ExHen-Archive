@@ -9,7 +9,7 @@ var baseUrl = '//your.archive.url.com/';
 var key = 'changeme';
 
 function createArchiveLink(gid, token) {
-    var link = $('<a href="#">Send to archive</a>');
+    var link = $('<div><a href="#">Send to archive</a></div>');
     link.data('gid', gid);
     link.data('token', token);
     
@@ -70,12 +70,12 @@ $('div#gd5').each(function() { //archive button on gallery detail
 
 $('div.itg').each(function() { //gallery search
     var container = $(this);
-    var galleries = $('div.id1', container);
+    var galleries = $('div.gl1t', container);
     var gids = [ ];
     
     galleries.each(function() {
         var galleryContainer = $(this);
-        var link = $('div.id2 a', galleryContainer).prop('href');
+        var link = $('a', galleryContainer).prop('href');
         
         var bits = link.split("/");
         
@@ -85,29 +85,28 @@ $('div.itg').each(function() { //gallery search
         gids.push(gid);
         
         galleryContainer.data('gid', gid);
-        $('.id44 img', galleryContainer).remove();
         
         $.getJSON(baseUrl + 'api.php', { action: 'hasgallery', gid: gid, key: key }, function(data, result) {
            if (!data.data.exists) {
               var link = createArchiveLink(gid, token);
-              link.css({ fontSize: '9px' });
+              link.css({ 'text-align': center, 'font-size': '12px' });
               link.on('click', function() {
-                  $(this).parents('.id1').css({ background: 'green' });
+                  $(this).parents('gl1t').css({ background: 'green' });
               });
         
-              link.prependTo($('.id44 div', galleryContainer));
+              link.appendTo(galleryContainer);
            } else {
              var res = "";
              if (data.data.archived && data.data.deleted == 0) {
-                res = $('<p>Archived</p>');
+                res = $('<div><p>Archived</p></div>');
                 galleryContainer.css({background: 'green'});
              }
                
              if (data.data.deleted >= 1) {
-               res = $('<p>Deleted</p>');  
+               res = $('<div><p>Deleted</p></div>');  
                galleryContainer.css({background: '#AA0000'});
              }
-             res.prependTo($('.id44 div', galleryContainer));
+             res.appendTo(galleryContainer);
            }
         });
     });
